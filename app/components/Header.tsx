@@ -3,17 +3,26 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "./ui/button"
-import { Menu, X } from "lucide-react"
+import { Menu, X, ChefHat, Languages, BarChart3 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { TLLogo } from "./TLLogo"
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "./ui/navigation-menu"
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { scrollY } = useScroll()
   
-  // Transform values for animations - simple horizontal collapse
+  // Transform values for animations
   const logoScaleX = useTransform(scrollY, [0, 80], [1, 0])
   const logoOpacity = useTransform(scrollY, [50, 80], [1, 0])
   const tlLogoScale = useTransform(scrollY, [30, 80], [0, 1])
@@ -27,12 +36,6 @@ export function Header() {
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
-
-  const navLinks = [
-    { href: "#features", label: "Features" },
-    { href: "#how-it-works", label: "How it Works" },
-    { href: "#pricing", label: "Pricing" },
-  ]
 
   return (
     <motion.header
@@ -84,17 +87,60 @@ export function Header() {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex md:items-center md:space-x-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-eerie-black/80 hover:text-spanish-orange transition-colors duration-200"
-              >
-                {link.label}
-              </Link>
-            ))}
-            <Button>Try Culi</Button>
+          <div className="hidden md:flex md:items-center md:space-x-6">
+            <NavigationMenu>
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="text-eerie-black/80">
+                    Features
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <div className="w-[400px] p-4">
+                      <div className="mb-4 pb-4 border-b border-cinereous/10">
+                        <Link href="/features" className="block">
+                          <h3 className="text-lg font-semibold text-eerie-black mb-2 hover:text-spanish-orange transition-colors">
+                            Explore All Features
+                          </h3>
+                          <p className="text-sm text-eerie-black/60">
+                            Discover how Culi transforms your restaurant&apos;s guest experience
+                          </p>
+                        </Link>
+                      </div>
+                      <ul className="grid gap-3">
+                        <FeatureItem
+                          href="/#features"
+                          icon={<ChefHat className="h-5 w-5" />}
+                          title="AI Menu Assistant"
+                          description="Instant answers about dishes, ingredients, and allergens"
+                        />
+                        <FeatureItem
+                          href="/#features"
+                          icon={<Languages className="h-5 w-5" />}
+                          title="95+ Languages"
+                          description="Serve international guests in their native language"
+                        />
+                        <FeatureItem
+                          href="/#features"
+                          icon={<BarChart3 className="h-5 w-5" />}
+                          title="Analytics Dashboard"
+                          description="Track popular dishes and customer preferences"
+                        />
+                      </ul>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/pricing" className={cn(navigationMenuTriggerStyle(), "text-eerie-black/80")}>
+                      Pricing
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+            
+            <Button>Try Culi Free</Button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -114,22 +160,53 @@ export function Header() {
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
           <div className="md:hidden py-4 space-y-2 animate-slide-down">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="block px-4 py-2 text-eerie-black/80 hover:text-spanish-orange transition-colors duration-200"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {link.label}
-              </Link>
-            ))}
+            <Link
+              href="/features"
+              className="block px-4 py-2 text-eerie-black/80 hover:text-spanish-orange transition-colors duration-200"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Features
+            </Link>
+            <Link
+              href="/pricing"
+              className="block px-4 py-2 text-eerie-black/80 hover:text-spanish-orange transition-colors duration-200"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Pricing
+            </Link>
             <div className="px-4 pt-2">
-              <Button className="w-full">Try Culi</Button>
+              <Button className="w-full">Try Culi Free</Button>
             </div>
           </div>
         )}
       </motion.nav>
     </motion.header>
+  )
+}
+
+// Feature Item Component
+function FeatureItem({ href, icon, title, description }: {
+  href: string
+  icon: React.ReactNode
+  title: string
+  description: string
+}) {
+  return (
+    <li>
+      <Link
+        href={href}
+        className="block p-3 rounded-lg hover:bg-seasalt transition-colors group"
+      >
+        <div className="flex items-start gap-3">
+          <div className="p-2 rounded-md bg-spanish-orange/10 text-spanish-orange group-hover:bg-spanish-orange group-hover:text-white transition-colors">
+            {icon}
+          </div>
+          <div>
+            <h4 className="font-medium text-eerie-black mb-1">{title}</h4>
+            <p className="text-sm text-eerie-black/60">{description}</p>
+          </div>
+        </div>
+      </Link>
+    </li>
   )
 }

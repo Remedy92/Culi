@@ -82,27 +82,6 @@ export function TranslationDemo() {
           ))}
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="text-center mt-16"
-        >
-          <p className="text-dark-umber/70 mb-2">
-            Supporting 100+ languages worldwide
-          </p>
-          <div className="flex flex-wrap justify-center gap-4 text-sm text-warm-taupe">
-            <span>🇨🇳 Chinese</span>
-            <span>🇪🇸 Spanish</span>
-            <span>🇸🇦 Arabic</span>
-            <span>🇫🇷 French</span>
-            <span>🇯🇵 Japanese</span>
-            <span>🇰🇷 Korean</span>
-            <span>🇮🇳 Hindi</span>
-            <span>+ many more</span>
-          </div>
-        </motion.div>
       </div>
     </section>
   )

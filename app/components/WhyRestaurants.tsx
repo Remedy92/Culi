@@ -43,10 +43,10 @@ export function WhyRestaurants() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl font-bold text-eerie-black mb-4">
-            Why Restaurants Love Culi
+            Why Use Culi?
           </h2>
           <p className="text-lg text-eerie-black/80 max-w-2xl mx-auto">
-            Join thousands of restaurants providing better guest experiences
+            Improve your guest experience with intelligent menu assistance
           </p>
         </motion.div>
 
@@ -87,7 +87,7 @@ export function WhyRestaurants() {
         >
           <div className="flex flex-wrap justify-center gap-8 md:gap-16">
             <div>
-              <p className="text-3xl font-bold text-spanish-orange">100+</p>
+              <p className="text-3xl font-bold text-spanish-orange">All</p>
               <p className="text-eerie-black/70">Languages Supported</p>
             </div>
             <div>

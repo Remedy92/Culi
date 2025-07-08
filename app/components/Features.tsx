@@ -8,7 +8,7 @@ const features = [
   {
     icon: Globe,
     title: "Instant Multilingual Support",
-    description: "Guests can ask questions in 100+ languages and get accurate answers about ingredients, allergens, and preparation methods.",
+    description: "Guests can ask questions in any language and get accurate answers about ingredients, allergens, and preparation methods.",
   },
   {
     icon: AlertCircle,

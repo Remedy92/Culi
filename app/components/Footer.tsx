@@ -87,7 +87,7 @@ export function Footer() {
         <div className="mt-12 pt-8 border-t border-seasalt/10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm">
-              © 2024 TableLink. All rights reserved.
+              © 2025 TableLink. All rights reserved.
             </p>
             <p className="text-sm">
               Powered by <span className="text-spanish-orange">Culi AI</span>

@@ -10,11 +10,11 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "TableLink - AI Menu Assistant for Restaurants",
-  description: "Culi helps restaurant guests get instant answers about your menu in 100+ languages. Works alongside your paper menus.",
+  description: "AI menu assistant that speaks every language. Instant answers about dishes, ingredients, and allergens.",
   keywords: ["restaurant", "AI assistant", "menu", "multilingual", "hospitality"],
   openGraph: {
     title: "TableLink - AI Menu Assistant for Restaurants",
-    description: "Culi helps restaurant guests get instant answers about your menu in 100+ languages",
+    description: "AI menu assistant that speaks every language. Instant answers about dishes, ingredients, and allergens",
     type: "website",
     locale: "en_US",
     siteName: "TableLink",

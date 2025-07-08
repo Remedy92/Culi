@@ -9,11 +9,11 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-spanish-orange text-white hover:bg-spanish-orange/90 shadow-warm hover:shadow-warm-lg hover:scale-105",
+          "bg-eerie-black text-white hover:bg-eerie-black/90 shadow-warm hover:shadow-warm-lg hover:scale-105",
         secondary:
           "bg-cinereous text-white hover:bg-cinereous/90",
         outline:
-          "border border-cinereous/30 bg-transparent text-eerie-black hover:bg-cinereous/10",
+          "border border-eerie-black/30 bg-transparent text-eerie-black hover:bg-eerie-black/10",
         ghost: 
           "text-eerie-black hover:bg-cinereous/10",
       },

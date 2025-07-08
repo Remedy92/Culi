@@ -14,7 +14,7 @@ const config: Config = {
         "spanish-orange": "#e16e27",
         "timberwolf": "#E6DEDB",
         "cinereous": "#ae9990",
-        "eerie-black": "#1e1e1e",
+        "eerie-black": "#0a0a0a",
         "seasalt": "#f8f8f8",
         primary: {
           DEFAULT: "#e16e27",
