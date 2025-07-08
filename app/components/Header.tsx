@@ -114,13 +114,13 @@ export function Header() {
                           description="Instant answers about dishes, ingredients, and allergens"
                         />
                         <FeatureItem
-                          href="/#features"
+                          href="/#translation-demo"
                           icon={<Languages className="h-5 w-5" />}
-                          title="95+ Languages"
+                          title="All Languages"
                           description="Serve international guests in their native language"
                         />
                         <FeatureItem
-                          href="/#features"
+                          href="/analytics-demo"
                           icon={<BarChart3 className="h-5 w-5" />}
                           title="Analytics Dashboard"
                           description="Track popular dishes and customer preferences"

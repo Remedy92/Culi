@@ -224,6 +224,28 @@ body {
   .animate-slide-down {
     animation: slide-down 200ms ease-out;
   }
+
+  /* Gradient animation */
+  @keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  .animate-gradient {
+    animation: gradient 4s ease infinite;
+  }
+
+  /* Soft shadow */
+  .shadow-soft {
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08), 0 2px 8px -1px rgba(0, 0, 0, 0.04);
+  }
 }
 
 @layer base {

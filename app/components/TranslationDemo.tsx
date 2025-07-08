@@ -32,7 +32,7 @@ const menuItems = [
 
 export function TranslationDemo() {
   return (
-    <section className="py-32 bg-cream relative overflow-hidden">
+    <section id="translation-demo" className="py-32 bg-cream relative overflow-hidden">
       {/* Subtle background decoration */}
       <div className="absolute inset-0">
         <div className="absolute top-0 left-1/4 h-64 w-64 rounded-full bg-terracotta/5 blur-3xl" />

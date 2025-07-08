@@ -3,7 +3,7 @@ import { Hero } from "./components/Hero"
 import { Features } from "./components/Features"
 import { TranslationDemo } from "./components/TranslationDemo"
 import { HowItWorks } from "./components/HowItWorks"
-import { WhyRestaurants } from "./components/WhyRestaurants"
+import { WhyRestaurantsBento } from "./components/WhyRestaurantsBento"
 import { CTASection } from "./components/CTASection"
 import { Footer } from "./components/Footer"
 
@@ -16,7 +16,7 @@ export default function Home() {
         <Features />
         <TranslationDemo />
         <HowItWorks />
-        <WhyRestaurants />
+        <WhyRestaurantsBento />
         <CTASection />
       </main>
       <Footer />
