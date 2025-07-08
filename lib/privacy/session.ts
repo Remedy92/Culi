@@ -77,6 +77,7 @@ export function hashUserAgent(userAgent: string): string {
  * Extract country and region from IP using a geo service
  * This is a placeholder - in production, use a service like MaxMind
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function getGeoFromIp(ip: string): Promise<{ country?: string; region?: string }> {
   // TODO: Implement with actual geo service
   // For now, return empty data

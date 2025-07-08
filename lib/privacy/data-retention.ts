@@ -33,13 +33,13 @@ export function getRetentionDays(
   subType: string,
   tier?: string
 ): number {
-  const policies = DATA_RETENTION_POLICIES[dataType] as any;
+  const policies = DATA_RETENTION_POLICIES[dataType];
   
   if (dataType === 'analytics' && tier) {
-    return policies[tier] || policies.free;
+    return (policies as typeof DATA_RETENTION_POLICIES.analytics)[tier as keyof typeof DATA_RETENTION_POLICIES.analytics] || DATA_RETENTION_POLICIES.analytics.free;
   }
   
-  return policies[subType] || 90; // Default to 90 days
+  return (policies as Record<string, number>)[subType] || 90; // Default to 90 days
 }
 
 /**

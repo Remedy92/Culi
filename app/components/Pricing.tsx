@@ -142,7 +142,7 @@ export function Pricing() {
         >
           <p className="text-sm text-eerie-black/60">
             Need more than 2,000 interactions per month? 
-            <Button variant="link" className="text-spanish-orange hover:text-spanish-orange/80 px-1">
+            <Button variant="ghost" className="text-spanish-orange hover:text-spanish-orange/80 px-1 h-auto py-0">
               Contact us for Enterprise pricing
             </Button>
           </p>
