@@ -1,7 +1,8 @@
 "use client";
-import React, { useEffect, useRef, useState, memo } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { Languages } from "lucide-react";
 
 export const TextRevealCard = ({
   text,
@@ -14,147 +15,88 @@ export const TextRevealCard = ({
   children?: React.ReactNode;
   className?: string;
 }) => {
-  const [widthPercentage, setWidthPercentage] = useState(0);
-  const cardRef = useRef<HTMLDivElement | any>(null);
-  const [left, setLeft] = useState(0);
-  const [localWidth, setLocalWidth] = useState(0);
   const [isMouseOver, setIsMouseOver] = useState(false);
+  const [isClicked, setIsClicked] = useState(false);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
 
   useEffect(() => {
-    if (cardRef.current) {
-      const { left, width: localWidth } = cardRef.current.getBoundingClientRect();
-      setLeft(left);
-      setLocalWidth(localWidth);
-    }
+    // Check if device supports touch
+    setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
   }, []);
 
-  function mouseMoveHandler(event: any) {
-    event.preventDefault();
-    const { clientX } = event;
-    if (cardRef.current) {
-      const relativeX = clientX - left;
-      setWidthPercentage((relativeX / localWidth) * 100);
+  const isRevealed = isMouseOver || isClicked;
+
+  const handleClick = () => {
+    // Toggle on click for mobile
+    setIsClicked(!isClicked);
+  };
+
+  const handleMouseEnter = () => {
+    // Only use hover on non-touch devices
+    if (!isTouchDevice) {
+      setIsMouseOver(true);
     }
-  }
+  };
 
-  function mouseLeaveHandler() {
-    setIsMouseOver(false);
-    setWidthPercentage(0);
-  }
-
-  function mouseEnterHandler() {
-    setIsMouseOver(true);
-  }
-
-  function touchMoveHandler(event: React.TouchEvent<HTMLDivElement>) {
-    event.preventDefault();
-    const clientX = event.touches[0]!.clientX;
-    if (cardRef.current) {
-      const relativeX = clientX - left;
-      setWidthPercentage((relativeX / localWidth) * 100);
+  const handleMouseLeave = () => {
+    // Only use hover on non-touch devices
+    if (!isTouchDevice) {
+      setIsMouseOver(false);
     }
-  }
+  };
 
-  const rotateDeg = (widthPercentage - 50) * 0.1;
   return (
     <div
-      onMouseEnter={mouseEnterHandler}
-      onMouseLeave={mouseLeaveHandler}
-      onMouseMove={mouseMoveHandler}
-      onTouchMove={touchMoveHandler}
-      onTouchStart={mouseEnterHandler}
-      onTouchEnd={mouseLeaveHandler}
-      ref={cardRef}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onClick={handleClick}
       className={cn(
-        "bg-warm-taupe/10 border border-warm-taupe/20 w-full rounded-3xl p-8 relative overflow-hidden shadow-warm hover:shadow-warm-lg transition-shadow duration-300",
+        "bg-warm-taupe/10 border border-warm-taupe/20 w-full rounded-3xl p-8 relative overflow-hidden shadow-warm hover:shadow-warm-lg transition-all duration-300 cursor-pointer select-none",
         className
       )}
     >
       {children}
 
-      <div className="h-40 relative flex items-center overflow-hidden">
+      <div className="h-32 relative flex items-center justify-center">
+        {/* Original text */}
         <motion.div
-          style={{
-            width: "100%",
+          animate={{
+            opacity: isRevealed ? 0 : 1,
+            scale: isRevealed ? 0.8 : 1,
           }}
-          animate={
-            isMouseOver
-              ? {
-                  opacity: widthPercentage > 0 ? 1 : 0,
-                  clipPath: `inset(0 ${100 - widthPercentage}% 0 0)`,
-                }
-              : {
-                  clipPath: `inset(0 ${100 - widthPercentage}% 0 0)`,
-                }
-          }
-          transition={isMouseOver ? { duration: 0 } : { duration: 0.4 }}
-          className="absolute bg-terracotta/10 z-20 will-change-transform rounded-2xl"
+          transition={{ duration: 0.3 }}
+          className="absolute inset-0 flex items-center justify-center"
         >
-          <p
-            style={{
-              textShadow: "4px 4px 15px rgba(0,0,0,0.2)",
-            }}
-            className="text-base sm:text-xl py-10 font-bold text-dark-umber bg-clip-text text-transparent bg-gradient-to-b from-dark-umber to-burnt-sienna"
-          >
+          <p className="text-2xl sm:text-3xl font-bold text-warm-taupe">
+            {text}
+          </p>
+        </motion.div>
+
+        {/* Revealed text */}
+        <motion.div
+          animate={{
+            opacity: isRevealed ? 1 : 0,
+            scale: isRevealed ? 1 : 1.2,
+          }}
+          transition={{ duration: 0.3 }}
+          className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-cream to-warm-taupe/5 rounded-2xl"
+        >
+          <p className="text-2xl sm:text-3xl font-bold text-terracotta">
             {revealText}
           </p>
         </motion.div>
-        <motion.div
-          animate={{
-            left: `${widthPercentage}%`,
-            rotate: `${rotateDeg}deg`,
-            opacity: widthPercentage > 0 ? 1 : 0,
-          }}
-          transition={isMouseOver ? { duration: 0 } : { duration: 0.4 }}
-          className="h-40 w-[8px] bg-gradient-to-b from-transparent via-terracotta to-transparent absolute z-50 will-change-transform"
-        ></motion.div>
 
-        <div className="overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,white,transparent)]">
-          <p className="text-base sm:text-xl py-10 font-bold bg-clip-text text-transparent bg-gradient-to-b from-warm-taupe to-cinereous">
-            {text}
-          </p>
-          <MemoizedStars />
-        </div>
+        {/* Mobile indicator */}
+        {isTouchDevice && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="absolute bottom-2 right-2"
+          >
+            <Languages className="h-4 w-4 text-warm-taupe/50" />
+          </motion.div>
+        )}
       </div>
     </div>
   );
 };
-
-const Stars = () => {
-  const randomMove = () => Math.random() * 4 - 2;
-  const randomOpacity = () => Math.random();
-  const random = () => Math.random();
-  return (
-    <div className="absolute inset-0">
-      {[...Array(80)].map((_, i) => (
-        <motion.span
-          key={`star-${i}`}
-          animate={{
-            top: `calc(${random() * 100}% + ${randomMove()}px)`,
-            left: `calc(${random() * 100}% + ${randomMove()}px)`,
-            opacity: randomOpacity(),
-            scale: [1, 1.2, 0],
-          }}
-          transition={{
-            duration: random() * 10 + 20,
-            repeat: Infinity,
-            ease: "linear",
-          }}
-          style={{
-            position: "absolute",
-            top: `${random() * 100}%`,
-            left: `${random() * 100}%`,
-            width: `2px`,
-            height: `2px`,
-            backgroundColor: "#C65D2C",
-            borderRadius: "50%",
-            pointerEvents: "none",
-          }}
-          className="inline-block"
-        ></motion.span>
-      ))}
-    </div>
-  );
-};
-
-export const MemoizedStars = memo(Stars);
