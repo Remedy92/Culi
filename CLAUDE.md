@@ -130,3 +130,8 @@ AI_GATEWAY_API_KEY= (optional, for Vercel AI Gateway)
 - Use edge functions for low latency
 - Implement connection pooling for database
 - Stream AI responses for better UX
+
+### Memory
+
+- use supabase mcp
+- never overcapitulize text
