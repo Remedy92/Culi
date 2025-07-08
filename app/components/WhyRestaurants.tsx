@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { TrendingUp, Users, Heart, Shield, Globe, Clock, Bot, GraduationCap, ChefHat, Zap, BookOpen } from "lucide-react"
+import { TrendingUp, Users, Heart, Shield, Globe, Clock, Bot, GraduationCap, ChefHat, Zap, BookOpen, BarChart3 } from "lucide-react"
 import { BentoGrid, BentoCard } from "@/app/components/ui/bento-grid"
 import { useState, useEffect } from "react"
 
@@ -139,7 +139,7 @@ export function WhyRestaurants() {
                     <div className="flex items-start gap-3">
                       <ChefHat className="h-4 w-4 text-spanish-orange flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="font-semibold text-sm">No more "let me ask the chef"</p>
+                        <p className="font-semibold text-sm">No more &ldquo;let me ask the chef&rdquo;</p>
                         <p className="text-xs text-seasalt/60">Instant answers, no kitchen interruptions</p>
                       </div>
                     </div>
@@ -156,10 +156,10 @@ export function WhyRestaurants() {
             </BentoCard>
           </motion.div>
 
-          {/* Row 2 - Mixed sizes */}
-          {/* Wide Card - Serve More Guests */}
+          {/* Row 2-3 - Mixed layout */}
+          {/* Medium Card - Serve More Guests */}
           <motion.div
-            className={gridSizes.wide}
+            className={gridSizes.medium}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -176,7 +176,7 @@ export function WhyRestaurants() {
                     Serve More Guests
                   </h3>
                   <p className="text-eerie-black/70 text-sm">
-                    Free up staff from repetitive questions
+                    Free up staff from repetitive questions so they can focus on hospitality
                   </p>
                 </div>
                 <div className="mt-3 lg:mt-0 flex items-center gap-3">
@@ -191,13 +191,62 @@ export function WhyRestaurants() {
             </BentoCard>
           </motion.div>
 
-          {/* Small Cards Row */}
+          {/* Tall Card - Build Guest Loyalty */}
+          <motion.div
+            className={gridSizes.tall}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <BentoCard className="relative overflow-hidden h-full">
+              <div className="absolute inset-0 bg-gradient-to-tr from-warm-taupe/5 to-transparent" />
+              <div className="relative z-10 h-full flex flex-col">
+                <div>
+                  <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-spanish-orange/20 mb-3">
+                    <Heart className="h-6 w-6 text-spanish-orange" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-eerie-black mb-2">
+                    Build Guest Loyalty
+                  </h3>
+                  <p className="text-eerie-black/70 text-sm">
+                    Show you care about every guest's needs, from dietary restrictions to language preferences.
+                  </p>
+                </div>
+                <div className="mt-auto space-y-2">
+                  <motion.div 
+                    className="h-1 bg-spanish-orange/20 rounded-full"
+                    initial={{ scaleX: 0 }}
+                    whileInView={{ scaleX: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1, delay: 0.4 }}
+                  />
+                  <motion.div 
+                    className="h-1 bg-spanish-orange/30 rounded-full w-4/5"
+                    initial={{ scaleX: 0 }}
+                    whileInView={{ scaleX: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1, delay: 0.5 }}
+                  />
+                  <motion.div 
+                    className="h-1 bg-spanish-orange/40 rounded-full w-3/5"
+                    initial={{ scaleX: 0 }}
+                    whileInView={{ scaleX: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1, delay: 0.6 }}
+                  />
+                </div>
+              </div>
+            </BentoCard>
+          </motion.div>
+
+          {/* Small Card - All Languages */}
           <motion.div
             className={gridSizes.small}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
           >
             <BentoCard className="bg-gradient-to-br from-spanish-orange/5 to-transparent h-full">
               <div className="h-full flex flex-col items-center justify-center text-center">
@@ -208,12 +257,46 @@ export function WhyRestaurants() {
             </BentoCard>
           </motion.div>
 
+          {/* Medium Card - Real-Time Insights */}
+          <motion.div
+            className={gridSizes.medium}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+          >
+            <BentoCard className="bg-gradient-to-br from-spanish-orange/5 to-transparent h-full">
+              <div className="h-full flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                <div className="flex-grow">
+                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-spanish-orange/20 mb-2">
+                    <BarChart3 className="h-5 w-5 text-spanish-orange" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-eerie-black mb-1">
+                    Real-Time Insights
+                  </h3>
+                  <p className="text-eerie-black/70 text-sm">
+                    Track what guests ask about most & optimize your menu
+                  </p>
+                </div>
+                <div className="mt-3 lg:mt-0 lg:ml-4">
+                  <div className="flex items-center gap-1">
+                    <div className="h-8 w-1 bg-spanish-orange/20 rounded-full" />
+                    <div className="h-12 w-1 bg-spanish-orange/30 rounded-full" />
+                    <div className="h-6 w-1 bg-spanish-orange/40 rounded-full" />
+                    <div className="h-10 w-1 bg-spanish-orange/50 rounded-full" />
+                  </div>
+                </div>
+              </div>
+            </BentoCard>
+          </motion.div>
+
+          {/* Small Card - 5 min Setup */}
           <motion.div
             className={gridSizes.small}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.4 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
           >
             <BentoCard className="h-full">
               <div className="h-full flex flex-col items-center justify-center text-center">
@@ -224,101 +307,6 @@ export function WhyRestaurants() {
             </BentoCard>
           </motion.div>
 
-          <motion.div
-            className={gridSizes.small}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-          >
-            <BentoCard className="group hover:bg-spanish-orange/5 h-full">
-              <div className="h-full flex flex-col items-center justify-center text-center">
-                <Shield className="h-6 w-6 text-spanish-orange mb-2 group-hover:scale-110 transition-transform" />
-                <p className="text-base font-semibold text-eerie-black">Reduce</p>
-                <p className="text-xs text-eerie-black/70">Liability</p>
-              </div>
-            </BentoCard>
-          </motion.div>
-
-          {/* Row 3 - Wide cards */}
-          {/* Wide Card - Build Guest Loyalty */}
-          <motion.div
-            className={gridSizes.wide}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-          >
-            <BentoCard className="relative overflow-hidden h-full">
-              <div className="absolute inset-0 bg-gradient-to-tr from-warm-taupe/5 to-transparent" />
-              <div className="relative z-10 h-full flex flex-col lg:flex-row lg:items-center lg:justify-between">
-                <div className="flex-grow">
-                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-spanish-orange/20 mb-2">
-                    <Heart className="h-5 w-5 text-spanish-orange" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-eerie-black mb-1">
-                    Build Guest Loyalty
-                  </h3>
-                  <p className="text-eerie-black/70 text-sm">
-                    Show you care about dietary needs & preferences
-                  </p>
-                </div>
-                <div className="mt-3 lg:mt-0 lg:ml-4 space-y-1">
-                  <motion.div 
-                    className="h-1 bg-spanish-orange/20 rounded-full w-20"
-                    initial={{ scaleX: 0 }}
-                    whileInView={{ scaleX: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1, delay: 0.7 }}
-                  />
-                  <motion.div 
-                    className="h-1 bg-spanish-orange/30 rounded-full w-16"
-                    initial={{ scaleX: 0 }}
-                    whileInView={{ scaleX: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1, delay: 0.8 }}
-                  />
-                  <motion.div 
-                    className="h-1 bg-spanish-orange/40 rounded-full w-12"
-                    initial={{ scaleX: 0 }}
-                    whileInView={{ scaleX: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1, delay: 0.9 }}
-                  />
-                </div>
-              </div>
-            </BentoCard>
-          </motion.div>
-
-          {/* Wide Card - 24/7 AI Powered */}
-          <motion.div
-            className={gridSizes.wide}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.7 }}
-          >
-            <BentoCard className="bg-gradient-to-br from-spanish-orange/10 to-spanish-orange/5 h-full">
-              <div className="h-full flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-spanish-orange/20">
-                    <Bot className="h-6 w-6 text-spanish-orange" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-eerie-black">24/7 AI Assistant</p>
-                    <p className="text-eerie-black/70 text-sm">Always ready to help your guests</p>
-                  </div>
-                </div>
-                <div className="hidden lg:block w-24 h-2 overflow-hidden rounded-full bg-spanish-orange/20">
-                  <motion.div
-                    className="h-full bg-spanish-orange"
-                    animate={{ x: ["-100%", "100%"] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                  />
-                </div>
-              </div>
-            </BentoCard>
-          </motion.div>
         </BentoGrid>
       </div>
     </section>
