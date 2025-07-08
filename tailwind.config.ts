@@ -6,6 +6,33 @@ const config: Config = {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  safelist: [
+    // Grid columns
+    'grid-cols-1',
+    'grid-cols-6',
+    'grid-cols-12',
+    'md:grid-cols-6',
+    'lg:grid-cols-12',
+    // Column spans
+    'col-span-1',
+    'col-span-2',
+    'col-span-3',
+    'col-span-6',
+    'col-span-12',
+    'md:col-span-2',
+    'md:col-span-3',
+    'md:col-span-6',
+    'lg:col-span-3',
+    'lg:col-span-6',
+    'lg:col-span-12',
+    // Row spans
+    'row-span-1',
+    'row-span-2',
+    'md:row-span-1',
+    'md:row-span-2',
+    // Auto rows
+    'auto-rows-[160px]',
+  ],
   theme: {
     extend: {
       colors: {
@@ -16,6 +43,7 @@ const config: Config = {
         "cinereous": "#ae9990",
         "eerie-black": "#0a0a0a",
         "seasalt": "#f8f8f8",
+        "warm-taupe": "#ae9990",
         primary: {
           DEFAULT: "#e16e27",
           foreground: "#ffffff",
@@ -36,6 +64,7 @@ const config: Config = {
         "fade-up": "fadeUp 0.5s ease-out",
         "fade-in": "fadeIn 0.3s ease-out",
         "slide-down": "slideDown 0.3s ease-out",
+        "spin-slow": "spin 20s linear infinite",
       },
       boxShadow: {
         'warm-sm': '0 1px 2px 0 rgba(225, 110, 39, 0.05)',

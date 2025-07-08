@@ -1,62 +1,49 @@
+"use client"
+
 import { cn } from "@/lib/utils"
 import { ReactNode } from "react"
 
-export const BentoGrid = ({
-  className,
-  children,
-}: {
+export interface BentoGridProps {
+  children: ReactNode
   className?: string
-  children?: ReactNode
-}) => {
+}
+
+export interface BentoCardProps {
+  children: ReactNode
+  className?: string
+  onClick?: () => void
+}
+
+export function BentoGrid({ children, className }: BentoGridProps) {
   return (
-    <div
-      className={cn(
-        "mx-auto grid max-w-7xl grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4",
-        className
-      )}
-    >
+    <div className={cn(
+      "grid grid-cols-12 gap-4",
+      "auto-rows-[160px]",
+      className
+    )}>
       {children}
     </div>
   )
 }
 
-export const BentoGridItem = ({
-  className,
-  title,
-  description,
-  header,
-  icon,
-  children,
-}: {
-  className?: string
-  title?: string | ReactNode
-  description?: string | ReactNode
-  header?: ReactNode
-  icon?: ReactNode
-  children?: ReactNode
-}) => {
+export function BentoCard({ children, className, onClick }: BentoCardProps) {
   return (
-    <div
+    <div 
+      onClick={onClick}
       className={cn(
-        "group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-warm-taupe/10 bg-white/80 p-6 shadow-warm backdrop-blur-sm transition-all duration-300 hover:shadow-warm-lg",
+        "relative group",
+        "rounded-2xl overflow-hidden",
+        "bg-white/80 backdrop-blur-sm",
+        "border border-warm-taupe/10",
+        "shadow-warm hover:shadow-warm-lg",
+        "transition-all duration-300",
+        "p-5 lg:p-6",
+        "cursor-default",
+        onClick && "cursor-pointer",
         className
       )}
     >
-      {header && <div className="mb-4">{header}</div>}
-      <div className="flex flex-col space-y-4">
-        {icon && <div className="flex-shrink-0">{icon}</div>}
-        <div className="flex-1">
-          {title && (
-            <h3 className="mb-2 text-xl font-semibold text-eerie-black">
-              {title}
-            </h3>
-          )}
-          {description && (
-            <p className="text-sm text-eerie-black/70">{description}</p>
-          )}
-          {children}
-        </div>
-      </div>
+      {children}
     </div>
   )
 }
