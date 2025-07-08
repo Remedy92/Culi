@@ -4,6 +4,7 @@ import { Button } from "./ui/button"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { ArrowDown } from "lucide-react"
+import { TextGenerateEffect } from "./ui/text-generate-effect"
 
 export function Hero() {
   return (
@@ -25,10 +26,13 @@ export function Hero() {
           transition={{ duration: 0.6 }}
           className="space-y-8"
         >
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-eerie-black tracking-tight">
-            Your menu,{" "}
-            <span className="text-spanish-orange">but smarter</span>
-          </h1>
+          <div className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight">
+            <TextGenerateEffect 
+              words="Your menu, but smarter"
+              className="text-center"
+              duration={0.5}
+            />
+          </div>
           
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -58,14 +62,19 @@ export function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 1 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+          className="absolute bottom-12 left-1/2 -translate-x-1/2"
         >
           <Link
             href="#features"
-            className="flex flex-col items-center gap-2 text-cinereous hover:text-spanish-orange transition-colors"
+            className="group flex flex-col items-center gap-3 text-warm-taupe hover:text-terracotta transition-all duration-300"
           >
-            <span className="text-sm">Learn more</span>
-            <ArrowDown className="h-5 w-5 animate-bounce" />
+            <span className="text-base font-medium">Learn more</span>
+            <motion.div
+              animate={{ y: [0, 8, 0] }}
+              transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+            >
+              <ArrowDown className="h-5 w-5" />
+            </motion.div>
           </Link>
         </motion.div>
       </div>

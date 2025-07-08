@@ -2,8 +2,8 @@
 @config "../tailwind.config.ts";
 
 :root {
-  --background: #E6DEDB;
-  --foreground: #1e1e1e;
+  --background: #FBF8F4;
+  --foreground: #3A3330;
 }
 
 @theme inline {
@@ -11,24 +11,29 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-inter);
   
-  /* Custom colors */
-  --color-spanish-orange: #e16e27;
-  --color-timberwolf: #E6DEDB;
-  --color-cinereous: #ae9990;
-  --color-eerie-black: #1e1e1e;
-  --color-seasalt: #f8f8f8;
+  /* Custom colors - Refined Orange-Beige Palette */
+  --color-spanish-orange: #C65D2C;
+  --color-terracotta: #C65D2C;
+  --color-timberwolf: #FBF8F4;
+  --color-cinereous: #B59B88;
+  --color-warm-taupe: #B59B88;
+  --color-eerie-black: #3A3330;
+  --color-dark-umber: #3A3330;
+  --color-seasalt: #FBF8F4;
+  --color-cream: #FBF8F4;
+  --color-burnt-sienna: #8B4513;
   
   /* Primary color alias */
-  --color-primary: #e16e27;
+  --color-primary: #C65D2C;
   --color-primary-foreground: #ffffff;
   
   /* Secondary color alias */
-  --color-secondary: #ae9990;
-  --color-secondary-foreground: #1e1e1e;
+  --color-secondary: #B59B88;
+  --color-secondary-foreground: #3A3330;
   
   /* Muted color alias */
-  --color-muted: #E6DEDB;
-  --color-muted-foreground: #1e1e1e;
+  --color-muted: #FBF8F4;
+  --color-muted-foreground: #3A3330;
 }
 
 html {
@@ -41,24 +46,6 @@ body {
   position: relative;
 }
 
-/* Subtle grain texture overlay */
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0.03;
-  z-index: 1;
-  pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-opacity='0.5'%3E%3Cpolygon fill='%23000' points='50 0 60 40 100 50 60 60 50 100 40 60 0 50 40 40'/%3E%3C/g%3E%3C/svg%3E");
-}
-
-body > *:not(header) {
-  position: relative;
-  z-index: 2;
-}
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
@@ -67,27 +54,27 @@ body > *:not(header) {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f8f8f8;
+  background: #FBF8F4;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #ae9990;
+  background: #B59B88;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #e16e27;
+  background: #C65D2C;
 }
 
 /* Selection colors */
 ::selection {
-  background: rgba(225, 110, 39, 0.2);
-  color: #1e1e1e;
+  background: rgba(198, 93, 44, 0.2);
+  color: #3A3330;
 }
 
 /* Focus styles */
 *:focus-visible {
-  outline: 2px solid #e16e27;
+  outline: 2px solid #C65D2C;
   outline-offset: 2px;
 }
 
@@ -103,18 +90,18 @@ body > *:not(header) {
 /* Custom shadow utilities */
 @layer utilities {
   .shadow-warm-sm {
-    box-shadow: 0 1px 2px 0 rgba(225, 110, 39, 0.05);
+    box-shadow: 0 1px 2px 0 rgba(198, 93, 44, 0.05);
   }
   .shadow-warm {
-    box-shadow: 0 1px 3px 0 rgba(225, 110, 39, 0.1), 0 1px 2px 0 rgba(225, 110, 39, 0.06);
+    box-shadow: 0 1px 3px 0 rgba(198, 93, 44, 0.1), 0 1px 2px 0 rgba(198, 93, 44, 0.06);
   }
   .shadow-warm-md {
-    box-shadow: 0 4px 6px -1px rgba(225, 110, 39, 0.1), 0 2px 4px -1px rgba(225, 110, 39, 0.06);
+    box-shadow: 0 4px 6px -1px rgba(198, 93, 44, 0.1), 0 2px 4px -1px rgba(198, 93, 44, 0.06);
   }
   .shadow-warm-lg {
-    box-shadow: 0 10px 15px -3px rgba(225, 110, 39, 0.1), 0 4px 6px -2px rgba(225, 110, 39, 0.05);
+    box-shadow: 0 10px 15px -3px rgba(198, 93, 44, 0.1), 0 4px 6px -2px rgba(198, 93, 44, 0.05);
   }
   .shadow-warm-xl {
-    box-shadow: 0 20px 25px -5px rgba(225, 110, 39, 0.1), 0 10px 10px -5px rgba(225, 110, 39, 0.04);
+    box-shadow: 0 20px 25px -5px rgba(198, 93, 44, 0.1), 0 10px 10px -5px rgba(198, 93, 44, 0.04);
   }
 }

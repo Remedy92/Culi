@@ -28,7 +28,7 @@ const benefits = [
 
 export function WhyRestaurants() {
   return (
-    <section className="py-24 lg:py-32 bg-seasalt relative overflow-hidden">
+    <section className="py-32 lg:py-40 bg-seasalt relative overflow-hidden">
       {/* Subtle background decoration */}
       <div className="absolute inset-0">
         <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-spanish-orange/5 blur-3xl" />
@@ -58,7 +58,7 @@ export function WhyRestaurants() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="flex gap-4 p-6 rounded-2xl bg-white/80 backdrop-blur-sm border border-cinereous/10 shadow-warm hover:shadow-warm-lg transition-all duration-300"
+              className="flex gap-4 p-8 rounded-3xl bg-white/80 backdrop-blur-sm border border-warm-taupe/10 shadow-warm hover:shadow-warm-lg transition-all duration-300"
             >
               <div className="flex-shrink-0">
                 <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-spanish-orange/20">

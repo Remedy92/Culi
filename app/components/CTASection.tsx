@@ -6,7 +6,7 @@ import { ArrowRight } from "lucide-react"
 
 export function CTASection() {
   return (
-    <section className="py-24 lg:py-32 bg-timberwolf relative overflow-hidden">
+    <section className="py-32 lg:py-40 bg-timberwolf relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-spanish-orange/10 blur-3xl" />

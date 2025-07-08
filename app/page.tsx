@@ -1,6 +1,7 @@
 import { Header } from "./components/Header"
 import { Hero } from "./components/Hero"
 import { Features } from "./components/Features"
+import { TranslationDemo } from "./components/TranslationDemo"
 import { HowItWorks } from "./components/HowItWorks"
 import { WhyRestaurants } from "./components/WhyRestaurants"
 import { CTASection } from "./components/CTASection"
@@ -13,6 +14,7 @@ export default function Home() {
       <main>
         <Hero />
         <Features />
+        <TranslationDemo />
         <HowItWorks />
         <WhyRestaurants />
         <CTASection />
