@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in to Culi</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif; background-color: #f8f8f8;">
+    <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color: #f8f8f8; padding: 40px 0;">
+        <tr>
+            <td align="center">
+                <table cellpadding="0" cellspacing="0" border="0" width="600" style="max-width: 600px; width: 100%; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 6px rgba(225, 110, 39, 0.1);">
+                    <!-- Logo Header -->
+                    <tr>
+                        <td align="center" style="padding: 40px 40px 20px 40px;">
+                            <div style="display: inline-block; background-color: #e16e27; color: #ffffff; font-weight: bold; font-size: 24px; padding: 12px 24px; border-radius: 12px;">
+                                TL
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Main Content -->
+                    <tr>
+                        <td style="padding: 20px 40px 40px 40px;">
+                            <h1 style="color: #0a0a0a; font-size: 28px; font-weight: 700; text-align: center; margin: 0 0 16px 0;">
+                                Welcome back to Culi!
+                            </h1>
+                            
+                            <p style="color: #ae9990; font-size: 16px; line-height: 24px; text-align: center; margin: 0 0 32px 0;">
+                                Click the button below to sign in to your account. This magic link will expire in 5 minutes.
+                            </p>
+                            
+                            <!-- CTA Button -->
+                            <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                                <tr>
+                                    <td align="center" style="padding: 0 0 24px 0;">
+                                        <a href="{{ .ConfirmationURL }}" 
+                                           style="display: inline-block; background-color: #e16e27; color: #ffffff; font-size: 16px; font-weight: 600; text-decoration: none; padding: 14px 32px; border-radius: 28px; box-shadow: 0 4px 6px rgba(225, 110, 39, 0.2); transition: all 0.2s;">
+                                            Sign in to Culi
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Divider -->
+                            <div style="border-top: 1px solid #E6DEDB; margin: 32px 0; text-align: center;">
+                                <span style="background-color: #ffffff; color: #ae9990; font-size: 12px; padding: 0 16px; position: relative; top: -10px;">
+                                    OR USE CODE
+                                </span>
+                            </div>
+                            
+                            <!-- OTP Code -->
+                            <div style="background-color: #f8f8f8; border: 2px solid #E6DEDB; border-radius: 12px; padding: 20px; text-align: center; margin: 24px 0;">
+                                <p style="color: #ae9990; font-size: 14px; margin: 0 0 8px 0;">
+                                    Your one-time code:
+                                </p>
+                                <div style="color: #0a0a0a; font-size: 32px; font-weight: 700; letter-spacing: 4px; font-family: monospace;">
+                                    {{ .Token }}
+                                </div>
+                            </div>
+                            
+                            <!-- Security Notice -->
+                            <p style="color: #ae9990; font-size: 14px; line-height: 20px; text-align: center; margin: 32px 0 0 0;">
+                                If you didn't request this email, you can safely ignore it.
+                            </p>
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #f8f8f8; padding: 24px 40px; border-radius: 0 0 16px 16px;">
+                            <p style="color: #ae9990; font-size: 12px; text-align: center; margin: 0;">
+                                Culi - AI-Powered Menu Assistant for Restaurants<br>
+                                <a href="{{ .SiteURL }}" style="color: #e16e27; text-decoration: none;">
+                                    www.culi.com
+                                </a>
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

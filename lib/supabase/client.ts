@@ -8,7 +8,8 @@ if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
   throw new Error('Missing env.NEXT_PUBLIC_SUPABASE_ANON_KEY');
 }
 
-// Client-side Supabase client
+// Legacy client-side Supabase client (for backward compatibility)
+// Use createClient from './browser' or './server' for new code
 export const supabase = createClient<Database>(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
@@ -20,7 +21,8 @@ export const supabase = createClient<Database>(
   }
 );
 
-// Server-side Supabase client with service role
+// Legacy server-side Supabase client with service role
+// Use createServiceRoleClient from './server' for new code
 export function createServiceClient() {
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
     throw new Error('Missing env.SUPABASE_SERVICE_ROLE_KEY');
@@ -39,6 +41,7 @@ export function createServiceClient() {
 }
 
 // Create a Supabase client with custom restaurant context
+// This can be used with both browser and server clients
 export function createRestaurantClient(restaurantId: string) {
   return createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

@@ -144,7 +144,9 @@ export function Header() {
             </NavigationMenu>
             
             <LanguageSwitcher />
-            <Button>{t('navigation.tryFree')}</Button>
+            <Link href="/auth">
+              <Button>{t('navigation.tryFree')}</Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -179,7 +181,9 @@ export function Header() {
               {t('navigation.pricing')}
             </Link>
             <div className="px-4 pt-2">
-              <Button className="w-full">{t('navigation.tryFree')}</Button>
+              <Link href="/auth" onClick={() => setIsMobileMenuOpen(false)}>
+                <Button className="w-full">{t('navigation.tryFree')}</Button>
+              </Link>
             </div>
           </div>
         )}
