@@ -3,6 +3,7 @@
 import { motion } from "framer-motion"
 import { TrendingUp, Users, Heart, Globe, Clock, GraduationCap, ChefHat, Zap, BookOpen, BarChart3 } from "lucide-react"
 import { BentoGrid, BentoCard } from "@/app/components/ui/bento-grid"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/app/components/ui/card"
 import { useState, useEffect } from "react"
 import { useTranslations } from 'next-intl'
 
@@ -67,6 +68,230 @@ export function WhyRestaurants() {
           </p>
         </motion.div>
 
+        {/* Mobile Cards Layout */}
+        <div className="md:hidden space-y-4">
+          {/* Guest Satisfaction Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <Card className="relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-spanish-orange/10 to-transparent" />
+              <CardHeader className="relative z-10">
+                <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-spanish-orange/20 mb-3">
+                  <TrendingUp className="h-6 w-6 text-spanish-orange" />
+                </div>
+                <CardTitle>{t('benefits.satisfaction.title')}</CardTitle>
+                <CardDescription className="text-base">
+                  {t('benefits.satisfaction.description')}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="relative z-10">
+                <div className="text-3xl font-bold text-spanish-orange mb-2">
+                  {satisfactionScore}%
+                </div>
+                <div className="w-full bg-warm-taupe/20 rounded-full h-2">
+                  <motion.div 
+                    className="bg-spanish-orange h-2 rounded-full"
+                    initial={{ width: 0 }}
+                    whileInView={{ width: `${satisfactionScore}%` }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1.5, ease: "easeOut" }}
+                  />
+                </div>
+                <p className="text-sm text-eerie-black/60 mt-2">{t('benefits.satisfaction.metric')}</p>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Operational Efficiency Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
+            <Card className="bg-gradient-to-br from-eerie-black to-eerie-black/90 text-white border-0">
+              <CardHeader>
+                <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-spanish-orange/20 mb-3">
+                  <GraduationCap className="h-6 w-6 text-spanish-orange" />
+                </div>
+                <CardTitle className="text-white">{t('benefits.efficiency.title')}</CardTitle>
+                <CardDescription className="text-seasalt/80 text-base">
+                  {t('benefits.efficiency.description')}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <Zap className="h-5 w-5 text-spanish-orange flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-sm">{t('benefits.efficiency.features.training.title', { percentage: trainingReduction })}</p>
+                    <p className="text-xs text-seasalt/60">{t('benefits.efficiency.features.training.description')}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <ChefHat className="h-5 w-5 text-spanish-orange flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-sm">{t('benefits.efficiency.features.chef.title')}</p>
+                    <p className="text-xs text-seasalt/60">{t('benefits.efficiency.features.chef.description')}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <BookOpen className="h-5 w-5 text-spanish-orange flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-sm">{t('benefits.efficiency.features.expert.title')}</p>
+                    <p className="text-xs text-seasalt/60">{t('benefits.efficiency.features.expert.description')}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Serve More Guests Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <Card>
+              <CardHeader>
+                <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-spanish-orange/20 mb-2">
+                  <Users className="h-5 w-5 text-spanish-orange" />
+                </div>
+                <CardTitle className="text-lg">{t('benefits.serveMore.title')}</CardTitle>
+                <CardDescription className="text-base">
+                  {t('benefits.serveMore.description')}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-3">
+                  <div className="flex -space-x-2">
+                    {[...Array(4)].map((_, i) => (
+                      <div key={i} className="w-8 h-8 rounded-full bg-spanish-orange/20 border-2 border-white" />
+                    ))}
+                  </div>
+                  <p className="text-sm text-eerie-black/60">{t('benefits.serveMore.metric', { count: guestCount })}</p>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Build Guest Loyalty Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <Card>
+              <CardHeader>
+                <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-spanish-orange/20 mb-3">
+                  <Heart className="h-6 w-6 text-spanish-orange" />
+                </div>
+                <CardTitle>{t('benefits.loyalty.title')}</CardTitle>
+                <CardDescription className="text-base">
+                  {t('benefits.loyalty.description')}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <motion.div 
+                    className="h-2 bg-spanish-orange/20 rounded-full"
+                    initial={{ scaleX: 0 }}
+                    whileInView={{ scaleX: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1, delay: 0.4 }}
+                  />
+                  <motion.div 
+                    className="h-2 bg-spanish-orange/30 rounded-full w-4/5"
+                    initial={{ scaleX: 0 }}
+                    whileInView={{ scaleX: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1, delay: 0.5 }}
+                  />
+                  <motion.div 
+                    className="h-2 bg-spanish-orange/40 rounded-full w-3/5"
+                    initial={{ scaleX: 0 }}
+                    whileInView={{ scaleX: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1, delay: 0.6 }}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* All Languages Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            <Card className="bg-gradient-to-br from-spanish-orange/5 to-transparent">
+              <CardContent className="pt-6">
+                <div className="flex flex-col items-center text-center">
+                  <Globe className="h-8 w-8 text-spanish-orange mb-3 animate-spin-slow" />
+                  <p className="text-2xl font-bold text-spanish-orange mb-1">{t('benefits.languages.title')}</p>
+                  <p className="text-eerie-black/70 text-sm">{t('benefits.languages.subtitle')}</p>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Real-Time Insights Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+          >
+            <Card className="bg-gradient-to-br from-spanish-orange/5 to-transparent">
+              <CardHeader>
+                <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-spanish-orange/20 mb-2">
+                  <BarChart3 className="h-5 w-5 text-spanish-orange" />
+                </div>
+                <CardTitle className="text-lg">{t('benefits.insights.title')}</CardTitle>
+                <CardDescription className="text-base">
+                  {t('benefits.insights.description')}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-center gap-2">
+                  <div className="h-8 w-1 bg-spanish-orange/20 rounded-full" />
+                  <div className="h-12 w-1 bg-spanish-orange/30 rounded-full" />
+                  <div className="h-6 w-1 bg-spanish-orange/40 rounded-full" />
+                  <div className="h-10 w-1 bg-spanish-orange/50 rounded-full" />
+                  <div className="h-14 w-1 bg-spanish-orange/60 rounded-full" />
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* 5 min Setup Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+          >
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex flex-col items-center text-center">
+                  <Clock className="h-8 w-8 text-spanish-orange mb-3" />
+                  <p className="text-2xl font-bold text-spanish-orange mb-1">{t('benefits.setup.title')}</p>
+                  <p className="text-eerie-black/70 text-sm">{t('benefits.setup.subtitle')}</p>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+
+        {/* Desktop Bento Grid Layout */}
+        <div className="hidden md:block">
         <BentoGrid>
           {/* Row 1 - Large cards side by side */}
           {/* Large Card - Increase Guest Satisfaction */}
@@ -310,6 +535,7 @@ export function WhyRestaurants() {
           </motion.div>
 
         </BentoGrid>
+        </div>
       </div>
     </section>
   )

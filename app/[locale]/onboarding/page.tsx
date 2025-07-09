@@ -320,30 +320,32 @@ export default function OnboardingPage() {
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <div className="flex items-center gap-3">
-                            <Input 
-                              placeholder="Type your restaurant name..." 
-                              disabled={isLoading}
-                              className="flex-1 bg-white rounded-full px-4 py-3 sm:px-6 sm:py-5 text-base sm:text-lg focus:outline-none focus:ring-2 focus:ring-spanish-orange/20 placeholder:text-gray-400 shadow-sm border-0 placeholder:text-sm sm:placeholder:text-base"
-                              {...field} 
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter' && field.value && !showForm) {
-                                  e.preventDefault()
-                                  setShowForm(true)
-                                }
-                              }}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => field.value && setShowForm(true)}
-                              className="flex-shrink-0 w-[52px] h-[52px] sm:w-12 sm:h-12 bg-spanish-orange text-white rounded-full flex items-center justify-center hover:bg-opacity-90 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:scale-100 disabled:hover:scale-100 shadow-sm touch-manipulation"
-                              disabled={!field.value || isLoading}
-                            >
-                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M22 2L11 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                              </svg>
-                            </button>
+                          <div className="bg-white rounded-2xl shadow-warm-sm p-2">
+                            <div className="flex items-center gap-2">
+                              <Input 
+                                placeholder="Type your restaurant name..." 
+                                disabled={isLoading}
+                                className="flex-1 h-10 sm:h-12 px-4 bg-transparent border-0 text-sm sm:text-base focus:outline-none focus:ring-0 placeholder:text-gray-400 placeholder:text-sm"
+                                {...field} 
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter' && field.value && !showForm) {
+                                    e.preventDefault()
+                                    setShowForm(true)
+                                  }
+                                }}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => field.value && setShowForm(true)}
+                                className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-spanish-orange text-white rounded-xl flex items-center justify-center hover:bg-opacity-90 transition-all disabled:opacity-50 shadow-sm touch-manipulation"
+                                disabled={!field.value || isLoading}
+                              >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M12 19V5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                  <path d="M5 12L12 5L19 12" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                              </button>
+                            </div>
                           </div>
                         </FormControl>
                         <FormMessage className="mt-2 text-center" />
