@@ -54,17 +54,28 @@ export default function OnboardingPage() {
 
     try {
       // Get the current user
-      const { data: { user } } = await supabase.auth.getUser()
+      const { data: { user }, error: userError } = await supabase.auth.getUser()
       
-      if (!user) {
-        throw new Error('No authenticated user found')
+      if (userError) {
+        console.error('Auth error:', JSON.stringify(userError, null, 2))
+        throw new Error('Authentication error: ' + userError.message)
       }
+      
+      if (!user || !user.id) {
+        throw new Error('No authenticated user found. Please sign in again.')
+      }
+      
+      console.log('Authenticated user:', { id: user.id, email: user.email })
 
       // Generate a slug from the restaurant name
       const slug = values.restaurantName
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-|-$/g, '')
+        
+      if (!slug) {
+        throw new Error('Restaurant name must contain at least one letter or number')
+      }
 
       // Create the restaurant
       const { error: restaurantError } = await supabase
@@ -75,14 +86,13 @@ export default function OnboardingPage() {
           owner_id: user.id,
           email: user.email,
         })
-        .select()
-        .single()
 
       if (restaurantError) {
+        console.error('Restaurant creation error:', JSON.stringify(restaurantError, null, 2))
         if (restaurantError.code === '23505') { // Unique violation
           throw new Error('A restaurant with this name already exists. Please choose a different name.')
         }
-        throw restaurantError
+        throw new Error(restaurantError.message || 'Failed to create restaurant')
       }
 
       // Record GDPR consents
@@ -93,7 +103,7 @@ export default function OnboardingPage() {
       ]
 
       for (const consent of consents) {
-        await supabase
+        const { error: consentError } = await supabase
           .from('gdpr_consents')
           .insert({
             user_id: user.id,
@@ -101,6 +111,11 @@ export default function OnboardingPage() {
             ...consent,
             given_at: consent.consent_given ? new Date().toISOString() : null,
           })
+          
+        if (consentError) {
+          console.error('Consent error:', JSON.stringify(consentError, null, 2))
+          // Continue with other consents even if one fails
+        }
       }
 
       toast.success('Welcome to Culi! Your restaurant has been created.')
@@ -109,7 +124,7 @@ export default function OnboardingPage() {
       const locale = window.location.pathname.split('/')[1]
       router.push(`/${locale}/dashboard`)
     } catch (error) {
-      console.error('Onboarding error:', error)
+      console.error('Onboarding error:', error instanceof Error ? error.message : JSON.stringify(error, null, 2))
       toast.error(error instanceof Error ? error.message : 'Something went wrong')
     } finally {
       setIsLoading(false)

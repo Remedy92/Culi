@@ -50,10 +50,6 @@ export default function AuthPage() {
 
       if (!response.ok) {
         const error = await response.json()
-        // Check if the error is about user not existing
-        if (error.error?.includes('User not found') || error.error?.includes('Invalid login')) {
-          throw new Error('No account found with this email. Please sign up first.')
-        }
         throw new Error(error.error || 'Something went wrong')
       }
 
