@@ -38,6 +38,8 @@ const config: Config = {
         "fade-in": "fadeIn 0.3s ease-out",
         "slide-down": "slideDown 0.3s ease-out",
         "spin-slow": "spin 20s linear infinite",
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
       },
       boxShadow: {
         'warm-sm': '0 1px 2px 0 rgba(225, 110, 39, 0.05)',
@@ -58,6 +60,14 @@ const config: Config = {
         slideDown: {
           "0%": { opacity: "0", transform: "translateY(-10px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
         },
       },
     },

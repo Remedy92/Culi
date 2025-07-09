@@ -37,9 +37,6 @@ export function CTASection() {
             </Button>
           </div>
 
-          <p className="text-sm text-cinereous">
-            5-minute setup
-          </p>
         </motion.div>
       </div>
     </section>

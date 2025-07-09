@@ -21,10 +21,10 @@ const footerLinks = {
     { name: "Status", href: "#" },
   ],
   Legal: [
-    { name: "Privacy", href: "#" },
-    { name: "Terms", href: "#" },
-    { name: "Security", href: "#" },
-    { name: "GDPR", href: "#" },
+    { name: "Privacy", href: "/privacy" },
+    { name: "Terms", href: "/terms" },
+    { name: "Cookies", href: "/cookies" },
+    { name: "GDPR", href: "/gdpr" },
   ],
 }
 
@@ -43,7 +43,7 @@ export function Footer() {
           {/* Brand column */}
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="text-2xl font-bold text-seasalt">
-              TableLink
+              Culi
             </Link>
             <p className="mt-4 text-sm">
               AI-powered menu assistant for modern restaurants.
@@ -87,7 +87,7 @@ export function Footer() {
         <div className="mt-12 pt-8 border-t border-seasalt/10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm">
-              © 2025 TableLink. All rights reserved.
+              © 2025 Culi. All rights reserved.
             </p>
             <p className="text-sm">
               Powered by <span className="text-spanish-orange">Culi AI</span>
