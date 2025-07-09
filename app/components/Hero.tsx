@@ -156,12 +156,14 @@ export function Hero() {
             transition={{ duration: prefersReducedMotion ? 0 : 0.6, delay: prefersReducedMotion ? 0 : 0.4 }}
             className="flex flex-col sm:flex-row gap-4 justify-center pt-2"
           >
-            <Button 
-              size="lg" 
-              className="w-full sm:w-auto min-w-[200px] h-12 md:h-14 text-base md:text-lg touch-manipulation"
-            >
-              {t('cta.start')}
-            </Button>
+            <Link href="/auth">
+              <Button 
+                size="lg" 
+                className="w-full sm:w-auto min-w-[200px] h-12 md:h-14 text-base md:text-lg touch-manipulation"
+              >
+                {t('cta.start')}
+              </Button>
+            </Link>
           </motion.div>
 
           {/* Learn more - improved mobile spacing */}

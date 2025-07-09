@@ -5,6 +5,7 @@ import { Button } from "./ui/button"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "./ui/card"
 import { Check } from "lucide-react"
 import { useTranslations } from 'next-intl'
+import Link from 'next/link'
 
 export function Pricing() {
   const t = useTranslations('pricing');
@@ -120,12 +121,14 @@ export function Pricing() {
                       </li>
                     ))}
                   </ul>
-                  <Button
-                    className="w-full"
-                    variant={plan.highlighted ? "default" : "outline"}
-                  >
-                    {plan.cta}
-                  </Button>
+                  <Link href="/auth" className="block">
+                    <Button
+                      className="w-full"
+                      variant={plan.highlighted ? "default" : "outline"}
+                    >
+                      {plan.cta}
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
             </motion.div>

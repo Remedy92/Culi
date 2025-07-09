@@ -61,7 +61,6 @@ export default function LanguageSwitcher({ isMobile = false }: LanguageSwitcherP
             aria-label={`Switch to ${lang.name}`}
             aria-current={locale === lang.code ? 'true' : 'false'}
           >
-            <span className="text-base">{lang.flag}</span>
             <span className="text-sm font-medium">{lang.code.toUpperCase()}</span>
           </button>
         ))}
@@ -79,8 +78,8 @@ export default function LanguageSwitcher({ isMobile = false }: LanguageSwitcherP
         aria-haspopup="true"
         aria-expanded={isOpen}
       >
-        <span className="text-lg">{currentLanguage.flag}</span>
         <span className="hidden sm:inline">{currentLanguage.name}</span>
+        <span className="sm:hidden">{currentLanguage.code.toUpperCase()}</span>
         <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 

@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import { Button } from "./ui/button"
 import { ArrowRight } from "lucide-react"
 import { useTranslations } from 'next-intl'
+import Link from 'next/link'
 
 export function CTASection() {
   const t = useTranslations('cta');
@@ -30,10 +31,12 @@ export function CTASection() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-            <Button size="lg" className="min-w-[200px] group">
-              {t('buttons.start')}
-              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Button>
+            <Link href="/auth">
+              <Button size="lg" className="min-w-[200px] group">
+                {t('buttons.start')}
+                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Button>
+            </Link>
             <Button size="lg" variant="outline" className="min-w-[200px]">
               {t('buttons.demo')}
             </Button>
