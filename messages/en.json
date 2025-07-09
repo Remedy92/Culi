@@ -1,0 +1,239 @@
+{
+  "metadata": {
+    "title": "Culi - AI Menu Assistant for Restaurants",
+    "description": "Enable guests to ask questions about your menu in any language. 5-minute setup. AI that knows your menu inside out."
+  },
+  "header": {
+    "brandName": "Culi",
+    "navigation": {
+      "features": "Features",
+      "pricing": "Pricing",
+      "tryFree": "Try Culi Free"
+    },
+    "featuresMenu": {
+      "exploreAll": "Explore All Features",
+      "aiAssistant": "AI Menu Assistant",
+      "allLanguages": "All Languages",
+      "analyticsDashboard": "Analytics Dashboard"
+    },
+    "mobileMenuToggle": "Toggle navigation menu"
+  },
+  "hero": {
+    "badge": "All Languages",
+    "title": "Your <highlight>menu</highlight>, but smarter",
+    "description": "<bold>AI</bold> that knows your menu inside out. Any question, any language, instantly.",
+    "cta": {
+      "start": "Start with Culi",
+      "learnMore": "Learn more"
+    }
+  },
+  "features": {
+    "sectionTitle": "See <highlight>Culi</highlight> in Action",
+    "sectionDescription": "Watch how guests interact with your menu in any language",
+    "items": {
+      "setup": {
+        "title": "5-minute setup",
+        "description": "Upload your menu, we handle the rest"
+      },
+      "companion": {
+        "title": "Seamless companion",
+        "description": "Works alongside your paper menu"
+      },
+      "languages": {
+        "title": "100+ languages",
+        "description": "Every guest feels at home"
+      },
+      "dietary": {
+        "title": "Dietary safety",
+        "description": "Allergen info always accurate"
+      }
+    }
+  },
+  "chatDemo": {
+    "poweredBy": "Powered by Culi AI",
+    "conversations": {
+      "glutenFree": {
+        "question": "Do you have gluten-free options?",
+        "answer": "Yes! I can see several gluten-free options on our menu"
+      },
+      "vegetarian": {
+        "question": "What vegetarian dishes do you recommend?",
+        "answer": "Our Roasted Vegetable Tart and Wild Mushroom Risotto are excellent vegetarian choices!"
+      },
+      "popular": {
+        "question": "What's the most popular dish?",
+        "answer": "Our Grilled Sea Bass with lemon butter sauce is our most popular dish. Guests love the fresh, local catch!"
+      }
+    }
+  },
+  "translationDemo": {
+    "title": "See the Magic of Translation",
+    "description": "Hover over menu items to see how Culi instantly translates dishes from any language",
+    "languages": {
+      "english": "English",
+      "french": "French",
+      "dutch": "Dutch",
+      "german": "German",
+      "spanish": "Spanish",
+      "italian": "Italian"
+    },
+    "menuItems": {
+      "seaBass": {
+        "name": "Pan-Seared Sea Bass",
+        "description": "Fresh Atlantic sea bass with lemon butter sauce"
+      },
+      "risotto": {
+        "name": "Wild Mushroom Risotto",
+        "description": "Creamy arborio rice with seasonal forest mushrooms"
+      },
+      "tart": {
+        "name": "Roasted Vegetable Tart",
+        "description": "Seasonal vegetables in a flaky pastry crust"
+      }
+    }
+  },
+  "howItWorks": {
+    "title": "How It Works",
+    "subtitle": "Get started in minutes, not hours",
+    "steps": {
+      "upload": {
+        "title": "Upload your menu",
+        "description": "PDF, photo, or paste text - Culi handles any format"
+      },
+      "qr": {
+        "title": "Get your QR code",
+        "description": "Place it on tables, at the entrance, or in your menu"
+      },
+      "serve": {
+        "title": "Serve every guest perfectly",
+        "description": "They scan, ask questions in their language, get instant answers"
+      }
+    }
+  },
+  "whyRestaurants": {
+    "title": "Why Use Culi?",
+    "subtitle": "Transform your restaurant operations and delight your guests",
+    "benefits": {
+      "efficiency": {
+        "title": "Increase Efficiency",
+        "description": "Free your staff from repetitive questions about ingredients and allergens.",
+        "metric": "73%",
+        "metricLabel": "fewer menu questions"
+      },
+      "satisfaction": {
+        "title": "Delight Every Guest",
+        "description": "International visitors can explore your menu confidently in their language.",
+        "metric": "4.8/5",
+        "metricLabel": "guest satisfaction"
+      },
+      "revenue": {
+        "title": "Boost Revenue",
+        "description": "Confident guests order more. Detailed descriptions increase appetite appeal.",
+        "metric": "€12",
+        "metricLabel": "higher average order"
+      },
+      "compliance": {
+        "title": "Stay Compliant",
+        "description": "Always accurate allergen information. GDPR-compliant. Peace of mind included.",
+        "metric": "100%",
+        "metricLabel": "allergen accuracy"
+      }
+    }
+  },
+  "cta": {
+    "title": "Ready to delight your guests?",
+    "description": "Join forward-thinking restaurants using Culi to provide exceptional guest experiences in every language.",
+    "buttons": {
+      "start": "Start with Culi",
+      "demo": "Schedule Demo"
+    }
+  },
+  "pricing": {
+    "title": "Start with Culi, Scale As You Grow",
+    "currency": "€",
+    "monthly": "/month",
+    "yearly": "/year",
+    "mostPopular": "MOST POPULAR",
+    "plans": {
+      "essential": {
+        "name": "Essential",
+        "description": "Perfect for cafes and small restaurants",
+        "price": {
+          "monthly": 29,
+          "yearly": 290
+        },
+        "features": [
+          "Up to 500 menu queries/month",
+          "Basic analytics dashboard",
+          "QR code generation",
+          "Email support"
+        ]
+      },
+      "professional": {
+        "name": "Professional",
+        "description": "Ideal for busy restaurants",
+        "price": {
+          "monthly": 59,
+          "yearly": 590
+        },
+        "features": [
+          "Up to 2,000 menu queries/month",
+          "Advanced analytics & insights",
+          "Custom branding",
+          "Priority support",
+          "API access"
+        ]
+      },
+      "scale": {
+        "name": "Scale",
+        "description": "For high-volume establishments",
+        "price": {
+          "monthly": 119,
+          "yearly": 1190
+        },
+        "features": [
+          "Up to 10,000 menu queries/month",
+          "Real-time analytics",
+          "Multi-location support",
+          "Dedicated account manager",
+          "Custom integrations"
+        ]
+      }
+    },
+    "overage": {
+      "title": "Simple overage pricing",
+      "description": "€0.02 per additional query above your plan limit"
+    },
+    "enterprise": {
+      "title": "Enterprise",
+      "description": "Contact us for Enterprise pricing",
+      "cta": "Contact Sales"
+    }
+  },
+  "footer": {
+    "tagline": "AI-powered menu assistant for modern restaurants.",
+    "categories": {
+      "product": "Product",
+      "company": "Company",
+      "resources": "Resources",
+      "legal": "Legal"
+    },
+    "links": {
+      "features": "Features",
+      "pricing": "Pricing",
+      "integration": "Integration",
+      "about": "About",
+      "careers": "Careers",
+      "contact": "Contact",
+      "documentation": "Documentation",
+      "support": "Support",
+      "blog": "Blog",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "cookies": "Cookie Policy",
+      "gdpr": "GDPR"
+    },
+    "copyright": "© 2025 Culi. All rights reserved.",
+    "poweredBy": "Powered by Culi AI"
+  }
+}

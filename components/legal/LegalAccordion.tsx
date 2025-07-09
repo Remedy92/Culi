@@ -27,8 +27,7 @@ const AccordionTrigger = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
 >(({ className, children, ...props }, ref) => (
-  <AccordionPrimitive.Header className="flex relative">
-    <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-spanish-orange/0 transition-all duration-300 data-[state=open]:bg-spanish-orange/30" data-state={props['data-state']} />
+  <AccordionPrimitive.Header className="flex">
     <AccordionPrimitive.Trigger
       ref={ref}
       className={cn(
@@ -37,6 +36,9 @@ const AccordionTrigger = React.forwardRef<
         "[&[data-state=open]>svg]:rotate-180",
         "[&[data-state=open]]:text-spanish-orange [&[data-state=open]]:font-semibold",
         "text-[0.9375rem] leading-relaxed tracking-[-0.01em]",
+        "relative before:absolute before:left-0 before:top-0 before:bottom-0 before:w-0.5",
+        "before:bg-spanish-orange/0 before:transition-all before:duration-300",
+        "data-[state=open]:before:bg-spanish-orange/30",
         className
       )}
       {...props}

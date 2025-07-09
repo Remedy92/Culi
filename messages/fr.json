@@ -1,0 +1,239 @@
+{
+  "metadata": {
+    "title": "Culi - Assistant Menu IA pour Restaurants",
+    "description": "Permettez aux clients de poser des questions sur votre menu dans n'importe quelle langue. Installation en 5 minutes. Une IA qui connaît votre menu parfaitement."
+  },
+  "header": {
+    "brandName": "Culi",
+    "navigation": {
+      "features": "Fonctionnalités",
+      "pricing": "Tarifs",
+      "tryFree": "Essayer Culi Gratuitement"
+    },
+    "featuresMenu": {
+      "exploreAll": "Explorer Toutes les Fonctionnalités",
+      "aiAssistant": "Assistant Menu IA",
+      "allLanguages": "Toutes les Langues",
+      "analyticsDashboard": "Tableau de Bord Analytique"
+    },
+    "mobileMenuToggle": "Basculer le menu de navigation"
+  },
+  "hero": {
+    "badge": "Toutes les Langues",
+    "title": "Votre <highlight>menu</highlight>, en plus intelligent",
+    "description": "Une <bold>IA</bold> qui connaît votre menu parfaitement. N'importe quelle question, n'importe quelle langue, instantanément.",
+    "cta": {
+      "start": "Commencer avec Culi",
+      "learnMore": "En savoir plus"
+    }
+  },
+  "features": {
+    "sectionTitle": "Découvrez <highlight>Culi</highlight> en Action",
+    "sectionDescription": "Observez comment les clients interagissent avec votre menu dans n'importe quelle langue",
+    "items": {
+      "setup": {
+        "title": "Installation en 5 minutes",
+        "description": "Téléchargez votre menu, nous nous occupons du reste"
+      },
+      "companion": {
+        "title": "Compagnon sans faille",
+        "description": "Fonctionne avec votre menu papier"
+      },
+      "languages": {
+        "title": "100+ langues",
+        "description": "Chaque client se sent chez lui"
+      },
+      "dietary": {
+        "title": "Sécurité alimentaire",
+        "description": "Informations sur les allergènes toujours exactes"
+      }
+    }
+  },
+  "chatDemo": {
+    "poweredBy": "Propulsé par Culi IA",
+    "conversations": {
+      "glutenFree": {
+        "question": "Avez-vous des options sans gluten?",
+        "answer": "Oui! Je vois plusieurs options sans gluten sur notre menu"
+      },
+      "vegetarian": {
+        "question": "Quels plats végétariens recommandez-vous?",
+        "answer": "Notre Tarte aux Légumes Rôtis et notre Risotto aux Champignons Sauvages sont d'excellents choix végétariens!"
+      },
+      "popular": {
+        "question": "Quel est le plat le plus populaire?",
+        "answer": "Notre Bar Grillé avec sauce au beurre citronné est notre plat le plus populaire. Les clients adorent la pêche fraîche et locale!"
+      }
+    }
+  },
+  "translationDemo": {
+    "title": "Découvrez la Magie de la Traduction",
+    "description": "Survolez les éléments du menu pour voir comment Culi traduit instantanément les plats de n'importe quelle langue",
+    "languages": {
+      "english": "Anglais",
+      "french": "Français",
+      "dutch": "Néerlandais",
+      "german": "Allemand",
+      "spanish": "Espagnol",
+      "italian": "Italien"
+    },
+    "menuItems": {
+      "seaBass": {
+        "name": "Bar Poêlé",
+        "description": "Bar frais de l'Atlantique avec sauce au beurre citronné"
+      },
+      "risotto": {
+        "name": "Risotto aux Champignons Sauvages",
+        "description": "Riz arborio crémeux avec champignons forestiers de saison"
+      },
+      "tart": {
+        "name": "Tarte aux Légumes Rôtis",
+        "description": "Légumes de saison dans une pâte feuilletée croustillante"
+      }
+    }
+  },
+  "howItWorks": {
+    "title": "Comment Ça Marche",
+    "subtitle": "Commencez en quelques minutes, pas en heures",
+    "steps": {
+      "upload": {
+        "title": "Téléchargez votre menu",
+        "description": "PDF, photo ou coller du texte - Culi gère tous les formats"
+      },
+      "qr": {
+        "title": "Obtenez votre code QR",
+        "description": "Placez-le sur les tables, à l'entrée ou dans votre menu"
+      },
+      "serve": {
+        "title": "Servez chaque client parfaitement",
+        "description": "Ils scannent, posent des questions dans leur langue, obtiennent des réponses instantanées"
+      }
+    }
+  },
+  "whyRestaurants": {
+    "title": "Pourquoi Utiliser Culi?",
+    "subtitle": "Transformez vos opérations de restaurant et ravissez vos clients",
+    "benefits": {
+      "efficiency": {
+        "title": "Augmentez l'Efficacité",
+        "description": "Libérez votre personnel des questions répétitives sur les ingrédients et les allergènes.",
+        "metric": "73%",
+        "metricLabel": "moins de questions sur le menu"
+      },
+      "satisfaction": {
+        "title": "Ravissez Chaque Client",
+        "description": "Les visiteurs internationaux peuvent explorer votre menu en toute confiance dans leur langue.",
+        "metric": "4.8/5",
+        "metricLabel": "satisfaction client"
+      },
+      "revenue": {
+        "title": "Augmentez les Revenus",
+        "description": "Les clients confiants commandent plus. Les descriptions détaillées augmentent l'appétit.",
+        "metric": "12€",
+        "metricLabel": "commande moyenne plus élevée"
+      },
+      "compliance": {
+        "title": "Restez Conforme",
+        "description": "Informations sur les allergènes toujours exactes. Conforme au RGPD. Tranquillité d'esprit incluse.",
+        "metric": "100%",
+        "metricLabel": "précision des allergènes"
+      }
+    }
+  },
+  "cta": {
+    "title": "Prêt à ravir vos clients?",
+    "description": "Rejoignez les restaurants avant-gardistes qui utilisent Culi pour offrir des expériences client exceptionnelles dans toutes les langues.",
+    "buttons": {
+      "start": "Commencer avec Culi",
+      "demo": "Planifier une Démo"
+    }
+  },
+  "pricing": {
+    "title": "Commencez avec Culi, Évoluez avec Votre Croissance",
+    "currency": "€",
+    "monthly": "/mois",
+    "yearly": "/an",
+    "mostPopular": "LE PLUS POPULAIRE",
+    "plans": {
+      "essential": {
+        "name": "Essentiel",
+        "description": "Parfait pour les cafés et petits restaurants",
+        "price": {
+          "monthly": 29,
+          "yearly": 290
+        },
+        "features": [
+          "Jusqu'à 500 requêtes menu/mois",
+          "Tableau de bord analytique basique",
+          "Génération de code QR",
+          "Support par email"
+        ]
+      },
+      "professional": {
+        "name": "Professionnel",
+        "description": "Idéal pour les restaurants occupés",
+        "price": {
+          "monthly": 59,
+          "yearly": 590
+        },
+        "features": [
+          "Jusqu'à 2 000 requêtes menu/mois",
+          "Analyses avancées et insights",
+          "Personnalisation de la marque",
+          "Support prioritaire",
+          "Accès API"
+        ]
+      },
+      "scale": {
+        "name": "Échelle",
+        "description": "Pour les établissements à fort volume",
+        "price": {
+          "monthly": 119,
+          "yearly": 1190
+        },
+        "features": [
+          "Jusqu'à 10 000 requêtes menu/mois",
+          "Analyses en temps réel",
+          "Support multi-sites",
+          "Gestionnaire de compte dédié",
+          "Intégrations personnalisées"
+        ]
+      }
+    },
+    "overage": {
+      "title": "Tarification simple des dépassements",
+      "description": "0,02€ par requête supplémentaire au-delà de votre limite de plan"
+    },
+    "enterprise": {
+      "title": "Enterprise",
+      "description": "Contactez-nous pour les tarifs Enterprise",
+      "cta": "Contacter les Ventes"
+    }
+  },
+  "footer": {
+    "tagline": "Assistant menu IA pour restaurants modernes.",
+    "categories": {
+      "product": "Produit",
+      "company": "Entreprise",
+      "resources": "Ressources",
+      "legal": "Légal"
+    },
+    "links": {
+      "features": "Fonctionnalités",
+      "pricing": "Tarifs",
+      "integration": "Intégration",
+      "about": "À propos",
+      "careers": "Carrières",
+      "contact": "Contact",
+      "documentation": "Documentation",
+      "support": "Support",
+      "blog": "Blog",
+      "privacy": "Politique de Confidentialité",
+      "terms": "Conditions d'Utilisation",
+      "cookies": "Politique de Cookies",
+      "gdpr": "RGPD"
+    },
+    "copyright": "© 2025 Culi. Tous droits réservés.",
+    "poweredBy": "Propulsé par Culi IA"
+  }
+}

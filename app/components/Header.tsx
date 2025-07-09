@@ -16,11 +16,14 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "./ui/navigation-menu"
+import { useTranslations } from 'next-intl'
+import LanguageSwitcher from './LanguageSwitcher'
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { scrollY } = useScroll()
+  const t = useTranslations('header')
   
   // Transform values for animations
   const logoScaleX = useTransform(scrollY, [0, 80], [1, 0])
@@ -92,14 +95,14 @@ export function Header() {
               <NavigationMenuList>
                 <NavigationMenuItem>
                   <NavigationMenuTrigger className="text-eerie-black/80">
-                    Features
+                    {t('navigation.features')}
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <div className="w-[400px] p-4">
                       <div className="mb-4 pb-4 border-b border-cinereous/10">
                         <Link href="/features" className="block">
                           <h3 className="text-lg font-semibold text-eerie-black mb-2 hover:text-spanish-orange transition-colors">
-                            Explore All Features
+                            {t('featuresMenu.exploreAll')}
                           </h3>
                           <p className="text-sm text-eerie-black/60">
                             Discover how Culi transforms your restaurant&apos;s guest experience
@@ -110,19 +113,19 @@ export function Header() {
                         <FeatureItem
                           href="/#features"
                           icon={<ChefHat className="h-5 w-5" />}
-                          title="AI Menu Assistant"
+                          title={t('featuresMenu.aiAssistant')}
                           description="Instant answers about dishes, ingredients, and allergens"
                         />
                         <FeatureItem
                           href="/#translation-demo"
                           icon={<Languages className="h-5 w-5" />}
-                          title="All Languages"
+                          title={t('featuresMenu.allLanguages')}
                           description="Serve international guests in their native language"
                         />
                         <FeatureItem
                           href="/analytics-demo"
                           icon={<BarChart3 className="h-5 w-5" />}
-                          title="Analytics Dashboard"
+                          title={t('featuresMenu.analyticsDashboard')}
                           description="Track popular dishes and customer preferences"
                         />
                       </ul>
@@ -133,21 +136,22 @@ export function Header() {
                 <NavigationMenuItem>
                   <NavigationMenuLink asChild>
                     <Link href="/pricing" className={cn(navigationMenuTriggerStyle(), "text-eerie-black/80")}>
-                      Pricing
+                      {t('navigation.pricing')}
                     </Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
             
-            <Button>Try Culi Free</Button>
+            <LanguageSwitcher />
+            <Button>{t('navigation.tryFree')}</Button>
           </div>
 
           {/* Mobile Menu Button */}
           <button
             className="md:hidden p-2 rounded-lg hover:bg-cinereous/10 transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Toggle menu"
+            aria-label={t('mobileMenuToggle')}
           >
             {isMobileMenuOpen ? (
               <X className="h-6 w-6" />
@@ -165,17 +169,17 @@ export function Header() {
               className="block px-4 py-2 text-eerie-black/80 hover:text-spanish-orange transition-colors duration-200"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              Features
+              {t('navigation.features')}
             </Link>
             <Link
               href="/pricing"
               className="block px-4 py-2 text-eerie-black/80 hover:text-spanish-orange transition-colors duration-200"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              Pricing
+              {t('navigation.pricing')}
             </Link>
             <div className="px-4 pt-2">
-              <Button className="w-full">Try Culi Free</Button>
+              <Button className="w-full">{t('navigation.tryFree')}</Button>
             </div>
           </div>
         )}

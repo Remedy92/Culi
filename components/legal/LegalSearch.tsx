@@ -281,7 +281,7 @@ export function LegalSearch() {
                   className="search-item flex items-start gap-3"
                 >
                   <div className="search-item-icon mt-0.5">
-                    {React.cloneElement(item.icon as React.ReactElement, { className: 'h-4 w-4' })}
+                    {item.icon}
                   </div>
                   <div className="flex-1">
                     <div className="search-item-title">

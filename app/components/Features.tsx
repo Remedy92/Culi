@@ -3,31 +3,33 @@
 import { motion } from "framer-motion"
 import { Zap, Link2, Globe, Shield } from "lucide-react"
 import { ChatDemo } from "./ChatDemo"
-
-const features = [
-  {
-    icon: Zap,
-    title: "5-minute setup",
-    description: "Upload menu, get QR code",
-  },
-  {
-    icon: Link2,
-    title: "Seamless companion",
-    description: "Works alongside paper menus",
-  },
-  {
-    icon: Globe,
-    title: "100+ languages",
-    description: "Instant translation",
-  },
-  {
-    icon: Shield,
-    title: "Dietary safety",
-    description: "Allergen & restriction info",
-  },
-]
+import { useTranslations } from 'next-intl'
 
 export function Features() {
+  const t = useTranslations('features');
+  
+  const features = [
+    {
+      icon: Zap,
+      title: t('items.setup.title'),
+      description: t('items.setup.description'),
+    },
+    {
+      icon: Link2,
+      title: t('items.companion.title'),
+      description: t('items.companion.description'),
+    },
+    {
+      icon: Globe,
+      title: t('items.languages.title'),
+      description: t('items.languages.description'),
+    },
+    {
+      icon: Shield,
+      title: t('items.dietary.title'),
+      description: t('items.dietary.description'),
+    },
+  ];
   return (
     <section id="features" className="py-32 lg:py-40 bg-seasalt relative overflow-hidden">
       {/* Subtle background decoration */}
@@ -44,10 +46,12 @@ export function Features() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl font-bold text-eerie-black mb-4">
-            See <span className="text-spanish-orange">Culi</span> in Action
+            {t.rich('sectionTitle', {
+              highlight: (chunks) => <span className="text-spanish-orange">{chunks}</span>
+            })}
           </h2>
           <p className="text-lg text-eerie-black/80 max-w-2xl mx-auto">
-            Watch how guests interact with your menu in any language
+            {t('sectionDescription')}
           </p>
         </motion.div>
 

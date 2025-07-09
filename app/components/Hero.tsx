@@ -4,8 +4,10 @@ import { Button } from "./ui/button"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { ArrowDown, Globe } from "lucide-react"
+import { useTranslations } from 'next-intl'
 
 export function Hero() {
+  const t = useTranslations('hero');
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Warm gradient background */}
@@ -187,11 +189,13 @@ export function Hero() {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-spanish-orange/10 text-spanish-orange text-sm font-medium"
           >
             <Globe className="h-4 w-4" />
-            <span>All Languages</span>
+            <span>{t('badge')}</span>
           </motion.div>
 
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-eerie-black">
-            Your <span className="text-spanish-orange">menu</span>, but smarter
+            {t.rich('title', {
+              highlight: (chunks) => <span className="text-spanish-orange">{chunks}</span>
+            })}
           </h1>
           
           <motion.p
@@ -200,7 +204,9 @@ export function Hero() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="mx-auto max-w-4xl text-lg sm:text-xl text-eerie-black/80 whitespace-nowrap md:whitespace-normal lg:whitespace-nowrap"
           >
-            AI that knows your menu inside out. Any question, any language, instantly.
+            {t.rich('description', {
+              bold: (chunks) => <span className="font-bold text-eerie-black">{chunks}</span>
+            })}
           </motion.p>
 
           <motion.div
@@ -213,7 +219,7 @@ export function Hero() {
               size="lg" 
               className="min-w-[200px]"
             >
-              Start with Culi
+              {t('cta.start')}
             </Button>
           </motion.div>
 
@@ -228,7 +234,7 @@ export function Hero() {
               href="#features"
               className="group inline-flex flex-col items-center gap-3 text-warm-taupe hover:text-terracotta transition-all duration-300"
             >
-              <span className="text-base font-medium">Learn more</span>
+              <span className="text-base font-medium">{t('cta.learnMore')}</span>
               <motion.div
                 animate={{ y: [0, 8, 0] }}
                 transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}

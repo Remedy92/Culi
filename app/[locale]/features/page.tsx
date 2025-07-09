@@ -1,7 +1,7 @@
-import { Header } from "../components/Header"
-import { Features } from "../components/Features"
-import { TranslationDemo } from "../components/TranslationDemo"
-import { Footer } from "../components/Footer"
+import { Header } from "../../components/Header"
+import { Features } from "../../components/Features"
+import { TranslationDemo } from "../../components/TranslationDemo"
+import { Footer } from "../../components/Footer"
 
 export default function FeaturesPage() {
   return (

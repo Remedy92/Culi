@@ -1,13 +1,13 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Header } from "../components/Header"
-import { Footer } from "../components/Footer"
-import { NumberTicker } from "../components/ui/number-ticker"
-import { AnimatedCircularProgressBar } from "../components/ui/animated-circular-progress-bar"
-import { MagicCard } from "../components/ui/magic-card"
-import { AnimatedGradientText } from "../components/ui/animated-gradient-text"
-import { BlurFade } from "../components/ui/blur-fade"
+import { Header } from "../../components/Header"
+import { Footer } from "../../components/Footer"
+import { NumberTicker } from "../../components/ui/number-ticker"
+import { AnimatedCircularProgressBar } from "../../components/ui/animated-circular-progress-bar"
+import { MagicCard } from "../../components/ui/magic-card"
+import { AnimatedGradientText } from "../../components/ui/animated-gradient-text"
+import { BlurFade } from "../../components/ui/blur-fade"
 import { Calendar, MessageSquare, Eye, DollarSign } from "lucide-react"
 
 export default function AnalyticsDemoPage() {
