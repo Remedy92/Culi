@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -18,7 +18,8 @@ import {
   FormMessage,
   FormDescription,
 } from '@/app/components/ui/form'
-import { TLLogo } from '@/app/components/TLLogo'
+import { CuliCurveLogo, CuliLogoLoading } from '@/app/components/CuliCurveLogo'
+import { TypewriterEffectSmooth } from '@/app/components/ui/typewriter-effect'
 import { CheckCircle } from 'lucide-react'
 
 const formSchema = z.object({
@@ -36,8 +37,18 @@ const formSchema = z.object({
 
 export default function OnboardingPage() {
   const [isLoading, setIsLoading] = useState(false)
+  const [showForm, setShowForm] = useState(false)
+  const [showSecondMessage, setShowSecondMessage] = useState(false)
   const router = useRouter()
   const supabase = createClient()
+
+  // Show second message after first one completes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSecondMessage(true)
+    }, 2000) // Adjust timing based on first message length
+    return () => clearTimeout(timer)
+  }, [])
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -132,45 +143,149 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-seasalt px-4 py-12">
+    <div className="min-h-screen bg-seasalt px-4 py-8">
+      {/* Header */}
+      <div className="w-full mb-12">
+        <div className="flex items-center justify-center gap-3">
+          <CuliCurveLogo size={36} />
+          <div className="relative">
+            <span className="text-3xl font-black text-eerie-black">
+              <span className="text-4xl font-serif">C</span>uli
+            </span>
+          </div>
+        </div>
+      </div>
+
       <div className="max-w-2xl mx-auto">
+        {/* Chat Interface */}
+        <div className="space-y-4 mb-8">
+          {/* Culi's Message */}
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0 w-10 h-10 bg-white rounded-full shadow-warm flex items-center justify-center">
+              <CuliCurveLogo size={24} />
+            </div>
+            <div className="bg-white rounded-2xl rounded-tl-none shadow-warm-lg p-4 max-w-md">
+              <div className="space-y-2">
+                <TypewriterEffectSmooth
+                  words={[
+                    { text: "Hi!" },
+                    { text: "I'm" },
+                    { text: "Culi," },
+                    { text: "your" },
+                    { text: "AI" },
+                    { text: "menu" },
+                    { text: "assistant." },
+                    { text: "Let's" },
+                    { text: "get" },
+                    { text: "your" },
+                    { text: "restaurant" },
+                    { text: "set" },
+                    { text: "up!" }
+                  ]}
+                  className="text-base text-eerie-black"
+                  cursorClassName="bg-spanish-orange h-4"
+                />
+                {showSecondMessage && (
+                  <TypewriterEffectSmooth
+                    words={[
+                      { text: "What's" },
+                      { text: "the" },
+                      { text: "name" },
+                      { text: "of" },
+                      { text: "your" },
+                      { text: "restaurant?" }
+                    ]}
+                    className="text-base text-eerie-black"
+                    cursorClassName="bg-spanish-orange h-4"
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* User's Response */}
+          {form.watch("restaurantName") && showForm && (
+            <div className="flex items-start gap-3 justify-end animate-fade-in">
+              <div className="bg-spanish-orange text-white rounded-2xl rounded-tr-none shadow-warm-lg p-4 max-w-md">
+                <p>{form.watch("restaurantName")}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Culi's Follow-up */}
+          {showForm && (
+            <div className="flex items-start gap-3 animate-fade-in">
+              <div className="flex-shrink-0 w-10 h-10 bg-white rounded-full shadow-warm flex items-center justify-center">
+                <CuliCurveLogo size={24} />
+              </div>
+              <div className="bg-white rounded-2xl rounded-tl-none shadow-warm-lg p-4 max-w-md">
+                <TypewriterEffectSmooth
+                  words={[
+                    { text: "Great!" },
+                    { text: "Before" },
+                    { text: "we" },
+                    { text: "continue," },
+                    { text: "I" },
+                    { text: "need" },
+                    { text: "you" },
+                    { text: "to" },
+                    { text: "review" },
+                    { text: "and" },
+                    { text: "accept" },
+                    { text: "our" },
+                    { text: "policies." }
+                  ]}
+                  className="text-base text-eerie-black"
+                  cursorClassName="bg-spanish-orange h-4"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Form Section */}
         <div className="bg-white rounded-3xl shadow-warm-xl p-8 md:p-12">
-          <div className="flex justify-center mb-8">
-            <TLLogo />
-          </div>
-          
-          <div className="space-y-2 text-center mb-8">
-            <h1 className="text-3xl font-bold text-eerie-black">Welcome to Culi!</h1>
-            <p className="text-cinereous text-lg">
-              Let&apos;s set up your restaurant&apos;s AI-powered menu assistant
-            </p>
-          </div>
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* Restaurant Name Input - Chat Style */}
               <FormField
                 control={form.control}
                 name="restaurantName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Restaurant Name</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="e.g. The Golden Fork" 
-                        disabled={isLoading}
-                        {...field} 
-                      />
+                      <div className="relative">
+                        <Input 
+                          placeholder="Type your restaurant name..." 
+                          disabled={isLoading}
+                          className="pr-12 py-6 text-lg rounded-2xl border-2 focus:border-spanish-orange transition-colors"
+                          {...field} 
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && field.value) {
+                              e.preventDefault()
+                              setShowForm(true)
+                            }
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => field.value && setShowForm(true)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-spanish-orange text-white rounded-lg flex items-center justify-center hover:bg-opacity-90 transition-colors"
+                          disabled={!field.value || isLoading}
+                        >
+                          →
+                        </button>
+                      </div>
                     </FormControl>
-                    <FormDescription>
-                      This is how your restaurant will appear to guests
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <div className="space-y-4 pt-4">
-                <h3 className="text-sm font-medium text-eerie-black">Legal Requirements</h3>
+              {showForm && (
+                <div className="space-y-4 pt-4 animate-fade-in">
+                  <h3 className="text-sm font-medium text-eerie-black">Legal Requirements</h3>
                 
                 <FormField
                   control={form.control}
@@ -248,18 +363,28 @@ export default function OnboardingPage() {
                     </FormItem>
                   )}
                 />
-              </div>
+                </div>
+              )}
 
-              <div className="pt-4">
-                <Button
-                  type="submit"
-                  className="w-full"
-                  size="lg"
-                  disabled={isLoading}
-                >
-                  {isLoading ? 'Creating your restaurant...' : 'Create Restaurant'}
-                </Button>
-              </div>
+              {showForm && (
+                <div className="pt-4 animate-fade-in">
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    size="lg"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <span className="flex items-center gap-2">
+                        <CuliLogoLoading size={20} color="white" />
+                        Creating your restaurant...
+                      </span>
+                    ) : (
+                      'Create Restaurant'
+                    )}
+                  </Button>
+                </div>
+              )}
             </form>
           </Form>
 
