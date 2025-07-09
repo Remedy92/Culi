@@ -173,14 +173,14 @@ export function Header() {
 
         {/* Mobile Navigation - Enhanced with better touch targets and language switcher */}
         {isMobileMenuOpen && (
-          <div className="md:hidden py-4 space-y-1 animate-slide-down border-t border-cinereous/10 mt-2 bg-timberwolf/95 backdrop-blur-sm rounded-b-lg">
+          <div className="md:hidden py-4 space-y-1 animate-slide-down border-t border-cinereous/10 mt-2 bg-timberwolf rounded-b-lg">
             {/* Features Dropdown */}
             <details className="group">
               <summary className="flex items-center justify-between px-4 py-3 min-h-[48px] text-eerie-black/80 hover:text-spanish-orange hover:bg-seasalt/50 active:bg-seasalt transition-colors duration-200 cursor-pointer touch-manipulation">
                 <span className="font-medium">{t('navigation.features')}</span>
                 <ChefHat className="h-5 w-5 transition-transform group-open:rotate-180" />
               </summary>
-              <div className="bg-seasalt/50 py-2 backdrop-blur-sm">
+              <div className="bg-seasalt py-2">
                 <Link
                   href="/features"
                   className="flex items-center gap-3 px-6 py-3 min-h-[48px] text-eerie-black/70 hover:text-spanish-orange hover:bg-seasalt/50 active:bg-seasalt transition-colors"

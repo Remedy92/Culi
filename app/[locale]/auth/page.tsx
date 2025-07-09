@@ -14,7 +14,7 @@ import {
   FormItem,
   FormMessage,
 } from '@/app/components/ui/form'
-import { TLLogo } from '@/app/components/TLLogo'
+import { CuliCurveLogo } from '@/app/components/CuliCurveLogo'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 
@@ -63,28 +63,38 @@ export default function AuthPage() {
 
   if (emailSent) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-seasalt px-4">
-        <div className="w-full max-w-md">
-          <div className="bg-white rounded-3xl shadow-warm-xl p-8 text-center space-y-6">
-            <div className="flex justify-center">
-              <TLLogo />
-            </div>
-            <div className="space-y-2">
-              <h1 className="text-2xl font-bold text-eerie-black">Check your email</h1>
-              <p className="text-cinereous">
-                We sent a login link to {form.getValues('email')}
-              </p>
-            </div>
-            <div className="pt-4">
-              <button
-                onClick={() => {
-                  setEmailSent(false)
-                  form.reset()
-                }}
-                className="text-spanish-orange hover:underline text-sm font-medium"
-              >
-                Try a different email
-              </button>
+      <div className="min-h-screen flex flex-col bg-seasalt px-4">
+        {/* Header */}
+        <div className="py-6 flex justify-center">
+          <Link href="/" className="flex items-center gap-3 group">
+            <CuliCurveLogo size={40} className="group-hover:scale-105 transition-transform" />
+            <h1 className="text-2xl sm:text-3xl font-black text-eerie-black">
+              <span className="text-3xl sm:text-4xl font-serif">C</span>uli
+            </h1>
+          </Link>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 flex items-center justify-center">
+          <div className="w-full max-w-md">
+            <div className="bg-white rounded-3xl shadow-warm-xl p-8 text-center space-y-6">
+              <div className="space-y-2">
+                <h2 className="text-2xl font-bold text-eerie-black">Check your email</h2>
+                <p className="text-cinereous">
+                  We sent a login link to {form.getValues('email')}
+                </p>
+              </div>
+              <div className="pt-4">
+                <button
+                  onClick={() => {
+                    setEmailSent(false)
+                    form.reset()
+                  }}
+                  className="text-spanish-orange hover:underline text-sm font-medium"
+                >
+                  Try a different email
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -93,58 +103,67 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-seasalt px-4">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-3xl shadow-warm-xl p-8">
-          <div className="flex justify-center mb-8">
-            <TLLogo />
-          </div>
-          
-          <div className="space-y-2 text-center mb-8">
-            <h1 className="text-2xl font-bold text-eerie-black">Sign in to Culi</h1>
-            <p className="text-cinereous">
-              Enter your email to receive a secure login link
-            </p>
-          </div>
+    <div className="min-h-screen flex flex-col bg-seasalt px-4">
+      {/* Header */}
+      <div className="py-6 flex justify-center">
+        <Link href="/" className="flex items-center gap-3 group">
+          <CuliCurveLogo size={40} className="group-hover:scale-105 transition-transform" />
+          <h1 className="text-2xl sm:text-3xl font-black text-eerie-black">
+            <span className="text-3xl sm:text-4xl font-serif">C</span>uli
+          </h1>
+        </Link>
+      </div>
 
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input 
-                        placeholder="Enter your email address" 
-                        type="email"
-                        disabled={isLoading}
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={isLoading}
+      {/* Content */}
+      <div className="flex-1 flex items-center justify-center">
+        <div className="w-full max-w-md">
+          <div className="bg-white rounded-3xl shadow-warm-xl p-8">
+            <div className="space-y-2 text-center mb-8">
+              <h2 className="text-2xl font-bold text-eerie-black">Sign in to <span className="font-black"><span className="font-serif">C</span>uli</span></h2>
+              <p className="text-cinereous">
+                Enter your email to receive a secure login link
+              </p>
+            </div>
+
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input 
+                          placeholder="Enter your email address" 
+                          type="email"
+                          disabled={isLoading}
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Sending...' : 'Send login link'}
+                </Button>
+              </form>
+            </Form>
+
+            <div className="mt-8 text-center">
+              <Link 
+                href="/" 
+                className="inline-flex items-center text-sm text-cinereous hover:text-eerie-black transition-colors"
               >
-                {isLoading ? 'Sending...' : 'Send login link'}
-              </Button>
-            </form>
-          </Form>
-
-          <div className="mt-8 text-center">
-            <Link 
-              href="/" 
-              className="inline-flex items-center text-sm text-cinereous hover:text-eerie-black transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4 mr-1" />
-              Back to home
-            </Link>
+                <ArrowLeft className="w-4 h-4 mr-1" />
+                Back to home
+              </Link>
+            </div>
           </div>
         </div>
       </div>
