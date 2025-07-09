@@ -1,3 +1,6 @@
+'use client'
+
+import { useState } from 'react'
 import LegalLayout from '@/components/legal/LegalLayout'
 import { LegalAccordion } from '@/components/legal/LegalAccordion'
 import { Header } from '@/app/components/Header'
@@ -312,6 +315,8 @@ const sections = [
 ]
 
 export default function GDPRCompliancePage() {
+  const [openSection, setOpenSection] = useState<string>('')
+
   return (
     <>
       <Header />
@@ -320,6 +325,8 @@ export default function GDPRCompliancePage() {
           title="GDPR Compliance"
           lastUpdated="January 9, 2025"
           sections={sections}
+          openAccordionSection={openSection}
+          onAccordionChange={setOpenSection}
         >
           <div className="mb-8 p-6 bg-spanish-orange/5 rounded-lg border border-spanish-orange/20">
             <p className="text-lg text-eerie-black/90 leading-relaxed">
@@ -329,7 +336,11 @@ export default function GDPRCompliancePage() {
             </p>
           </div>
 
-          <LegalAccordion sections={sections} />
+          <LegalAccordion 
+            sections={sections}
+            value={openSection}
+            onValueChange={setOpenSection}
+          />
         </LegalLayout>
       </main>
       <Footer />

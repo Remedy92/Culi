@@ -63,14 +63,25 @@ interface LegalAccordionProps {
     content: React.ReactNode
   }[]
   className?: string
+  value?: string
+  onValueChange?: (value: string) => void
 }
 
-export function LegalAccordion({ sections, className }: LegalAccordionProps) {
+export function LegalAccordion({ sections, className, value, onValueChange }: LegalAccordionProps) {
+  const handleValueChange = (newValue: string) => {
+    // Just update the value, let the parent handle scrolling
+    if (onValueChange) {
+      onValueChange(newValue)
+    }
+  }
+
   return (
     <Accordion
       type="single"
       collapsible
       className={cn("w-full", className)}
+      value={value}
+      onValueChange={handleValueChange}
     >
       {sections.map((section) => (
         <AccordionItem key={section.id} value={section.id} id={section.id}>

@@ -1,6 +1,6 @@
 'use client'
 
-import { ReactNode, useEffect, useState } from 'react'
+import { ReactNode, useEffect, useState, useRef } from 'react'
 import Link from 'next/link'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
@@ -17,6 +17,8 @@ interface LegalLayoutProps {
     title: string
   }[]
   activeSection?: string
+  openAccordionSection?: string
+  onAccordionChange?: (sectionId: string) => void
 }
 
 export default function LegalLayout({
@@ -24,16 +26,77 @@ export default function LegalLayout({
   title,
   lastUpdated,
   sections,
-  activeSection: controlledActiveSection
+  activeSection: controlledActiveSection,
+  openAccordionSection,
+  onAccordionChange
 }: LegalLayoutProps) {
   const [activeSection, setActiveSection] = useState<string>('')
-  const [scrollProgress, setScrollProgress] = useState<number>(0)
+  const [indicatorPosition, setIndicatorPosition] = useState<number>(0)
+  const sectionRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({})
+  const navRef = useRef<HTMLElement>(null)
+  const isAutoScrolling = useRef(false)
+
+  // Set initial active section from URL hash
+  useEffect(() => {
+    const hash = window.location.hash.slice(1)
+    if (hash && sections.some(s => s.id === hash)) {
+      // Set auto-scrolling flag
+      isAutoScrolling.current = true
+      setActiveSection(hash)
+      
+      // Scroll to section after a brief delay
+      setTimeout(() => {
+        const element = document.getElementById(hash)
+        if (element) {
+          const offset = 100
+          const elementPosition = element.offsetTop - offset
+          window.scrollTo({
+            top: elementPosition,
+            behavior: 'smooth'
+          })
+        }
+        
+        // Reset flag after scroll
+        setTimeout(() => {
+          isAutoScrolling.current = false
+        }, 600)
+      }, 100)
+    }
+  }, [sections])
+
+  // Sync accordion state with active section and scroll
+  useEffect(() => {
+    if (openAccordionSection) {
+      // Set auto-scrolling flag
+      isAutoScrolling.current = true
+      
+      // Update active section
+      setActiveSection(openAccordionSection)
+      
+      // Scroll to the section after a brief delay for accordion animation
+      setTimeout(() => {
+        const element = document.getElementById(openAccordionSection)
+        if (element) {
+          const offset = 100 // Account for header and some padding
+          const elementPosition = element.offsetTop - offset
+          window.scrollTo({
+            top: elementPosition,
+            behavior: 'smooth'
+          })
+        }
+        
+        // Reset auto-scrolling flag after animation
+        setTimeout(() => {
+          isAutoScrolling.current = false
+        }, 500)
+      }, 100) // Wait for accordion to start opening
+    }
+  }, [openAccordionSection])
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight
-      const currentProgress = window.scrollY / scrollHeight
-      setScrollProgress(currentProgress)
+      // Skip updates during auto-scrolling
+      if (isAutoScrolling.current) return
 
       // Find active section based on scroll position
       const sectionElements = sections.map(section => ({
@@ -41,31 +104,81 @@ export default function LegalLayout({
         element: document.getElementById(section.id)
       })).filter(item => item.element)
 
+      let currentSectionId = ''
+
       for (let i = sectionElements.length - 1; i >= 0; i--) {
         const { id, element } = sectionElements[i]
         if (element && element.offsetTop <= window.scrollY + 100) {
-          setActiveSection(id)
+          currentSectionId = id
           break
+        }
+      }
+
+      if (currentSectionId) {
+        setActiveSection(currentSectionId)
+
+
+        // Update indicator position immediately for smooth movement
+        const activeButton = sectionRefs.current[currentSectionId]
+        if (activeButton && navRef.current) {
+          const navRect = navRef.current.getBoundingClientRect()
+          const buttonRect = activeButton.getBoundingClientRect()
+          const relativeTop = buttonRect.top - navRect.top
+          setIndicatorPosition(relativeTop)
         }
       }
     }
 
     handleScroll()
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
   }, [sections])
 
   const currentActiveSection = controlledActiveSection || activeSection
 
+  // Update indicator position when active section changes
+  useEffect(() => {
+    if (!currentActiveSection || !navRef.current) return
+
+    // Use requestAnimationFrame for smooth updates
+    const animationFrame = requestAnimationFrame(() => {
+      const activeButton = sectionRefs.current[currentActiveSection]
+      if (activeButton && navRef.current) {
+        const navRect = navRef.current.getBoundingClientRect()
+        const buttonRect = activeButton.getBoundingClientRect()
+        const relativeTop = buttonRect.top - navRect.top
+        setIndicatorPosition(relativeTop)
+      }
+    })
+
+    return () => cancelAnimationFrame(animationFrame)
+  }, [currentActiveSection])
+
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId)
     if (element) {
+      // Set auto-scrolling flag
+      isAutoScrolling.current = true
+      
       const offset = 80 // Account for fixed header
       const elementPosition = element.offsetTop - offset
+      
       window.scrollTo({
         top: elementPosition,
         behavior: 'smooth'
       })
+      
+      // Also open the accordion section if callback is provided
+      if (onAccordionChange) {
+        onAccordionChange(sectionId)
+      }
+      
+      // Reset auto-scrolling flag after animation completes
+      setTimeout(() => {
+        isAutoScrolling.current = false
+      }, 600) // Slightly longer than smooth scroll duration
     }
   }
 
@@ -89,25 +202,37 @@ export default function LegalLayout({
                 Table of Contents
               </h2>
               <ScrollArea className="h-[calc(100vh-200px)]">
-                <nav className="space-y-2 relative">
+                <nav ref={navRef} className="space-y-2 relative">
                   {/* Scroll Progress Indicator */}
-                  <div
-                    className="absolute left-0 top-0 w-0.5 bg-spanish-orange transition-all duration-300 rounded-full"
+                  <motion.div
+                    className="absolute left-0 w-1 bg-spanish-orange rounded-full shadow-[0_0_8px_rgba(225,110,39,0.5)] pointer-events-none z-10"
+                    initial={false}
+                    animate={{
+                      y: indicatorPosition,
+                      height: activeSection ? 36 : 0,
+                      opacity: activeSection ? 1 : 0
+                    }}
+                    transition={{
+                      y: { type: "spring", stiffness: 300, damping: 30 },
+                      height: { duration: 0.2, ease: "easeOut" },
+                      opacity: { duration: 0.2 }
+                    }}
                     style={{
-                      height: `${scrollProgress * 100}%`
+                      marginTop: 2 // Small offset to perfectly center with button
                     }}
                   />
                   
                   {sections.map((section) => (
                     <button
                       key={section.id}
+                      ref={(el) => { sectionRefs.current[section.id] = el }}
                       onClick={() => scrollToSection(section.id)}
                       className={cn(
-                        "block w-full text-left px-3 py-2 text-sm rounded-md transition-all duration-200",
+                        "block w-full text-left px-3 py-2 text-sm rounded-md transition-all duration-200 relative",
                         "hover:bg-spanish-orange/10 hover:text-spanish-orange",
                         currentActiveSection === section.id
-                          ? "bg-spanish-orange/10 text-spanish-orange font-medium border-l-2 border-spanish-orange"
-                          : "text-eerie-black/70 border-l-2 border-transparent"
+                          ? "bg-spanish-orange/10 text-spanish-orange font-medium pl-6"
+                          : "text-eerie-black/70 pl-6"
                       )}
                     >
                       {section.title}
@@ -156,22 +281,31 @@ export default function LegalLayout({
       </div>
 
       {/* Mobile Table of Contents - Bottom Sheet */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-cinereous/20 p-4">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-cinereous/20 p-4 z-50">
         <ScrollArea className="h-16">
-          <div className="flex gap-2 pb-2">
+          <div className="flex gap-2 pb-2 relative">
             {sections.map((section) => (
-              <button
+              <motion.button
                 key={section.id}
                 onClick={() => scrollToSection(section.id)}
                 className={cn(
-                  "px-3 py-1.5 text-sm rounded-full whitespace-nowrap transition-all duration-200",
+                  "px-3 py-1.5 text-sm rounded-full whitespace-nowrap transition-all duration-200 relative",
                   currentActiveSection === section.id
-                    ? "bg-spanish-orange text-white"
+                    ? "bg-spanish-orange text-white shadow-warm-md"
                     : "bg-spanish-orange/10 text-eerie-black/70 hover:bg-spanish-orange/20"
                 )}
+                whileTap={{ scale: 0.95 }}
               >
                 {section.title}
-              </button>
+                {currentActiveSection === section.id && (
+                  <motion.div
+                    className="absolute -bottom-1 left-1/2 w-1 h-1 bg-spanish-orange rounded-full"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    style={{ x: '-50%' }}
+                  />
+                )}
+              </motion.button>
             ))}
           </div>
         </ScrollArea>
