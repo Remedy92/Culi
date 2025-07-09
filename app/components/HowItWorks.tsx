@@ -2,29 +2,31 @@
 
 import { motion } from "framer-motion"
 import { Upload, QrCode, MessageSquare } from "lucide-react"
-
-const steps = [
-  {
-    number: "1",
-    icon: Upload,
-    title: "Upload your menu",
-    description: "Simply upload your menu as a PDF, image, or text file. Culi automatically extracts all items and details.",
-  },
-  {
-    number: "2",
-    icon: QrCode,
-    title: "Get your QR code",
-    description: "Receive unique QR codes for each table or a single code for your entire restaurant.",
-  },
-  {
-    number: "3",
-    icon: MessageSquare,
-    title: "Guests start chatting",
-    description: "Guests scan the code and ask questions in their language. Culi provides instant, accurate answers.",
-  },
-]
+import { useTranslations } from 'next-intl'
 
 export function HowItWorks() {
+  const t = useTranslations('howItWorks');
+  
+  const steps = [
+    {
+      number: "1",
+      icon: Upload,
+      title: t('steps.upload.title'),
+      description: t('steps.upload.description'),
+    },
+    {
+      number: "2",
+      icon: QrCode,
+      title: t('steps.qr.title'),
+      description: t('steps.qr.description'),
+    },
+    {
+      number: "3",
+      icon: MessageSquare,
+      title: t('steps.serve.title'),
+      description: t('steps.serve.description'),
+    },
+  ];
   return (
     <section id="how-it-works" className="py-32 lg:py-40 bg-timberwolf relative overflow-hidden">
       {/* Subtle background decoration */}
@@ -40,10 +42,10 @@ export function HowItWorks() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl font-bold text-eerie-black mb-4">
-            How It Works
+            {t('title')}
           </h2>
           <p className="text-lg text-eerie-black/80 max-w-2xl mx-auto">
-            Get started in minutes, not hours
+            {t('subtitle')}
           </p>
         </motion.div>
 

@@ -1,41 +1,43 @@
 import Link from "next/link"
 import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react"
-
-const footerLinks = {
-  Product: [
-    { name: "Features", href: "#features" },
-    { name: "How it Works", href: "#how-it-works" },
-    { name: "Pricing", href: "#pricing" },
-    { name: "Demo", href: "#demo" },
-  ],
-  Company: [
-    { name: "About", href: "#" },
-    { name: "Blog", href: "#" },
-    { name: "Careers", href: "#" },
-    { name: "Contact", href: "#" },
-  ],
-  Resources: [
-    { name: "Documentation", href: "#" },
-    { name: "Help Center", href: "#" },
-    { name: "API", href: "#" },
-    { name: "Status", href: "#" },
-  ],
-  Legal: [
-    { name: "Privacy", href: "/privacy" },
-    { name: "Terms", href: "/terms" },
-    { name: "Cookies", href: "/cookies" },
-    { name: "GDPR", href: "/gdpr" },
-  ],
-}
-
-const socialLinks = [
-  { name: "Facebook", icon: Facebook, href: "#" },
-  { name: "Twitter", icon: Twitter, href: "#" },
-  { name: "Instagram", icon: Instagram, href: "#" },
-  { name: "LinkedIn", icon: Linkedin, href: "#" },
-]
+import { useTranslations } from 'next-intl'
 
 export function Footer() {
+  const t = useTranslations('footer');
+  
+  const footerLinks = {
+    [t('categories.product')]: [
+      { name: t('links.features'), href: "#features" },
+      { name: "How it Works", href: "#how-it-works" },
+      { name: t('links.pricing'), href: "#pricing" },
+      { name: "Demo", href: "#demo" },
+    ],
+    [t('categories.company')]: [
+      { name: t('links.about'), href: "#" },
+      { name: t('links.blog'), href: "#" },
+      { name: t('links.careers'), href: "#" },
+      { name: t('links.contact'), href: "#" },
+    ],
+    [t('categories.resources')]: [
+      { name: t('links.documentation'), href: "#" },
+      { name: t('links.support'), href: "#" },
+      { name: "API", href: "#" },
+      { name: "Status", href: "#" },
+    ],
+    [t('categories.legal')]: [
+      { name: t('links.privacy'), href: "/privacy" },
+      { name: t('links.terms'), href: "/terms" },
+      { name: t('links.cookies'), href: "/cookies" },
+      { name: t('links.gdpr'), href: "/gdpr" },
+    ],
+  }
+
+  const socialLinks = [
+    { name: "Facebook", icon: Facebook, href: "#" },
+    { name: "Twitter", icon: Twitter, href: "#" },
+    { name: "Instagram", icon: Instagram, href: "#" },
+    { name: "LinkedIn", icon: Linkedin, href: "#" },
+  ];
   return (
     <footer className="bg-gradient-to-b from-eerie-black to-eerie-black/95 text-seasalt/80">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
@@ -43,10 +45,10 @@ export function Footer() {
           {/* Brand column */}
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="text-2xl font-bold text-seasalt">
-              Culi
+              TableLink
             </Link>
             <p className="mt-4 text-sm">
-              AI-powered menu assistant for modern restaurants.
+              {t('tagline')}
             </p>
             <div className="mt-6 flex gap-4">
               {socialLinks.map((social) => (
@@ -87,10 +89,12 @@ export function Footer() {
         <div className="mt-12 pt-8 border-t border-seasalt/10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm">
-              © 2025 Culi. All rights reserved.
+              {t('copyright')}
             </p>
             <p className="text-sm">
-              Powered by <span className="text-spanish-orange">Culi AI</span>
+              {t.rich('poweredBy', {
+                highlight: (chunks) => <span className="text-spanish-orange">{chunks}</span>
+              })}
             </p>
           </div>
         </div>

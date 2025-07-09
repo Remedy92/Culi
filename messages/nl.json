@@ -8,18 +8,18 @@
     "navigation": {
       "features": "Functies",
       "pricing": "Prijzen",
-      "tryFree": "Probeer Culi Gratis"
+      "tryFree": "Probeer Culi gratis"
     },
     "featuresMenu": {
-      "exploreAll": "Ontdek Alle Functies",
-      "aiAssistant": "AI Menu-assistent",
-      "allLanguages": "Alle Talen",
-      "analyticsDashboard": "Analytics Dashboard"
+      "exploreAll": "Ontdek alle functies",
+      "aiAssistant": "AI menu-assistent",
+      "allLanguages": "Alle talen",
+      "analyticsDashboard": "Analytics dashboard"
     },
     "mobileMenuToggle": "Navigatiemenu openen"
   },
   "hero": {
-    "badge": "Alle Talen",
+    "badge": "Alle talen",
     "title": "Uw <highlight>menu</highlight>, maar slimmer",
     "description": "Een <bold>AI</bold> die uw menu door en door kent. Elke vraag, elke taal, direct beantwoord.",
     "cta": {
@@ -28,7 +28,7 @@
     }
   },
   "features": {
-    "sectionTitle": "Zie <highlight>Culi</highlight> in Actie",
+    "sectionTitle": "Zie <highlight>Culi</highlight> in actie",
     "sectionDescription": "Bekijk hoe gasten met uw menu communiceren in elke taal",
     "items": {
       "setup": {
@@ -52,48 +52,50 @@
   "chatDemo": {
     "poweredBy": "Mogelijk gemaakt door Culi AI",
     "conversations": {
+      "suggestion": {
+        "question": "Culi, wat raad je mij aan op dit menu?",
+        "answer": "Op basis van populaire keuzes raad ik de gegrilde zalm met seizoensgroenten aan. Perfect gekruid en combineert prachtig met onze huiswitte wijn."
+      },
       "glutenFree": {
-        "question": "Hebben jullie glutenvrije opties?",
-        "answer": "Ja! Ik zie verschillende glutenvrije opties op ons menu"
+        "question": "Bevat de pasta gluten?",
+        "answer": "Ja, onze traditionele pasta bevat gluten. We bieden echter glutenvrije alternatieven van rijstmeel. Zal ik alle glutenvrije opties voor u markeren?"
       },
-      "vegetarian": {
-        "question": "Welke vegetarische gerechten raden jullie aan?",
-        "answer": "Onze Geroosterde Groentetaart en Wilde Paddenstoelenrisotto zijn uitstekende vegetarische keuzes!"
-      },
-      "popular": {
-        "question": "Wat is het populairste gerecht?",
-        "answer": "Onze Gegrilde Zeebaars met citroenbottersaus is ons populairste gerecht. Gasten zijn dol op de verse, lokale vangst!"
+      "spanish": {
+        "question": "¿Qué es 'Coq au Vin'?",
+        "answer": "Coq au Vin es un clásico plato francés de pollo cocinado lentamente en vino tinto con champiñones, tocino y cebollas perladas. Es tierno y lleno de sabor."
       }
     }
   },
   "translationDemo": {
-    "title": "Zie de Magie van Vertaling",
+    "title": "Zie de magie van vertaling",
     "description": "Beweeg over menu-items om te zien hoe Culi direct gerechten vertaalt uit elke taal",
     "languages": {
-      "english": "Engels",
-      "french": "Frans",
-      "dutch": "Nederlands",
-      "german": "Duits",
+      "chinese": "Chinees",
       "spanish": "Spaans",
-      "italian": "Italiaans"
+      "arabic": "Arabisch",
+      "french": "Frans"
     },
     "menuItems": {
-      "seaBass": {
-        "name": "Gebakken Zeebaars",
-        "description": "Verse Atlantische zeebaars met citroenbottersaus"
+      "pekingDuck": {
+        "name": "Peking eend",
+        "description": "Traditionele geroosterde eend met krokante huid, geserveerd met pannenkoeken"
       },
-      "risotto": {
-        "name": "Wilde Paddenstoelenrisotto",
-        "description": "Romige arborio rijst met seizoensgebonden bospaddenstoelen"
+      "paella": {
+        "name": "Valenciaanse paella",
+        "description": "Spaans rijstgerecht met konijn, bonen en saffraan"
       },
-      "tart": {
-        "name": "Geroosterde Groentetaart",
-        "description": "Seizoensgroenten in een krokante bladerdeegkorst"
+      "kabsa": {
+        "name": "Kabsa",
+        "description": "Geurige rijstschotel met lam, kardemom en gemengde kruiden"
+      },
+      "bouillabaisse": {
+        "name": "Visstoof",
+        "description": "Traditionele Provençaalse vissoep met rouille saus"
       }
     }
   },
   "howItWorks": {
-    "title": "Hoe Het Werkt",
+    "title": "Hoe het werkt",
     "subtitle": "Aan de slag in minuten, niet uren",
     "steps": {
       "upload": {
@@ -111,32 +113,52 @@
     }
   },
   "whyRestaurants": {
-    "title": "Waarom Culi Gebruiken?",
+    "title": "Waarom Culi gebruiken?",
     "subtitle": "Transformeer uw restaurantoperaties en verras elke gast",
     "benefits": {
-      "efficiency": {
-        "title": "Verhoog Efficiëntie",
-        "description": "Bevrijd uw personeel van repetitieve vragen over ingrediënten en allergenen.",
-        "metric": "73%",
-        "metricLabel": "minder menuvragen"
-      },
       "satisfaction": {
-        "title": "Verras Elke Gast",
-        "description": "Internationale bezoekers kunnen uw menu met vertrouwen verkennen in hun taal.",
-        "metric": "4.8/5",
-        "metricLabel": "gasttevredenheid"
+        "title": "Verhoog gasttevredenheid",
+        "description": "Stel gasten in staat weloverwogen keuzes te maken, verminder bestelfouten en verhoog tevredenheidscores.",
+        "metric": "Gemiddelde tevredenheidsscore"
       },
-      "revenue": {
-        "title": "Verhoog Omzet",
-        "description": "Zelfverzekerde gasten bestellen meer. Gedetailleerde beschrijvingen verhogen de eetlust.",
-        "metric": "€12",
-        "metricLabel": "hogere gemiddelde bestelling"
+      "efficiency": {
+        "title": "Operationele efficiëntie",
+        "description": "Transformeer hoe uw personeel werkt met intelligente assistentie",
+        "features": {
+          "training": {
+            "title": "Verminder menutrainingstijd met {percentage}%",
+            "description": "Nieuw personeel productief vanaf dag één"
+          },
+          "chef": {
+            "title": "Geen \"even aan de chef vragen\" meer",
+            "description": "Directe antwoorden, geen keukenonderbrekingen"
+          },
+          "expert": {
+            "title": "Elke ober wordt een menu-expert",
+            "description": "Zelfverzekerde antwoorden op elke vraag"
+          }
+        }
       },
-      "compliance": {
-        "title": "Blijf Compliant",
-        "description": "Altijd accurate allergeneninformatie. GDPR-compliant. Gemoedsrust inbegrepen.",
-        "metric": "100%",
-        "metricLabel": "allergenenauwkeurigheid"
+      "serveMore": {
+        "title": "Bedien meer gasten",
+        "description": "Bevrijd personeel van repetitieve vragen zodat ze zich kunnen richten op gastvrijheid",
+        "metric": "+{count} dagelijks"
+      },
+      "loyalty": {
+        "title": "Bouw gastloyaliteit op",
+        "description": "Toon dat u om de behoeften van elke gast geeft, van dieetbeperkingen tot taalvoorkeuren."
+      },
+      "languages": {
+        "title": "Alle",
+        "subtitle": "talen"
+      },
+      "insights": {
+        "title": "Real-time inzichten",
+        "description": "Volg waar gasten het meest naar vragen & optimaliseer uw menu"
+      },
+      "setup": {
+        "title": "5 min",
+        "subtitle": "Installatie"
       }
     }
   },
@@ -145,69 +167,54 @@
     "description": "Sluit u aan bij vooruitstrevende restaurants die Culi gebruiken om uitzonderlijke gastervaringen te bieden in elke taal.",
     "buttons": {
       "start": "Start met Culi",
-      "demo": "Plan een Demo"
+      "demo": "Plan een demo"
     }
   },
   "pricing": {
-    "title": "Start met Culi, Groei Mee",
-    "currency": "€",
-    "monthly": "/maand",
-    "yearly": "/jaar",
-    "mostPopular": "MEEST POPULAIR",
+    "title": "Start met Culi, groei mee",
     "plans": {
-      "essential": {
-        "name": "Essentieel",
-        "description": "Perfect voor cafés en kleine restaurants",
-        "price": {
-          "monthly": 29,
-          "yearly": 290
-        },
+      "free": {
+        "name": "Gratis",
+        "price": "€0",
+        "description": "Probeer Culi risicovrij",
         "features": [
-          "Tot 500 menu-vragen/maand",
+          "50 AI-interacties/maand",
+          "2 talen (Nederlands + Engels)",
           "Basis analytics dashboard",
-          "QR-code generatie",
-          "E-mail ondersteuning"
-        ]
+          "1 QR-code"
+        ],
+        "cta": "Aan de slag"
+      },
+      "starter": {
+        "name": "Starter",
+        "price": "€49",
+        "description": "Perfect voor kleine restaurants",
+        "features": [
+          "500 AI-interacties/maand",
+          "Alle talen ondersteund",
+          "Geavanceerde analytics",
+          "WhatsApp integratie",
+          "Prioriteit email ondersteuning",
+          "Onbeperkte QR-codes"
+        ],
+        "cta": "Start met Culi",
+        "overage": "€0,10 per extra interactie"
       },
       "professional": {
         "name": "Professioneel",
-        "description": "Ideaal voor drukke restaurants",
-        "price": {
-          "monthly": 59,
-          "yearly": 590
-        },
+        "price": "€99",
+        "description": "Voor drukke etablissementen",
         "features": [
-          "Tot 2.000 menu-vragen/maand",
-          "Geavanceerde analytics & inzichten",
-          "Eigen branding",
-          "Prioriteitsondersteuning",
-          "API-toegang"
-        ]
-      },
-      "scale": {
-        "name": "Schaal",
-        "description": "Voor high-volume etablissementen",
-        "price": {
-          "monthly": 119,
-          "yearly": 1190
-        },
-        "features": [
-          "Tot 10.000 menu-vragen/maand",
-          "Real-time analytics",
-          "Multi-locatie ondersteuning",
-          "Toegewijde accountmanager",
-          "Aangepaste integraties"
-        ]
+          "2.000 AI-interacties/maand",
+          "API-toegang (1.000 calls)",
+          "Verwijder Culi branding",
+          "Telefoonondersteuning",
+          "POS-integraties",
+          "Aangepaste analytics rapporten"
+        ],
+        "cta": "Start met Culi",
+        "overage": "€0,05 per extra interactie"
       }
-    },
-    "overage": {
-      "title": "Eenvoudige overschrijdingsprijzen",
-      "description": "€0,02 per extra vraag boven uw planlimiet"
-    },
-    "enterprise": {
-      "title": "Enterprise",
-      "description": "Neem contact op voor Enterprise-prijzen",
-      "cta": "Contact Sales"
     }
   },
   "footer": {
@@ -233,7 +240,7 @@
       "cookies": "Cookiebeleid",
       "gdpr": "AVG"
     },
-    "copyright": "© 2025 Culi. Alle rechten voorbehouden.",
-    "poweredBy": "Mogelijk gemaakt door Culi AI"
+    "copyright": "© 2025 TableLink. Alle rechten voorbehouden.",
+    "poweredBy": "Mogelijk gemaakt door <highlight>Culi AI</highlight>"
   }
 }

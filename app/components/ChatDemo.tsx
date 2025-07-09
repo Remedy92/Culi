@@ -3,23 +3,25 @@
 import { motion } from "framer-motion"
 import { TypeAnimation } from "react-type-animation"
 import { useState } from "react"
-
-const conversations = [
-  {
-    question: "Culi, what do you suggest for me on this menu?",
-    answer: "Based on popular choices, I recommend the grilled salmon with seasonal vegetables. It's perfectly seasoned and pairs beautifully with our house white wine."
-  },
-  {
-    question: "Does the pasta contain gluten?",
-    answer: "Yes, our traditional pasta contains gluten. However, we offer gluten-free alternatives made from rice flour. Would you like me to highlight all gluten-free options?"
-  },
-  {
-    question: "¿Qué es 'Coq au Vin'?",
-    answer: "Coq au Vin es un clásico plato francés de pollo cocinado lentamente en vino tinto con champiñones, tocino y cebollas perladas. Es tierno y lleno de sabor."
-  }
-]
+import { useTranslations } from 'next-intl'
 
 export function ChatDemo() {
+  const t = useTranslations('chatDemo');
+  
+  const conversations = [
+    {
+      question: t('conversations.suggestion.question'),
+      answer: t('conversations.suggestion.answer')
+    },
+    {
+      question: t('conversations.glutenFree.question'),
+      answer: t('conversations.glutenFree.answer')
+    },
+    {
+      question: t('conversations.spanish.question'),
+      answer: t('conversations.spanish.answer')
+    }
+  ];
   const [currentConversation, setCurrentConversation] = useState(0)
   const [showLoading, setShowLoading] = useState(false)
   const [showAnswer, setShowAnswer] = useState(false)
@@ -109,7 +111,7 @@ export function ChatDemo() {
 
         {/* Culi indicator */}
         <div className="mt-6 flex items-center justify-center text-xs text-warm-taupe">
-          <span className="font-medium">Powered by Culi AI</span>
+          <span className="font-medium">{t('poweredBy')}</span>
         </div>
       </div>
 

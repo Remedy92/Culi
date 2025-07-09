@@ -8,18 +8,18 @@
     "navigation": {
       "features": "Fonctionnalités",
       "pricing": "Tarifs",
-      "tryFree": "Essayer Culi Gratuitement"
+      "tryFree": "Essayer Culi gratuitement"
     },
     "featuresMenu": {
-      "exploreAll": "Explorer Toutes les Fonctionnalités",
-      "aiAssistant": "Assistant Menu IA",
-      "allLanguages": "Toutes les Langues",
-      "analyticsDashboard": "Tableau de Bord Analytique"
+      "exploreAll": "Explorer toutes les fonctionnalités",
+      "aiAssistant": "Assistant menu IA",
+      "allLanguages": "Toutes les langues",
+      "analyticsDashboard": "Tableau de bord analytique"
     },
     "mobileMenuToggle": "Basculer le menu de navigation"
   },
   "hero": {
-    "badge": "Toutes les Langues",
+    "badge": "Toutes les langues",
     "title": "Votre <highlight>menu</highlight>, en plus intelligent",
     "description": "Une <bold>IA</bold> qui connaît votre menu parfaitement. N'importe quelle question, n'importe quelle langue, instantanément.",
     "cta": {
@@ -28,7 +28,7 @@
     }
   },
   "features": {
-    "sectionTitle": "Découvrez <highlight>Culi</highlight> en Action",
+    "sectionTitle": "Découvrez <highlight>Culi</highlight> en action",
     "sectionDescription": "Observez comment les clients interagissent avec votre menu dans n'importe quelle langue",
     "items": {
       "setup": {
@@ -52,48 +52,50 @@
   "chatDemo": {
     "poweredBy": "Propulsé par Culi IA",
     "conversations": {
+      "suggestion": {
+        "question": "Culi, que me suggérez-vous sur ce menu?",
+        "answer": "D'après les choix populaires, je recommande le saumon grillé avec légumes de saison. Il est parfaitement assaisonné et se marie magnifiquement avec notre vin blanc maison."
+      },
       "glutenFree": {
-        "question": "Avez-vous des options sans gluten?",
-        "answer": "Oui! Je vois plusieurs options sans gluten sur notre menu"
+        "question": "Les pâtes contiennent-elles du gluten?",
+        "answer": "Oui, nos pâtes traditionnelles contiennent du gluten. Cependant, nous proposons des alternatives sans gluten à base de farine de riz. Voulez-vous que je mette en évidence toutes les options sans gluten?"
       },
-      "vegetarian": {
-        "question": "Quels plats végétariens recommandez-vous?",
-        "answer": "Notre Tarte aux Légumes Rôtis et notre Risotto aux Champignons Sauvages sont d'excellents choix végétariens!"
-      },
-      "popular": {
-        "question": "Quel est le plat le plus populaire?",
-        "answer": "Notre Bar Grillé avec sauce au beurre citronné est notre plat le plus populaire. Les clients adorent la pêche fraîche et locale!"
+      "spanish": {
+        "question": "¿Qué es 'Coq au Vin'?",
+        "answer": "Coq au Vin es un clásico plato francés de pollo cocinado lentamente en vino tinto con champiñones, tocino y cebollas perladas. Es tierno y lleno de sabor."
       }
     }
   },
   "translationDemo": {
-    "title": "Découvrez la Magie de la Traduction",
+    "title": "Découvrez la magie de la traduction",
     "description": "Survolez les éléments du menu pour voir comment Culi traduit instantanément les plats de n'importe quelle langue",
     "languages": {
-      "english": "Anglais",
-      "french": "Français",
-      "dutch": "Néerlandais",
-      "german": "Allemand",
+      "chinese": "Chinois",
       "spanish": "Espagnol",
-      "italian": "Italien"
+      "arabic": "Arabe",
+      "french": "Français"
     },
     "menuItems": {
-      "seaBass": {
-        "name": "Bar Poêlé",
-        "description": "Bar frais de l'Atlantique avec sauce au beurre citronné"
+      "pekingDuck": {
+        "name": "Canard de Pékin",
+        "description": "Canard rôti traditionnel à la peau croustillante, servi avec des crêpes"
       },
-      "risotto": {
-        "name": "Risotto aux Champignons Sauvages",
-        "description": "Riz arborio crémeux avec champignons forestiers de saison"
+      "paella": {
+        "name": "Paella valencienne",
+        "description": "Plat de riz espagnol avec lapin, haricots et safran"
       },
-      "tart": {
-        "name": "Tarte aux Légumes Rôtis",
-        "description": "Légumes de saison dans une pâte feuilletée croustillante"
+      "kabsa": {
+        "name": "Kabsa",
+        "description": "Plat de riz parfumé avec agneau, cardamome et épices mélangées"
+      },
+      "bouillabaisse": {
+        "name": "Bouillabaisse",
+        "description": "Soupe de poisson provençale traditionnelle avec sauce rouille"
       }
     }
   },
   "howItWorks": {
-    "title": "Comment Ça Marche",
+    "title": "Comment ça marche",
     "subtitle": "Commencez en quelques minutes, pas en heures",
     "steps": {
       "upload": {
@@ -111,32 +113,52 @@
     }
   },
   "whyRestaurants": {
-    "title": "Pourquoi Utiliser Culi?",
+    "title": "Pourquoi utiliser Culi?",
     "subtitle": "Transformez vos opérations de restaurant et ravissez vos clients",
     "benefits": {
-      "efficiency": {
-        "title": "Augmentez l'Efficacité",
-        "description": "Libérez votre personnel des questions répétitives sur les ingrédients et les allergènes.",
-        "metric": "73%",
-        "metricLabel": "moins de questions sur le menu"
-      },
       "satisfaction": {
-        "title": "Ravissez Chaque Client",
-        "description": "Les visiteurs internationaux peuvent explorer votre menu en toute confiance dans leur langue.",
-        "metric": "4.8/5",
-        "metricLabel": "satisfaction client"
+        "title": "Augmentez la satisfaction des clients",
+        "description": "Permettez aux clients de faire des choix éclairés, réduisez les erreurs de commande et augmentez les scores de satisfaction.",
+        "metric": "Score de satisfaction moyen"
       },
-      "revenue": {
-        "title": "Augmentez les Revenus",
-        "description": "Les clients confiants commandent plus. Les descriptions détaillées augmentent l'appétit.",
-        "metric": "12€",
-        "metricLabel": "commande moyenne plus élevée"
+      "efficiency": {
+        "title": "Efficacité opérationnelle",
+        "description": "Transformez le fonctionnement de votre personnel avec une assistance intelligente",
+        "features": {
+          "training": {
+            "title": "Réduisez le temps de formation au menu de {percentage}%",
+            "description": "Nouveau personnel productif dès le premier jour"
+          },
+          "chef": {
+            "title": "Fini le \"laissez-moi demander au chef\"",
+            "description": "Réponses instantanées, pas d'interruptions en cuisine"
+          },
+          "expert": {
+            "title": "Chaque serveur devient un expert du menu",
+            "description": "Réponses confiantes à toutes les questions"
+          }
+        }
       },
-      "compliance": {
-        "title": "Restez Conforme",
-        "description": "Informations sur les allergènes toujours exactes. Conforme au RGPD. Tranquillité d'esprit incluse.",
-        "metric": "100%",
-        "metricLabel": "précision des allergènes"
+      "serveMore": {
+        "title": "Servez plus de clients",
+        "description": "Libérez le personnel des questions répétitives pour qu'ils puissent se concentrer sur l'hospitalité",
+        "metric": "+{count} par jour"
+      },
+      "loyalty": {
+        "title": "Créez la fidélité des clients",
+        "description": "Montrez que vous vous souciez des besoins de chaque client, des restrictions alimentaires aux préférences linguistiques."
+      },
+      "languages": {
+        "title": "Toutes",
+        "subtitle": "les langues"
+      },
+      "insights": {
+        "title": "Analyses en temps réel",
+        "description": "Suivez ce que les clients demandent le plus & optimisez votre menu"
+      },
+      "setup": {
+        "title": "5 min",
+        "subtitle": "Installation"
       }
     }
   },
@@ -145,69 +167,54 @@
     "description": "Rejoignez les restaurants avant-gardistes qui utilisent Culi pour offrir des expériences client exceptionnelles dans toutes les langues.",
     "buttons": {
       "start": "Commencer avec Culi",
-      "demo": "Planifier une Démo"
+      "demo": "Planifier une démo"
     }
   },
   "pricing": {
-    "title": "Commencez avec Culi, Évoluez avec Votre Croissance",
-    "currency": "€",
-    "monthly": "/mois",
-    "yearly": "/an",
-    "mostPopular": "LE PLUS POPULAIRE",
+    "title": "Commencez avec Culi, évoluez avec votre croissance",
     "plans": {
-      "essential": {
-        "name": "Essentiel",
-        "description": "Parfait pour les cafés et petits restaurants",
-        "price": {
-          "monthly": 29,
-          "yearly": 290
-        },
+      "free": {
+        "name": "Gratuit",
+        "price": "€0",
+        "description": "Essayez Culi sans risque",
         "features": [
-          "Jusqu'à 500 requêtes menu/mois",
+          "50 interactions IA/mois",
+          "2 langues (Néerlandais + Anglais)",
           "Tableau de bord analytique basique",
-          "Génération de code QR",
-          "Support par email"
-        ]
+          "1 code QR"
+        ],
+        "cta": "Commencer"
+      },
+      "starter": {
+        "name": "Débutant",
+        "price": "€49",
+        "description": "Parfait pour les petits restaurants",
+        "features": [
+          "500 interactions IA/mois",
+          "Toutes les langues supportées",
+          "Analyses avancées",
+          "Intégration WhatsApp",
+          "Support email prioritaire",
+          "Codes QR illimités"
+        ],
+        "cta": "Commencer avec Culi",
+        "overage": "€0,10 par interaction supplémentaire"
       },
       "professional": {
         "name": "Professionnel",
-        "description": "Idéal pour les restaurants occupés",
-        "price": {
-          "monthly": 59,
-          "yearly": 590
-        },
+        "price": "€99",
+        "description": "Pour les établissements occupés",
         "features": [
-          "Jusqu'à 2 000 requêtes menu/mois",
-          "Analyses avancées et insights",
-          "Personnalisation de la marque",
-          "Support prioritaire",
-          "Accès API"
-        ]
-      },
-      "scale": {
-        "name": "Échelle",
-        "description": "Pour les établissements à fort volume",
-        "price": {
-          "monthly": 119,
-          "yearly": 1190
-        },
-        "features": [
-          "Jusqu'à 10 000 requêtes menu/mois",
-          "Analyses en temps réel",
-          "Support multi-sites",
-          "Gestionnaire de compte dédié",
-          "Intégrations personnalisées"
-        ]
+          "2 000 interactions IA/mois",
+          "Accès API (1 000 appels)",
+          "Supprimer le branding Culi",
+          "Support téléphonique",
+          "Intégrations POS",
+          "Rapports analytiques personnalisés"
+        ],
+        "cta": "Commencer avec Culi",
+        "overage": "€0,05 par interaction supplémentaire"
       }
-    },
-    "overage": {
-      "title": "Tarification simple des dépassements",
-      "description": "0,02€ par requête supplémentaire au-delà de votre limite de plan"
-    },
-    "enterprise": {
-      "title": "Enterprise",
-      "description": "Contactez-nous pour les tarifs Enterprise",
-      "cta": "Contacter les Ventes"
     }
   },
   "footer": {
@@ -233,7 +240,7 @@
       "cookies": "Politique de Cookies",
       "gdpr": "RGPD"
     },
-    "copyright": "© 2025 Culi. Tous droits réservés.",
-    "poweredBy": "Propulsé par Culi IA"
+    "copyright": "© 2025 TableLink. Tous droits réservés.",
+    "poweredBy": "Propulsé par <highlight>Culi IA</highlight>"
   }
 }

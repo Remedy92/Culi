@@ -4,8 +4,10 @@ import { motion } from "framer-motion"
 import { TrendingUp, Users, Heart, Globe, Clock, GraduationCap, ChefHat, Zap, BookOpen, BarChart3 } from "lucide-react"
 import { BentoGrid, BentoCard } from "@/app/components/ui/bento-grid"
 import { useState, useEffect } from "react"
+import { useTranslations } from 'next-intl'
 
 export function WhyRestaurants() {
+  const t = useTranslations('whyRestaurants');
   const [guestCount, setGuestCount] = useState(0)
   const [satisfactionScore, setSatisfactionScore] = useState(0)
   const [trainingReduction, setTrainingReduction] = useState(0)
@@ -58,10 +60,10 @@ export function WhyRestaurants() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl font-bold text-eerie-black mb-4">
-            Why Use Culi?
+            {t('title')}
           </h2>
           <p className="text-lg text-eerie-black/80 max-w-2xl mx-auto">
-            Transform your restaurant operations and delight your guests
+            {t('subtitle')}
           </p>
         </motion.div>
 
@@ -83,10 +85,10 @@ export function WhyRestaurants() {
                     <TrendingUp className="h-6 w-6 text-spanish-orange" />
                   </div>
                   <h3 className="text-xl lg:text-2xl font-bold text-eerie-black mb-2">
-                    Increase Guest Satisfaction
+                    {t('benefits.satisfaction.title')}
                   </h3>
                   <p className="text-eerie-black/70 text-sm lg:text-base">
-                    Empower guests to make informed choices, reducing order mistakes and increasing satisfaction scores.
+                    {t('benefits.satisfaction.description')}
                   </p>
                 </div>
                 <div className="mt-4">
@@ -102,7 +104,7 @@ export function WhyRestaurants() {
                       transition={{ duration: 1.5, ease: "easeOut" }}
                     />
                   </div>
-                  <p className="text-xs lg:text-sm text-eerie-black/60 mt-2">Average satisfaction score</p>
+                  <p className="text-xs lg:text-sm text-eerie-black/60 mt-2">{t('benefits.satisfaction.metric')}</p>
                 </div>
               </div>
             </BentoCard>
@@ -123,31 +125,31 @@ export function WhyRestaurants() {
                     <GraduationCap className="h-6 w-6 text-spanish-orange" />
                   </div>
                   <h3 className="text-xl lg:text-2xl font-bold mb-2">
-                    Operational Efficiency
+                    {t('benefits.efficiency.title')}
                   </h3>
                   <p className="text-seasalt/80 text-sm lg:text-base mb-4">
-                    Transform how your staff operates with intelligent assistance
+                    {t('benefits.efficiency.description')}
                   </p>
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
                       <Zap className="h-4 w-4 text-spanish-orange flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="font-semibold text-sm">Cut menu training time by {trainingReduction}%</p>
-                        <p className="text-xs text-seasalt/60">New staff productive on day one</p>
+                        <p className="font-semibold text-sm">{t('benefits.efficiency.features.training.title', { percentage: trainingReduction })}</p>
+                        <p className="text-xs text-seasalt/60">{t('benefits.efficiency.features.training.description')}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
                       <ChefHat className="h-4 w-4 text-spanish-orange flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="font-semibold text-sm">No more &ldquo;let me ask the chef&rdquo;</p>
-                        <p className="text-xs text-seasalt/60">Instant answers, no kitchen interruptions</p>
+                        <p className="font-semibold text-sm">{t('benefits.efficiency.features.chef.title')}</p>
+                        <p className="text-xs text-seasalt/60">{t('benefits.efficiency.features.chef.description')}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
                       <BookOpen className="h-4 w-4 text-spanish-orange flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="font-semibold text-sm">Every server becomes a menu expert</p>
-                        <p className="text-xs text-seasalt/60">Confident answers to any question</p>
+                        <p className="font-semibold text-sm">{t('benefits.efficiency.features.expert.title')}</p>
+                        <p className="text-xs text-seasalt/60">{t('benefits.efficiency.features.expert.description')}</p>
                       </div>
                     </div>
                   </div>
@@ -173,10 +175,10 @@ export function WhyRestaurants() {
                     <Users className="h-5 w-5 text-spanish-orange" />
                   </div>
                   <h3 className="text-lg font-semibold text-eerie-black mb-1">
-                    Serve More Guests
+                    {t('benefits.serveMore.title')}
                   </h3>
                   <p className="text-eerie-black/70 text-sm">
-                    Free up staff from repetitive questions so they can focus on hospitality
+                    {t('benefits.serveMore.description')}
                   </p>
                 </div>
                 <div className="mt-3 lg:mt-0 flex items-center gap-3">
@@ -185,7 +187,7 @@ export function WhyRestaurants() {
                       <div key={i} className="w-6 h-6 rounded-full bg-spanish-orange/20 border-2 border-white" />
                     ))}
                   </div>
-                  <p className="text-sm text-eerie-black/60">+{guestCount} daily</p>
+                  <p className="text-sm text-eerie-black/60">{t('benefits.serveMore.metric', { count: guestCount })}</p>
                 </div>
               </div>
             </BentoCard>
@@ -207,10 +209,10 @@ export function WhyRestaurants() {
                     <Heart className="h-6 w-6 text-spanish-orange" />
                   </div>
                   <h3 className="text-xl font-semibold text-eerie-black mb-2">
-                    Build Guest Loyalty
+                    {t('benefits.loyalty.title')}
                   </h3>
                   <p className="text-eerie-black/70 text-sm">
-                    Show you care about every guest&apos;s needs, from dietary restrictions to language preferences.
+                    {t('benefits.loyalty.description')}
                   </p>
                 </div>
                 <div className="mt-auto space-y-2">
@@ -251,8 +253,8 @@ export function WhyRestaurants() {
             <BentoCard className="bg-gradient-to-br from-spanish-orange/5 to-transparent h-full">
               <div className="h-full flex flex-col items-center justify-center text-center">
                 <Globe className="h-6 w-6 text-spanish-orange mb-2 animate-spin-slow" />
-                <p className="text-2xl font-bold text-spanish-orange">All</p>
-                <p className="text-eerie-black/70 text-xs">Languages</p>
+                <p className="text-2xl font-bold text-spanish-orange">{t('benefits.languages.title')}</p>
+                <p className="text-eerie-black/70 text-xs">{t('benefits.languages.subtitle')}</p>
               </div>
             </BentoCard>
           </motion.div>
@@ -272,10 +274,10 @@ export function WhyRestaurants() {
                     <BarChart3 className="h-5 w-5 text-spanish-orange" />
                   </div>
                   <h3 className="text-lg font-semibold text-eerie-black mb-1">
-                    Real-Time Insights
+                    {t('benefits.insights.title')}
                   </h3>
                   <p className="text-eerie-black/70 text-sm">
-                    Track what guests ask about most & optimize your menu
+                    {t('benefits.insights.description')}
                   </p>
                 </div>
                 <div className="mt-3 lg:mt-0 lg:ml-4">
@@ -301,8 +303,8 @@ export function WhyRestaurants() {
             <BentoCard className="h-full">
               <div className="h-full flex flex-col items-center justify-center text-center">
                 <Clock className="h-6 w-6 text-spanish-orange mb-2" />
-                <p className="text-2xl font-bold text-spanish-orange">5 min</p>
-                <p className="text-eerie-black/70 text-xs">Setup</p>
+                <p className="text-2xl font-bold text-spanish-orange">{t('benefits.setup.title')}</p>
+                <p className="text-eerie-black/70 text-xs">{t('benefits.setup.subtitle')}</p>
               </div>
             </BentoCard>
           </motion.div>

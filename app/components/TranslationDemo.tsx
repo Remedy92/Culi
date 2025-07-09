@@ -2,35 +2,37 @@
 
 import { motion } from "framer-motion"
 import { TextRevealCard } from "./ui/text-reveal-card"
-
-const menuItems = [
-  {
-    original: "北京烤鸭",
-    translated: "Peking Duck",
-    description: "Traditional roasted duck with crispy skin, served with pancakes",
-    language: "Chinese",
-  },
-  {
-    original: "Paella Valenciana",
-    translated: "Valencian Paella",
-    description: "Spanish rice dish with rabbit, beans, and saffron",
-    language: "Spanish",
-  },
-  {
-    original: "الكبسة",
-    translated: "Kabsa",
-    description: "Fragrant rice dish with lamb, cardamom, and mixed spices",
-    language: "Arabic",
-  },
-  {
-    original: "Bouillabaisse",
-    translated: "Fish Stew",
-    description: "Traditional Provençal fish soup with rouille sauce",
-    language: "French",
-  },
-]
+import { useTranslations } from 'next-intl'
 
 export function TranslationDemo() {
+  const t = useTranslations('translationDemo');
+  
+  const menuItems = [
+    {
+      original: "北京烤鸭",
+      translated: t('menuItems.pekingDuck.name'),
+      description: t('menuItems.pekingDuck.description'),
+      language: t('languages.chinese'),
+    },
+    {
+      original: "Paella Valenciana",
+      translated: t('menuItems.paella.name'),
+      description: t('menuItems.paella.description'),
+      language: t('languages.spanish'),
+    },
+    {
+      original: "الكبسة",
+      translated: t('menuItems.kabsa.name'),
+      description: t('menuItems.kabsa.description'),
+      language: t('languages.arabic'),
+    },
+    {
+      original: "Bouillabaisse",
+      translated: t('menuItems.bouillabaisse.name'),
+      description: t('menuItems.bouillabaisse.description'),
+      language: t('languages.french'),
+    },
+  ];
   return (
     <section id="translation-demo" className="py-32 bg-cream relative overflow-hidden">
       {/* Subtle background decoration */}
@@ -48,10 +50,10 @@ export function TranslationDemo() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl font-bold text-dark-umber mb-4">
-            See the Magic of Translation
+            {t('title')}
           </h2>
           <p className="text-lg text-dark-umber/80 max-w-2xl mx-auto">
-            Hover over menu items to see how Culi instantly translates dishes from any language
+            {t('description')}
           </p>
         </motion.div>
 

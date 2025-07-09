@@ -4,56 +4,58 @@ import { motion } from "framer-motion"
 import { Button } from "./ui/button"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "./ui/card"
 import { Check } from "lucide-react"
-
-const plans = [
-  {
-    name: "Free",
-    price: "€0",
-    description: "Try Culi risk-free",
-    features: [
-      "50 AI interactions/month",
-      "2 languages (Dutch + English)",
-      "Basic analytics dashboard",
-      "1 QR code",
-    ],
-    highlighted: false,
-    cta: "Get Started",
-  },
-  {
-    name: "Starter",
-    price: "€49",
-    description: "Perfect for small restaurants",
-    features: [
-      "500 AI interactions/month",
-      "All languages supported",
-      "Advanced analytics",
-      "WhatsApp integration",
-      "Priority email support",
-      "Unlimited QR codes",
-    ],
-    highlighted: true,
-    cta: "Start with Culi",
-    overage: "€0.10 per extra interaction",
-  },
-  {
-    name: "Professional",
-    price: "€99",
-    description: "For busy establishments",
-    features: [
-      "2,000 AI interactions/month",
-      "API access (1,000 calls)",
-      "Remove Culi branding",
-      "Phone support",
-      "POS integrations",
-      "Custom analytics reports",
-    ],
-    highlighted: false,
-    cta: "Start with Culi",
-    overage: "€0.05 per extra interaction",
-  },
-]
+import { useTranslations } from 'next-intl'
 
 export function Pricing() {
+  const t = useTranslations('pricing');
+  
+  const plans = [
+    {
+      name: t('plans.free.name'),
+      price: t('plans.free.price'),
+      description: t('plans.free.description'),
+      features: [
+        t('plans.free.features.0'),
+        t('plans.free.features.1'),
+        t('plans.free.features.2'),
+        t('plans.free.features.3'),
+      ],
+      highlighted: false,
+      cta: t('plans.free.cta'),
+    },
+    {
+      name: t('plans.starter.name'),
+      price: t('plans.starter.price'),
+      description: t('plans.starter.description'),
+      features: [
+        t('plans.starter.features.0'),
+        t('plans.starter.features.1'),
+        t('plans.starter.features.2'),
+        t('plans.starter.features.3'),
+        t('plans.starter.features.4'),
+        t('plans.starter.features.5'),
+      ],
+      highlighted: true,
+      cta: t('plans.starter.cta'),
+      overage: t('plans.starter.overage'),
+    },
+    {
+      name: t('plans.professional.name'),
+      price: t('plans.professional.price'),
+      description: t('plans.professional.description'),
+      features: [
+        t('plans.professional.features.0'),
+        t('plans.professional.features.1'),
+        t('plans.professional.features.2'),
+        t('plans.professional.features.3'),
+        t('plans.professional.features.4'),
+        t('plans.professional.features.5'),
+      ],
+      highlighted: false,
+      cta: t('plans.professional.cta'),
+      overage: t('plans.professional.overage'),
+    },
+  ];
   return (
     <section id="pricing" className="py-24 lg:py-32 bg-seasalt">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -65,7 +67,7 @@ export function Pricing() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl font-bold text-eerie-black mb-4">
-            Start with Culi, Scale As You Grow
+            {t('title')}
           </h2>
         </motion.div>
 
