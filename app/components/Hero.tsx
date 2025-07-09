@@ -133,7 +133,7 @@ export function Hero() {
             <span>{t('badge')}</span>
           </motion.div>
 
-          <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight text-eerie-black leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-eerie-black leading-tight">
             {t.rich('title', {
               highlight: (chunks) => <span className="text-spanish-orange inline">{chunks}</span>
             })}
@@ -173,14 +173,14 @@ export function Hero() {
           >
             <Link
               href="#features"
-              className="group inline-flex flex-col items-center gap-2 md:gap-3 text-warm-taupe hover:text-terracotta transition-all duration-300 p-2 -m-2 touch-manipulation"
+              className="group inline-flex flex-col items-center gap-2 md:gap-3 text-warm-taupe hover:text-terracotta transition-all duration-300 p-3 -m-3 touch-manipulation"
             >
-              <span className="text-sm md:text-base font-medium">{t('cta.learnMore')}</span>
+              <span className="text-base md:text-lg font-medium">{t('cta.learnMore')}</span>
               <motion.div
                 animate={!prefersReducedMotion ? { y: [0, 8, 0] } : {}}
                 transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
               >
-                <ArrowDown className="h-4 w-4 md:h-5 md:w-5" />
+                <ArrowDown className="h-5 w-5 md:h-6 md:w-6" />
               </motion.div>
             </Link>
           </motion.div>
