@@ -9,6 +9,7 @@ import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/browser'
 import { Button } from '@/app/components/ui/button'
 import { Input } from '@/app/components/ui/input'
+import { Checkbox } from '@/app/components/ui/checkbox'
 import {
   Form,
   FormControl,
@@ -16,11 +17,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from '@/app/components/ui/form'
 import { CuliCurveLogo, CuliLogoLoading } from '@/app/components/CuliCurveLogo'
 import { TypewriterEffectSmooth } from '@/app/components/ui/typewriter-effect'
-import { CheckCircle } from 'lucide-react'
+import { CheckCircle, Edit2 } from 'lucide-react'
 
 const formSchema = z.object({
   restaurantName: z.string().min(2, {
@@ -50,6 +50,22 @@ export default function OnboardingPage() {
     return () => clearTimeout(timer)
   }, [])
 
+  // Scroll to form when shown
+  useEffect(() => {
+    if (showForm) {
+      setTimeout(() => {
+        const formElement = document.querySelector('.legal-requirements-form')
+        if (formElement) {
+          formElement.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start',
+            inline: 'nearest'
+          })
+        }
+      }, 300)
+    }
+  }, [showForm])
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -68,7 +84,6 @@ export default function OnboardingPage() {
       const { data: { user }, error: userError } = await supabase.auth.getUser()
       
       if (userError) {
-        console.error('Auth error:', JSON.stringify(userError, null, 2))
         throw new Error('Authentication error: ' + userError.message)
       }
       
@@ -76,7 +91,6 @@ export default function OnboardingPage() {
         throw new Error('No authenticated user found. Please sign in again.')
       }
       
-      console.log('Authenticated user:', { id: user.id, email: user.email })
 
       // Generate a slug from the restaurant name
       const slug = values.restaurantName
@@ -99,7 +113,6 @@ export default function OnboardingPage() {
         })
 
       if (restaurantError) {
-        console.error('Restaurant creation error:', JSON.stringify(restaurantError, null, 2))
         if (restaurantError.code === '23505') { // Unique violation
           throw new Error('A restaurant with this name already exists. Please choose a different name.')
         }
@@ -124,8 +137,7 @@ export default function OnboardingPage() {
           })
           
         if (consentError) {
-          console.error('Consent error:', JSON.stringify(consentError, null, 2))
-          // Continue with other consents even if one fails
+          // Continue with other consents even if one fails - non-critical error
         }
       }
 
@@ -135,7 +147,6 @@ export default function OnboardingPage() {
       const locale = window.location.pathname.split('/')[1]
       router.push(`/${locale}/dashboard`)
     } catch (error) {
-      console.error('Onboarding error:', error instanceof Error ? error.message : JSON.stringify(error, null, 2))
       toast.error(error instanceof Error ? error.message : 'Something went wrong')
     } finally {
       setIsLoading(false)
@@ -143,7 +154,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-seasalt px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 px-4 py-8 pb-24 md:pb-8">
       {/* Header */}
       <div className="w-full mb-12">
         <div className="flex items-center justify-center gap-3">
@@ -183,7 +194,6 @@ export default function OnboardingPage() {
                     { text: "up!" }
                   ]}
                   className="text-base text-eerie-black"
-                  cursorClassName="bg-spanish-orange h-4"
                 />
                 {showSecondMessage && (
                   <TypewriterEffectSmooth
@@ -196,7 +206,6 @@ export default function OnboardingPage() {
                       { text: "restaurant?" }
                     ]}
                     className="text-base text-eerie-black"
-                    cursorClassName="bg-spanish-orange h-4"
                   />
                 )}
               </div>
@@ -206,9 +215,17 @@ export default function OnboardingPage() {
           {/* User's Response */}
           {form.watch("restaurantName") && showForm && (
             <div className="flex items-start gap-3 justify-end animate-fade-in">
-              <div className="bg-spanish-orange text-white rounded-2xl rounded-tr-none shadow-warm-lg p-4 max-w-md">
-                <p>{form.watch("restaurantName")}</p>
-              </div>
+              <button
+                type="button"
+                onClick={() => setShowForm(false)}
+                className="bg-spanish-orange text-white rounded-2xl rounded-tr-none shadow-warm-lg p-4 max-w-md relative group hover:bg-opacity-90 transition-all cursor-pointer"
+                title="Click to edit restaurant name"
+              >
+                <div className="flex items-center gap-2">
+                  <p>{form.watch("restaurantName")}</p>
+                  <Edit2 className="w-4 h-4 text-white/70" />
+                </div>
+              </button>
             </div>
           )}
 
@@ -236,73 +253,79 @@ export default function OnboardingPage() {
                     { text: "policies." }
                   ]}
                   className="text-base text-eerie-black"
-                  cursorClassName="bg-spanish-orange h-4"
                 />
               </div>
             </div>
           )}
         </div>
 
-        {/* Form Section */}
-        <div className="bg-white rounded-3xl shadow-warm-xl p-8 md:p-12">
+        {/* Chat Input Section */}
+        <div className={`${showForm ? '' : 'fixed bottom-0 left-0 right-0'} bg-white/95 backdrop-blur-md border-t border-gray-100 shadow-lg p-4 md:static md:bg-transparent md:border-0 md:p-0 md:shadow-none transition-all duration-300`}>
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               {/* Restaurant Name Input - Chat Style */}
-              <FormField
-                control={form.control}
-                name="restaurantName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <div className="relative">
-                        <Input 
-                          placeholder="Type your restaurant name..." 
-                          disabled={isLoading}
-                          className="pr-12 py-6 text-lg rounded-2xl border-2 focus:border-spanish-orange transition-colors"
-                          {...field} 
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' && field.value) {
-                              e.preventDefault()
-                              setShowForm(true)
-                            }
-                          }}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => field.value && setShowForm(true)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-spanish-orange text-white rounded-lg flex items-center justify-center hover:bg-opacity-90 transition-colors"
-                          disabled={!field.value || isLoading}
-                        >
-                          →
-                        </button>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {!showForm && (
+                <div className="max-w-2xl mx-auto">
+                  <FormField
+                    control={form.control}
+                    name="restaurantName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <div className="flex items-center gap-3">
+                            <Input 
+                              placeholder="Type your restaurant name..." 
+                              disabled={isLoading}
+                              className="flex-1 bg-white rounded-full px-6 py-5 text-lg focus:outline-none focus:ring-2 focus:ring-spanish-orange/20 placeholder:text-gray-400 shadow-sm border-0"
+                              {...field} 
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' && field.value && !showForm) {
+                                  e.preventDefault()
+                                  setShowForm(true)
+                                }
+                              }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => field.value && setShowForm(true)}
+                              className="flex-shrink-0 w-12 h-12 bg-spanish-orange text-white rounded-full flex items-center justify-center hover:bg-opacity-90 transition-all hover:scale-105 disabled:opacity-50 disabled:scale-100 disabled:hover:scale-100 shadow-sm"
+                              disabled={!field.value || isLoading}
+                            >
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M22 2L11 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            </button>
+                          </div>
+                        </FormControl>
+                        <FormMessage className="mt-2 text-center" />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              )}
 
               {showForm && (
-                <div className="space-y-4 pt-4 animate-fade-in">
-                  <h3 className="text-sm font-medium text-eerie-black">Legal Requirements</h3>
+                <div className="max-w-2xl mx-auto">
+                  <div className="bg-white rounded-3xl shadow-warm-xl p-6 md:p-8 mt-6 animate-fade-in legal-requirements-form">
+                    <h3 className="text-sm font-medium text-eerie-black mb-4">Legal Requirements</h3>
                 
                 <FormField
                   control={form.control}
                   name="acceptPrivacy"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-3">
                       <FormControl>
-                        <input
-                          type="checkbox"
-                          className="mt-1 h-4 w-4 rounded border-cinereous/30 text-spanish-orange focus:ring-spanish-orange"
+                        <Checkbox
                           checked={field.value}
-                          onChange={field.onChange}
+                          onCheckedChange={field.onChange}
                           disabled={isLoading}
+                          className="mt-0.5"
                         />
                       </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel className="font-normal">
+                      <div className="space-y-1 leading-relaxed">
+                        <FormLabel className="text-base font-normal cursor-pointer select-none">
                           I accept the{' '}
                           <a href="/privacy" target="_blank" className="text-spanish-orange hover:underline">
                             Privacy Policy
@@ -318,18 +341,17 @@ export default function OnboardingPage() {
                   control={form.control}
                   name="acceptTerms"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-3">
                       <FormControl>
-                        <input
-                          type="checkbox"
-                          className="mt-1 h-4 w-4 rounded border-cinereous/30 text-spanish-orange focus:ring-spanish-orange"
+                        <Checkbox
                           checked={field.value}
-                          onChange={field.onChange}
+                          onCheckedChange={field.onChange}
                           disabled={isLoading}
+                          className="mt-0.5"
                         />
                       </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel className="font-normal">
+                      <div className="space-y-1 leading-relaxed">
+                        <FormLabel className="text-base font-normal cursor-pointer select-none">
                           I accept the{' '}
                           <a href="/terms" target="_blank" className="text-spanish-orange hover:underline">
                             Terms of Service
@@ -341,38 +363,40 @@ export default function OnboardingPage() {
                   )}
                 />
 
+                <div className="border-t border-gray-100 my-3"></div>
+
                 <FormField
                   control={form.control}
                   name="marketingEmails"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-3">
                       <FormControl>
-                        <input
-                          type="checkbox"
-                          className="mt-1 h-4 w-4 rounded border-cinereous/30 text-spanish-orange focus:ring-spanish-orange"
+                        <Checkbox
                           checked={field.value}
-                          onChange={field.onChange}
+                          onCheckedChange={field.onChange}
                           disabled={isLoading}
+                          className="mt-0.5"
                         />
                       </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel className="font-normal">
+                      <div className="space-y-1 leading-relaxed">
+                        <FormLabel className="text-base font-normal cursor-pointer select-none text-gray-600">
                           Send me tips and updates about Culi (optional)
                         </FormLabel>
                       </div>
                     </FormItem>
                   )}
                 />
+                  </div>
                 </div>
               )}
 
               {showForm && (
-                <div className="pt-4 animate-fade-in">
+                <div className="max-w-2xl mx-auto mt-6 animate-fade-in">
                   <Button
                     type="submit"
-                    className="w-full"
+                    className="w-full py-6 text-lg"
                     size="lg"
-                    disabled={isLoading}
+                    disabled={isLoading || !form.watch("acceptPrivacy") || !form.watch("acceptTerms")}
                   >
                     {isLoading ? (
                       <span className="flex items-center gap-2">
@@ -380,7 +404,7 @@ export default function OnboardingPage() {
                         Creating your restaurant...
                       </span>
                     ) : (
-                      'Create Restaurant'
+                      'Continue'
                     )}
                   </Button>
                 </div>
@@ -388,18 +412,22 @@ export default function OnboardingPage() {
             </form>
           </Form>
 
-          <div className="mt-8 p-4 bg-timberwolf/50 rounded-2xl">
-            <h3 className="font-medium text-eerie-black mb-2 flex items-center">
-              <CheckCircle className="w-5 h-5 mr-2 text-spanish-orange" />
-              What happens next?
-            </h3>
-            <ul className="space-y-1 text-sm text-cinereous">
-              <li>• Upload your menu (PDF, image, or text)</li>
-              <li>• Culi&apos;s AI will extract and understand your dishes</li>
-              <li>• Get a QR code for guests to scan</li>
-              <li>• Start answering questions in any language!</li>
-            </ul>
-          </div>
+          {showForm && (
+            <div className="max-w-2xl mx-auto mt-8 animate-fade-in">
+              <div className="p-4 bg-timberwolf/30 rounded-2xl">
+                <h3 className="font-medium text-eerie-black mb-2 flex items-center">
+                  <CheckCircle className="w-5 h-5 mr-2 text-spanish-orange" />
+                  What happens next?
+                </h3>
+                <ul className="space-y-1 text-sm text-cinereous">
+                  <li>• Upload your menu (PDF, image, or text)</li>
+                  <li>• Culi&apos;s AI will extract and understand your dishes</li>
+                  <li>• Get a QR code for guests to scan</li>
+                  <li>• Start answering questions in any language!</li>
+                </ul>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
