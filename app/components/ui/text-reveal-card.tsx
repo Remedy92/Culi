@@ -87,13 +87,14 @@ export const TextRevealCard = ({
         </motion.div>
 
         {/* Mobile indicator */}
-        {isTouchDevice && (
+        {isTouchDevice && !isClicked && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="absolute bottom-2 right-2"
+            className="absolute bottom-2 right-2 flex items-center gap-1"
           >
-            <Languages className="h-4 w-4 text-warm-taupe/50" />
+            <span className="text-xs text-warm-taupe/60 font-medium">Tap</span>
+            <Languages className="h-4 w-4 text-warm-taupe/60" />
           </motion.div>
         )}
       </div>

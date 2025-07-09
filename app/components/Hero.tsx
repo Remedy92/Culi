@@ -133,9 +133,9 @@ export function Hero() {
             <span>{t('badge')}</span>
           </motion.div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-eerie-black leading-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight text-eerie-black leading-tight">
             {t.rich('title', {
-              highlight: (chunks) => <span className="text-spanish-orange block md:inline">{chunks}</span>
+              highlight: (chunks) => <span className="text-spanish-orange inline">{chunks}</span>
             })}
           </h1>
           

@@ -62,25 +62,32 @@ export function Header() {
         <div className="flex h-full items-center justify-between">
           <div className="flex items-center">
             <div className="relative w-[120px] h-10 flex items-center">
-              {/* Full TableLink text */}
+              {/* Full TableLink text - hidden on mobile */}
               <motion.div
                 style={{
                   scaleX: logoScaleX,
                   opacity: logoOpacity
                 }}
-                className="absolute inset-0 flex items-center justify-center origin-center"
+                className="absolute inset-0 flex items-center justify-center origin-center hidden md:flex"
               >
                 <Link href="/" className="text-2xl font-bold text-eerie-black whitespace-nowrap">
                   TableLink
                 </Link>
               </motion.div>
               
-              {/* TL Logo */}
+              {/* TL Logo - always visible on mobile, no animation */}
+              <div className="absolute inset-0 flex items-center justify-center md:hidden">
+                <Link href="/" className="block">
+                  <TLLogo size="md" />
+                </Link>
+              </div>
+              
+              {/* TL Logo for desktop animation */}
               <motion.div
                 style={{
                   scale: tlLogoScale
                 }}
-                className="absolute inset-0 flex items-center justify-center"
+                className="absolute inset-0 hidden md:flex items-center justify-center"
               >
                 <Link href="/" className="block">
                   <TLLogo size="md" />
@@ -166,14 +173,14 @@ export function Header() {
 
         {/* Mobile Navigation - Enhanced with better touch targets and language switcher */}
         {isMobileMenuOpen && (
-          <div className="md:hidden py-4 space-y-1 animate-slide-down border-t border-cinereous/10 mt-2">
+          <div className="md:hidden py-4 space-y-1 animate-slide-down border-t border-cinereous/10 mt-2 bg-timberwolf/95 backdrop-blur-sm rounded-b-lg">
             {/* Features Dropdown */}
             <details className="group">
               <summary className="flex items-center justify-between px-4 py-3 min-h-[48px] text-eerie-black/80 hover:text-spanish-orange hover:bg-seasalt/50 active:bg-seasalt transition-colors duration-200 cursor-pointer touch-manipulation">
                 <span className="font-medium">{t('navigation.features')}</span>
                 <ChefHat className="h-5 w-5 transition-transform group-open:rotate-180" />
               </summary>
-              <div className="bg-seasalt/30 py-2">
+              <div className="bg-seasalt/50 py-2 backdrop-blur-sm">
                 <Link
                   href="/features"
                   className="flex items-center gap-3 px-6 py-3 min-h-[48px] text-eerie-black/70 hover:text-spanish-orange hover:bg-seasalt/50 active:bg-seasalt transition-colors"

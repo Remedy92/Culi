@@ -4,7 +4,6 @@ import { motion } from "framer-motion"
 import { TypeAnimation } from "react-type-animation"
 import { useState, useEffect, useRef } from "react"
 import { useTranslations } from 'next-intl'
-import { Pause, Play } from "lucide-react"
 
 export function ChatDemo() {
   const t = useTranslations('chatDemo');
@@ -26,7 +25,6 @@ export function ChatDemo() {
   const [currentConversation, setCurrentConversation] = useState(0)
   const [showLoading, setShowLoading] = useState(false)
   const [showAnswer, setShowAnswer] = useState(false)
-  const [isPaused, setIsPaused] = useState(false)
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
   const loadingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -42,43 +40,26 @@ export function ChatDemo() {
   }, [])
 
   const handleSequenceComplete = () => {
-    if (isPaused) return
-    
     // Show loading dots after question is typed
     setShowLoading(true)
     
     // After 1.5 seconds, hide loading and show answer
     loadingTimeoutRef.current = setTimeout(() => {
-      if (!isPaused) {
-        setShowLoading(false)
-        setShowAnswer(true)
-        
-        // After answer is shown for 3 seconds, move to next conversation
-        timeoutRef.current = setTimeout(() => {
-          if (!isPaused) {
-            setShowAnswer(false)
-            setCurrentConversation((prev) => (prev + 1) % conversations.length)
-          }
-        }, 4000)
-      }
+      setShowLoading(false)
+      setShowAnswer(true)
+      
+      // After answer is shown for 3 seconds, move to next conversation
+      timeoutRef.current = setTimeout(() => {
+        setShowAnswer(false)
+        setCurrentConversation((prev) => (prev + 1) % conversations.length)
+      }, 4000)
     }, 1500)
   }
 
-  const togglePause = () => {
-    setIsPaused(!isPaused)
-  }
 
   return (
     <div className="mx-auto max-w-xl md:max-w-2xl px-4 sm:px-0">
       <div className="relative rounded-2xl bg-white/50 backdrop-blur-sm border border-warm-taupe/10 p-4 sm:p-6 md:p-8 shadow-warm touch-manipulation">
-        {/* Pause/Play button for mobile */}
-        <button
-          onClick={togglePause}
-          className="absolute top-2 right-2 sm:top-4 sm:right-4 p-2 rounded-lg bg-seasalt/80 hover:bg-seasalt active:bg-seasalt/90 transition-colors touch-manipulation md:hidden"
-          aria-label={isPaused ? 'Resume demo' : 'Pause demo'}
-        >
-          {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
-        </button>
         
         {/* Chat messages container */}
         <div className="space-y-3 sm:space-y-4 min-h-[180px] sm:min-h-[200px]">

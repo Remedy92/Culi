@@ -17,8 +17,8 @@ export interface BentoCardProps {
 export function BentoGrid({ children, className }: BentoGridProps) {
   return (
     <div className={cn(
-      "grid grid-cols-12 gap-4",
-      "auto-rows-[160px]",
+      "grid grid-cols-1 md:grid-cols-12 gap-4",
+      "auto-rows-[160px] md:auto-rows-[160px]",
       className
     )}>
       {children}

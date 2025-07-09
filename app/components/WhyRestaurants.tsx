@@ -35,12 +35,12 @@ export function WhyRestaurants() {
 
   // Grid size classes for motion divs
   const gridSizes = {
-    small: "col-span-3 row-span-1",
-    medium: "col-span-6 row-span-1",
-    large: "col-span-6 row-span-2",
-    xlarge: "col-span-6 row-span-2",
-    wide: "col-span-6 row-span-1",
-    tall: "col-span-3 row-span-2"
+    small: "col-span-1 md:col-span-3 row-span-1",
+    medium: "col-span-1 md:col-span-6 row-span-1",
+    large: "col-span-1 md:col-span-6 row-span-1 md:row-span-2",
+    xlarge: "col-span-1 md:col-span-6 row-span-1 md:row-span-2",
+    wide: "col-span-1 md:col-span-6 row-span-1",
+    tall: "col-span-1 md:col-span-3 row-span-1 md:row-span-2"
   }
 
   return (
