@@ -47,7 +47,7 @@ export function Features() {
         >
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-eerie-black mb-4">
             {t.rich('sectionTitle', {
-              highlight: (chunks) => <span className="text-spanish-orange">{chunks}</span>
+              highlight: () => <span className="text-spanish-orange font-black"><span className="font-serif">C</span>uli</span>
             })}
           </h2>
           <p className="text-base md:text-lg text-eerie-black/80 max-w-2xl mx-auto">

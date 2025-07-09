@@ -165,7 +165,7 @@
   },
   "cta": {
     "title": "Ready to delight your guests?",
-    "description": "Join forward-thinking restaurants using Culi to provide exceptional guest experiences in every language.",
+    "description": "Join forward-thinking restaurants using <culi>Culi</culi> to provide exceptional guest experiences in every language.",
     "buttons": {
       "start": "Start with Culi",
       "demo": "Schedule demo"

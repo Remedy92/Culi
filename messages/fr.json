@@ -165,7 +165,7 @@
   },
   "cta": {
     "title": "Prêt à ravir vos clients?",
-    "description": "Rejoignez les restaurants avant-gardistes qui utilisent Culi pour offrir des expériences client exceptionnelles dans toutes les langues.",
+    "description": "Rejoignez les restaurants avant-gardistes qui utilisent <culi>Culi</culi> pour offrir des expériences client exceptionnelles dans toutes les langues.",
     "buttons": {
       "start": "Commencer avec Culi",
       "demo": "Planifier une démo"

@@ -23,10 +23,10 @@ export function Demo() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-4xl font-bold text-eerie-black mb-6">
-              See Culi in action
+              See <span className="font-black"><span className="font-serif">C</span>uli</span> in action
             </h2>
             <p className="text-lg text-eerie-black/80 mb-8">
-              Watch how Culi seamlessly handles multilingual conversations, providing accurate information about your menu items, allergens, and dietary restrictions.
+              Watch how <span className="font-black"><span className="font-serif">C</span>uli</span> seamlessly handles multilingual conversations, providing accurate information about your menu items, allergens, and dietary restrictions.
             </p>
             <div className="space-y-4">
               <div className="flex items-start gap-3">
@@ -86,7 +86,7 @@ export function Demo() {
                     <div className="bg-white rounded-t-2xl h-full shadow-sm">
                       {/* Chat header */}
                       <div className="border-b border-cinereous/10 p-4">
-                        <h3 className="font-semibold text-eerie-black">Culi Assistant</h3>
+                        <h3 className="font-semibold text-eerie-black"><span className="font-black"><span className="font-serif">C</span>uli</span> Assistant</h3>
                         <p className="text-xs text-cinereous">Restaurant TableLink</p>
                       </div>
 

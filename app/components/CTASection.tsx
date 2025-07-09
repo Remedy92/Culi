@@ -27,7 +27,9 @@ export function CTASection() {
             {t('title')}
           </h2>
           <p className="text-lg md:text-xl text-eerie-black/80 max-w-2xl mx-auto">
-            {t('description')}
+            {t.rich('description', {
+              culi: () => <span className="font-black"><span className="font-serif">C</span>uli</span>
+            })}
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">

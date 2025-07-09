@@ -70,8 +70,8 @@ export function Header() {
                 }}
                 className="absolute inset-0 flex items-center justify-center origin-center hidden md:flex"
               >
-                <Link href="/" className="text-2xl font-bold text-eerie-black whitespace-nowrap">
-                  TableLink
+                <Link href="/" className="text-2xl font-black text-eerie-black whitespace-nowrap">
+                  <span className="text-3xl font-serif">C</span>uli
                 </Link>
               </motion.div>
               
@@ -112,7 +112,7 @@ export function Header() {
                             {t('featuresMenu.exploreAll')}
                           </h3>
                           <p className="text-sm text-eerie-black/60">
-                            Discover how Culi transforms your restaurant&apos;s guest experience
+                            Discover how <span className="font-black"><span className="font-serif">C</span>uli</span> transforms your restaurant&apos;s guest experience
                           </p>
                         </Link>
                       </div>

@@ -44,8 +44,8 @@ export function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8">
           {/* Brand column */}
           <div className="col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-1 text-center sm:text-left">
-            <Link href="/" className="text-xl md:text-2xl font-bold text-seasalt inline-block">
-              Culi
+            <Link href="/" className="text-xl md:text-2xl font-black text-seasalt inline-block">
+              <span className="text-2xl md:text-3xl font-serif">C</span>uli
             </Link>
             <p className="mt-3 md:mt-4 text-xs md:text-sm max-w-xs mx-auto sm:mx-0">
               {t('tagline')}
