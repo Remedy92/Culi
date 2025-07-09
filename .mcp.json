@@ -1,13 +1,11 @@
 {
   "mcpServers": {
-    "shadcn": {
-      "command": "npx",
-      "args": ["-y", "shadcn-mcp@latest"],
-      "env": {}
-    },
     "magicui": {
       "command": "npx",
-      "args": ["-y", "@magicuidesign/mcp@latest"],
+      "args": [
+        "-y",
+        "@magicuidesign/mcp@latest"
+      ],
       "env": {}
     }
   }
