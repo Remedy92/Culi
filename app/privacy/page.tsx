@@ -194,8 +194,8 @@ export default function PrivacyPolicyPage() {
           openAccordionSection={openSection}
           onAccordionChange={setOpenSection}
         >
-          <div className="mb-8 p-6 bg-spanish-orange/5 rounded-lg border border-spanish-orange/20">
-            <p className="text-lg text-eerie-black/90 leading-relaxed">
+          <div className="mb-12 p-8 bg-gradient-to-r from-spanish-orange/[0.03] to-transparent rounded-lg border-l-4 border-spanish-orange/20">
+            <p className="text-[1.0625rem] text-[#2A2220] leading-[1.8] tracking-[-0.01em]">
               Your privacy is fundamental to how we&apos;ve built Culi. We&apos;ve designed our service to collect 
               minimal data and protect your information at every step. This policy explains what data we 
               collect, how we use it, and your rights regarding your information.

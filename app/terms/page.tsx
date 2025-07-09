@@ -273,8 +273,8 @@ export default function TermsOfServicePage() {
           openAccordionSection={openSection}
           onAccordionChange={setOpenSection}
         >
-          <div className="mb-8 p-6 bg-spanish-orange/5 rounded-lg border border-spanish-orange/20">
-            <p className="text-lg text-eerie-black/90 leading-relaxed">
+          <div className="mb-12 p-8 bg-gradient-to-r from-spanish-orange/[0.03] to-transparent rounded-lg border-l-4 border-spanish-orange/20">
+            <p className="text-[1.0625rem] text-[#2A2220] leading-[1.8] tracking-[-0.01em]">
               Welcome to Culi. These Terms of Service govern your use of our AI-powered menu assistant 
               platform. By using our service, you agree to these terms. Please read them carefully.
             </p>

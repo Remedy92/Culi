@@ -14,7 +14,8 @@ const AccordionItem = React.forwardRef<
   <AccordionPrimitive.Item
     ref={ref}
     className={cn(
-      "border-b border-cinereous/20 last:border-0",
+      "relative border-b border-cinereous/15 last:border-0 transition-all duration-300",
+      "data-[state=open]:bg-gradient-to-r data-[state=open]:from-spanish-orange/[0.02] data-[state=open]:to-transparent",
       className
     )}
     {...props}
@@ -26,17 +27,22 @@ const AccordionTrigger = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
 >(({ className, children, ...props }, ref) => (
-  <AccordionPrimitive.Header className="flex">
+  <AccordionPrimitive.Header className="flex relative">
+    <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-spanish-orange/0 transition-all duration-300 data-[state=open]:bg-spanish-orange/30" data-state={props['data-state']} />
     <AccordionPrimitive.Trigger
       ref={ref}
       className={cn(
-        "flex flex-1 items-center justify-between py-6 text-left font-medium text-eerie-black transition-all hover:text-spanish-orange [&[data-state=open]>svg]:rotate-180 [&[data-state=open]]:text-spanish-orange",
+        "flex flex-1 items-center justify-between py-6 pl-6 pr-4 text-left font-medium text-eerie-black/90",
+        "transition-all duration-300 hover:text-spanish-orange",
+        "[&[data-state=open]>svg]:rotate-180",
+        "[&[data-state=open]]:text-spanish-orange [&[data-state=open]]:font-semibold",
+        "text-[0.9375rem] leading-relaxed tracking-[-0.01em]",
         className
       )}
       {...props}
     >
       {children}
-      <ChevronDown className="h-4 w-4 shrink-0 text-eerie-black/60 transition-transform duration-200" />
+      <ChevronDown className="h-4 w-4 shrink-0 text-eerie-black/50 transition-all duration-300 ml-4" />
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
 ))
@@ -48,10 +54,10 @@ const AccordionContent = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <AccordionPrimitive.Content
     ref={ref}
-    className="overflow-hidden text-eerie-black/80 data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
+    className="overflow-hidden text-[#2A2220] data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
     {...props}
   >
-    <div className={cn("pb-6 pt-0", className)}>{children}</div>
+    <div className={cn("pb-6 pt-0 pl-6", className)}>{children}</div>
   </AccordionPrimitive.Content>
 ))
 AccordionContent.displayName = AccordionPrimitive.Content.displayName
@@ -87,7 +93,7 @@ export function LegalAccordion({ sections, className, value, onValueChange }: Le
         <AccordionItem key={section.id} value={section.id} id={section.id}>
           <AccordionTrigger>{section.title}</AccordionTrigger>
           <AccordionContent>
-            <div className="prose prose-sm max-w-none text-eerie-black/80">
+            <div className="prose-legal text-[0.9375rem] leading-[1.8] max-w-none">
               {section.content}
             </div>
           </AccordionContent>

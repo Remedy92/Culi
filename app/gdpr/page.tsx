@@ -328,8 +328,8 @@ export default function GDPRCompliancePage() {
           openAccordionSection={openSection}
           onAccordionChange={setOpenSection}
         >
-          <div className="mb-8 p-6 bg-spanish-orange/5 rounded-lg border border-spanish-orange/20">
-            <p className="text-lg text-eerie-black/90 leading-relaxed">
+          <div className="mb-12 p-8 bg-gradient-to-r from-spanish-orange/[0.03] to-transparent rounded-lg border-l-4 border-spanish-orange/20">
+            <p className="text-[1.0625rem] text-[#2A2220] leading-[1.8] tracking-[-0.01em]">
               The General Data Protection Regulation (GDPR) gives individuals in the European Economic Area 
               and United Kingdom important rights over their personal data. This page explains how Culi 
               complies with GDPR and how you can exercise your rights.

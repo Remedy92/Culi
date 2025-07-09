@@ -198,7 +198,7 @@ export default function LegalLayout({
           {/* Table of Contents - Desktop */}
           <aside className="hidden lg:block w-64 flex-shrink-0">
             <div className="sticky top-24">
-              <h2 className="text-sm font-semibold text-eerie-black/60 uppercase tracking-wider mb-4">
+              <h2 className="text-xs font-bold text-[#6B5D58] uppercase tracking-[0.1em] mb-6">
                 Table of Contents
               </h2>
               <ScrollArea className="h-[calc(100vh-200px)]">
@@ -228,11 +228,12 @@ export default function LegalLayout({
                       ref={(el) => { sectionRefs.current[section.id] = el }}
                       onClick={() => scrollToSection(section.id)}
                       className={cn(
-                        "block w-full text-left px-3 py-2 text-sm rounded-md transition-all duration-200 relative",
-                        "hover:bg-spanish-orange/10 hover:text-spanish-orange",
+                        "block w-full text-left px-4 py-3 text-[0.8125rem] rounded-md transition-all duration-200 relative",
+                        "hover:bg-spanish-orange/5 hover:text-spanish-orange",
+                        "tracking-[-0.01em] leading-tight",
                         currentActiveSection === section.id
-                          ? "bg-spanish-orange/10 text-spanish-orange font-medium pl-6"
-                          : "text-eerie-black/70 pl-6"
+                          ? "bg-spanish-orange/5 text-spanish-orange font-semibold pl-6"
+                          : "text-[#6B5D58] pl-6 font-medium"
                       )}
                     >
                       {section.title}
@@ -250,28 +251,28 @@ export default function LegalLayout({
             transition={{ duration: 0.5 }}
             className="flex-1 max-w-4xl"
           >
-            <header className="mb-8 pb-8 border-b border-cinereous/20">
-              <h1 className="text-4xl font-bold text-eerie-black mb-4">{title}</h1>
-              <p className="text-sm text-eerie-black/60">
+            <header className="mb-10 pb-10 border-b border-cinereous/15">
+              <h1 className="text-[2.5rem] font-bold text-eerie-black mb-5 tracking-[-0.02em] leading-tight">{title}</h1>
+              <p className="text-sm text-[#6B5D58] font-medium tracking-wide uppercase">
                 Last updated: {lastUpdated}
               </p>
             </header>
 
-            <div className="prose prose-lg max-w-none">
+            <div className="legal-content">
               {children}
             </div>
 
             {/* Contact Section */}
-            <section className="mt-16 p-6 bg-spanish-orange/5 rounded-lg border border-spanish-orange/20">
-              <h3 className="text-lg font-semibold text-eerie-black mb-2">
+            <section className="mt-20 p-8 bg-gradient-to-r from-spanish-orange/[0.03] to-transparent rounded-lg border border-spanish-orange/15">
+              <h3 className="text-lg font-semibold text-eerie-black mb-3 tracking-[-0.01em]">
                 Questions or concerns?
               </h3>
-              <p className="text-eerie-black/80 mb-4">
+              <p className="text-[#2A2220] mb-5 leading-relaxed">
                 If you have any questions about these {title.toLowerCase()}, please contact us.
               </p>
               <a
                 href="mailto:legal@culi.app"
-                className="text-spanish-orange hover:underline font-medium"
+                className="text-spanish-orange hover:text-spanish-orange/80 font-medium underline underline-offset-2 transition-colors duration-200"
               >
                 legal@culi.app
               </a>
