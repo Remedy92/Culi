@@ -34,11 +34,11 @@ export function TranslationDemo() {
     },
   ];
   return (
-    <section id="translation-demo" className="py-32 bg-cream relative overflow-hidden">
-      {/* Subtle background decoration */}
+    <section id="translation-demo" className="py-16 md:py-24 lg:py-32 bg-cream relative overflow-hidden">
+      {/* Subtle background decoration - simplified for mobile */}
       <div className="absolute inset-0">
-        <div className="absolute top-0 left-1/4 h-64 w-64 rounded-full bg-terracotta/5 blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 h-64 w-64 rounded-full bg-warm-taupe/5 blur-3xl" />
+        <div className="absolute top-0 left-1/4 h-32 w-32 md:h-64 md:w-64 rounded-full bg-terracotta/5 blur-2xl md:blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 h-32 w-32 md:h-64 md:w-64 rounded-full bg-warm-taupe/5 blur-2xl md:blur-3xl" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -47,17 +47,17 @@ export function TranslationDemo() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-8 md:mb-12 lg:mb-16"
         >
-          <h2 className="text-4xl font-bold text-dark-umber mb-4">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-dark-umber mb-3 md:mb-4">
             {t('title')}
           </h2>
-          <p className="text-lg text-dark-umber/80 max-w-2xl mx-auto">
+          <p className="text-base md:text-lg text-dark-umber/80 max-w-2xl mx-auto px-4 sm:px-0">
             {t('description')}
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-8 max-w-5xl mx-auto">
           {menuItems.map((item, index) => (
             <motion.div
               key={index}

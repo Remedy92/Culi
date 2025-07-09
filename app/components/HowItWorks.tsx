@@ -28,7 +28,7 @@ export function HowItWorks() {
     },
   ];
   return (
-    <section id="how-it-works" className="py-32 lg:py-40 bg-timberwolf relative overflow-hidden">
+    <section id="how-it-works" className="py-16 md:py-24 lg:py-32 xl:py-40 bg-timberwolf relative overflow-hidden">
       {/* Subtle background decoration */}
       <div className="absolute inset-0">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-96 w-96 rounded-full bg-spanish-orange/5 blur-3xl" />
@@ -41,10 +41,10 @@ export function HowItWorks() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold text-eerie-black mb-4">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-eerie-black mb-4">
             {t('title')}
           </h2>
-          <p className="text-lg text-eerie-black/80 max-w-2xl mx-auto">
+          <p className="text-base md:text-lg text-eerie-black/80 max-w-2xl mx-auto">
             {t('subtitle')}
           </p>
         </motion.div>
@@ -81,10 +81,10 @@ export function HowItWorks() {
                   </div>
 
                   {/* Content */}
-                  <h3 className="text-xl font-semibold text-eerie-black mb-2">
+                  <h3 className="text-lg md:text-xl font-semibold text-eerie-black mb-2">
                     {step.title}
                   </h3>
-                  <p className="text-cinereous max-w-xs">
+                  <p className="text-sm md:text-base text-cinereous max-w-xs">
                     {step.description}
                   </p>
                 </div>

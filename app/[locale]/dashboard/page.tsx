@@ -57,19 +57,28 @@ export default async function DashboardPage({
   return (
     <div className="min-h-screen bg-seasalt">
       {/* Header */}
-      <header className="bg-white shadow-warm">
+      <header className="bg-white shadow-warm sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center space-x-4">
-              <TLLogo />
-              <div className="hidden md:block">
-                <h1 className="text-xl font-semibold text-eerie-black">{restaurant.name}</h1>
+          <div className="flex justify-between items-center py-3 md:py-6">
+            <div className="flex items-center gap-3 md:gap-4 min-w-0">
+              <Link href={`/${locale}/dashboard`} className="flex-shrink-0">
+                <TLLogo size="sm" className="md:hidden" />
+                <TLLogo size="md" className="hidden md:block" />
+              </Link>
+              <div className="min-w-0">
+                <h1 className="text-base md:text-xl font-semibold text-eerie-black truncate">{restaurant.name}</h1>
+                <p className="text-xs text-cinereous md:hidden">{restaurant.tier} plan</p>
               </div>
             </div>
             
-            <nav className="flex items-center space-x-4">
+            <nav className="flex items-center gap-2">
               <Link href={`/${locale}/dashboard/settings`}>
-                <Button variant="ghost" size="icon">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="touch-target-min hover:bg-seasalt active:bg-cinereous/20 transition-colors"
+                  aria-label="Settings"
+                >
                   <Settings className="w-5 h-5" />
                 </Button>
               </Link>
@@ -79,7 +88,13 @@ export default async function DashboardPage({
                 await supabase.auth.signOut()
                 redirect(`/${locale}/`)
               }}>
-                <Button variant="ghost" size="icon" type="submit">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  type="submit"
+                  className="touch-target-min hover:bg-seasalt active:bg-cinereous/20 transition-colors"
+                  aria-label="Sign out"
+                >
                   <LogOut className="w-5 h-5" />
                 </Button>
               </form>
@@ -89,115 +104,115 @@ export default async function DashboardPage({
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="p-6 shadow-warm hover:shadow-warm-lg transition-shadow">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
+          <Card className="p-4 md:p-6 shadow-warm hover:shadow-warm-lg transition-shadow active:scale-[0.98] md:active:scale-100 touch-manipulation">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-cinereous">Monthly Conversations</p>
-                <p className="text-2xl font-bold text-eerie-black">{conversationCount}</p>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs md:text-sm text-cinereous">Monthly Conversations</p>
+                <p className="text-xl md:text-2xl font-bold text-eerie-black">{conversationCount}</p>
                 <p className="text-xs text-cinereous mt-1">
                   {restaurant.tier === 'free' ? '100' : restaurant.tier === 'professional' ? '1,000' : 'Unlimited'} limit
                 </p>
               </div>
-              <MessageSquare className="w-8 h-8 text-spanish-orange" />
+              <MessageSquare className="w-6 h-6 md:w-8 md:h-8 text-spanish-orange flex-shrink-0 ml-3" />
             </div>
           </Card>
 
-          <Card className="p-6 shadow-warm hover:shadow-warm-lg transition-shadow">
+          <Card className="p-4 md:p-6 shadow-warm hover:shadow-warm-lg transition-shadow active:scale-[0.98] md:active:scale-100 touch-manipulation">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-cinereous">Active Menu</p>
-                <p className="text-2xl font-bold text-eerie-black">Not Set</p>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs md:text-sm text-cinereous">Active Menu</p>
+                <p className="text-xl md:text-2xl font-bold text-eerie-black">Not Set</p>
                 <p className="text-xs text-cinereous mt-1">Upload your first menu</p>
               </div>
-              <Menu className="w-8 h-8 text-spanish-orange" />
+              <Menu className="w-6 h-6 md:w-8 md:h-8 text-spanish-orange flex-shrink-0 ml-3" />
             </div>
           </Card>
 
-          <Card className="p-6 shadow-warm hover:shadow-warm-lg transition-shadow">
+          <Card className="p-4 md:p-6 shadow-warm hover:shadow-warm-lg transition-shadow active:scale-[0.98] md:active:scale-100 touch-manipulation sm:col-span-2 lg:col-span-1">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-cinereous">Subscription</p>
-                <p className="text-2xl font-bold text-eerie-black capitalize">{restaurant.tier}</p>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs md:text-sm text-cinereous">Subscription</p>
+                <p className="text-xl md:text-2xl font-bold text-eerie-black capitalize">{restaurant.tier}</p>
                 <p className="text-xs text-cinereous mt-1">
                   {restaurant.tier === 'free' ? 'Upgrade for more features' : 'Active'}
                 </p>
               </div>
-              <BarChart3 className="w-8 h-8 text-spanish-orange" />
+              <BarChart3 className="w-6 h-6 md:w-8 md:h-8 text-spanish-orange flex-shrink-0 ml-3" />
             </div>
           </Card>
         </div>
 
         {/* Quick Actions */}
-        <h2 className="text-xl font-semibold text-eerie-black mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Link href={`/${locale}/dashboard/menu`}>
-            <Card className="p-6 shadow-warm hover:shadow-warm-lg transition-all hover:scale-105 cursor-pointer">
-              <Upload className="w-8 h-8 text-spanish-orange mb-3" />
-              <h3 className="font-medium text-eerie-black mb-1">Upload Menu</h3>
-              <p className="text-sm text-cinereous">Add or update your restaurant menu</p>
+        <h2 className="text-lg md:text-xl font-semibold text-eerie-black mb-3 md:mb-4">Quick Actions</h2>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+          <Link href={`/${locale}/dashboard/menu`} className="block">
+            <Card className="p-4 md:p-6 shadow-warm hover:shadow-warm-lg transition-all md:hover:scale-105 active:scale-[0.98] cursor-pointer h-full touch-manipulation">
+              <Upload className="w-6 h-6 md:w-8 md:h-8 text-spanish-orange mb-2 md:mb-3" />
+              <h3 className="font-medium text-sm md:text-base text-eerie-black mb-1">Upload Menu</h3>
+              <p className="text-xs md:text-sm text-cinereous line-clamp-2">Add or update your restaurant menu</p>
             </Card>
           </Link>
 
-          <Link href={`/${locale}/dashboard/qr`}>
-            <Card className="p-6 shadow-warm hover:shadow-warm-lg transition-all hover:scale-105 cursor-pointer">
-              <QrCode className="w-8 h-8 text-spanish-orange mb-3" />
-              <h3 className="font-medium text-eerie-black mb-1">Get QR Code</h3>
-              <p className="text-sm text-cinereous">Generate QR codes for tables</p>
+          <Link href={`/${locale}/dashboard/qr`} className="block">
+            <Card className="p-4 md:p-6 shadow-warm hover:shadow-warm-lg transition-all md:hover:scale-105 active:scale-[0.98] cursor-pointer h-full touch-manipulation">
+              <QrCode className="w-6 h-6 md:w-8 md:h-8 text-spanish-orange mb-2 md:mb-3" />
+              <h3 className="font-medium text-sm md:text-base text-eerie-black mb-1">Get QR Code</h3>
+              <p className="text-xs md:text-sm text-cinereous line-clamp-2">Generate QR codes for tables</p>
             </Card>
           </Link>
 
-          <Link href={`/${locale}/dashboard/conversations`}>
-            <Card className="p-6 shadow-warm hover:shadow-warm-lg transition-all hover:scale-105 cursor-pointer">
-              <MessageSquare className="w-8 h-8 text-spanish-orange mb-3" />
-              <h3 className="font-medium text-eerie-black mb-1">View Conversations</h3>
-              <p className="text-sm text-cinereous">See what guests are asking</p>
+          <Link href={`/${locale}/dashboard/conversations`} className="block">
+            <Card className="p-4 md:p-6 shadow-warm hover:shadow-warm-lg transition-all md:hover:scale-105 active:scale-[0.98] cursor-pointer h-full touch-manipulation">
+              <MessageSquare className="w-6 h-6 md:w-8 md:h-8 text-spanish-orange mb-2 md:mb-3" />
+              <h3 className="font-medium text-sm md:text-base text-eerie-black mb-1">View Conversations</h3>
+              <p className="text-xs md:text-sm text-cinereous line-clamp-2">See what guests are asking</p>
             </Card>
           </Link>
 
-          <Link href={`/${locale}/dashboard/team`}>
-            <Card className="p-6 shadow-warm hover:shadow-warm-lg transition-all hover:scale-105 cursor-pointer">
-              <Users className="w-8 h-8 text-spanish-orange mb-3" />
-              <h3 className="font-medium text-eerie-black mb-1">Manage Team</h3>
-              <p className="text-sm text-cinereous">Invite team members</p>
+          <Link href={`/${locale}/dashboard/team`} className="block">
+            <Card className="p-4 md:p-6 shadow-warm hover:shadow-warm-lg transition-all md:hover:scale-105 active:scale-[0.98] cursor-pointer h-full touch-manipulation">
+              <Users className="w-6 h-6 md:w-8 md:h-8 text-spanish-orange mb-2 md:mb-3" />
+              <h3 className="font-medium text-sm md:text-base text-eerie-black mb-1">Manage Team</h3>
+              <p className="text-xs md:text-sm text-cinereous line-clamp-2">Invite team members</p>
             </Card>
           </Link>
         </div>
 
         {/* Getting Started Guide */}
         {!monthlyStats && (
-          <Card className="mt-8 p-8 bg-timberwolf/50 shadow-warm">
-            <h2 className="text-xl font-semibold text-eerie-black mb-4">Getting Started</h2>
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 rounded-full bg-spanish-orange text-white flex items-center justify-center flex-shrink-0 text-sm font-medium">
+          <Card className="mt-6 md:mt-8 p-4 md:p-8 bg-timberwolf/50 shadow-warm">
+            <h2 className="text-lg md:text-xl font-semibold text-eerie-black mb-3 md:mb-4">Getting Started</h2>
+            <div className="space-y-3 md:space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-spanish-orange text-white flex items-center justify-center flex-shrink-0 text-sm md:text-base font-medium touch-target-min">
                   1
                 </div>
-                <div>
-                  <h3 className="font-medium text-eerie-black">Upload Your Menu</h3>
-                  <p className="text-sm text-cinereous">Upload a PDF, image, or enter your menu manually</p>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-medium text-sm md:text-base text-eerie-black">Upload Your Menu</h3>
+                  <p className="text-xs md:text-sm text-cinereous">Upload a PDF, image, or enter your menu manually</p>
                 </div>
               </div>
               
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 rounded-full bg-spanish-orange text-white flex items-center justify-center flex-shrink-0 text-sm font-medium">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-spanish-orange text-white flex items-center justify-center flex-shrink-0 text-sm md:text-base font-medium touch-target-min">
                   2
                 </div>
-                <div>
-                  <h3 className="font-medium text-eerie-black">Generate QR Codes</h3>
-                  <p className="text-sm text-cinereous">Create QR codes for your tables or menus</p>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-medium text-sm md:text-base text-eerie-black">Generate QR Codes</h3>
+                  <p className="text-xs md:text-sm text-cinereous">Create QR codes for your tables or menus</p>
                 </div>
               </div>
               
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 rounded-full bg-spanish-orange text-white flex items-center justify-center flex-shrink-0 text-sm font-medium">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-spanish-orange text-white flex items-center justify-center flex-shrink-0 text-sm md:text-base font-medium touch-target-min">
                   3
                 </div>
-                <div>
-                  <h3 className="font-medium text-eerie-black">Start Answering Questions</h3>
-                  <p className="text-sm text-cinereous">Guests can now ask about your menu in any language!</p>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-medium text-sm md:text-base text-eerie-black">Start Answering Questions</h3>
+                  <p className="text-xs md:text-sm text-cinereous">Guests can now ask about your menu in any language!</p>
                 </div>
               </div>
             </div>

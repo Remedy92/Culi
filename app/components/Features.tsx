@@ -31,7 +31,7 @@ export function Features() {
     },
   ];
   return (
-    <section id="features" className="py-32 lg:py-40 bg-seasalt relative overflow-hidden">
+    <section id="features" className="py-16 md:py-24 lg:py-32 xl:py-40 bg-seasalt relative overflow-hidden">
       {/* Subtle background decoration */}
       <div className="absolute inset-0">
         <div className="absolute top-0 right-0 h-64 w-64 rounded-full bg-spanish-orange/5 blur-3xl" />
@@ -45,12 +45,12 @@ export function Features() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold text-eerie-black mb-4">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-eerie-black mb-4">
             {t.rich('sectionTitle', {
               highlight: (chunks) => <span className="text-spanish-orange">{chunks}</span>
             })}
           </h2>
-          <p className="text-lg text-eerie-black/80 max-w-2xl mx-auto">
+          <p className="text-base md:text-lg text-eerie-black/80 max-w-2xl mx-auto">
             {t('sectionDescription')}
           </p>
         </motion.div>

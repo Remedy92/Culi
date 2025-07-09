@@ -149,11 +149,12 @@ export function Header() {
             </Link>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button - with proper touch target */}
           <button
-            className="md:hidden p-2 rounded-lg hover:bg-cinereous/10 transition-colors"
+            className="md:hidden p-3 -m-1 rounded-lg hover:bg-cinereous/10 active:bg-cinereous/20 transition-colors touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label={t('mobileMenuToggle')}
+            aria-expanded={isMobileMenuOpen}
           >
             {isMobileMenuOpen ? (
               <X className="h-6 w-6" />
@@ -163,26 +164,73 @@ export function Header() {
           </button>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Mobile Navigation - Enhanced with better touch targets and language switcher */}
         {isMobileMenuOpen && (
-          <div className="md:hidden py-4 space-y-2 animate-slide-down">
-            <Link
-              href="/features"
-              className="block px-4 py-2 text-eerie-black/80 hover:text-spanish-orange transition-colors duration-200"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              {t('navigation.features')}
-            </Link>
+          <div className="md:hidden py-4 space-y-1 animate-slide-down border-t border-cinereous/10 mt-2">
+            {/* Features Dropdown */}
+            <details className="group">
+              <summary className="flex items-center justify-between px-4 py-3 min-h-[48px] text-eerie-black/80 hover:text-spanish-orange hover:bg-seasalt/50 active:bg-seasalt transition-colors duration-200 cursor-pointer touch-manipulation">
+                <span className="font-medium">{t('navigation.features')}</span>
+                <ChefHat className="h-5 w-5 transition-transform group-open:rotate-180" />
+              </summary>
+              <div className="bg-seasalt/30 py-2">
+                <Link
+                  href="/features"
+                  className="flex items-center gap-3 px-6 py-3 min-h-[48px] text-eerie-black/70 hover:text-spanish-orange hover:bg-seasalt/50 active:bg-seasalt transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <span className="text-sm">{t('featuresMenu.exploreAll')}</span>
+                </Link>
+                <Link
+                  href="/#features"
+                  className="flex items-center gap-3 px-6 py-3 min-h-[48px] text-eerie-black/70 hover:text-spanish-orange hover:bg-seasalt/50 active:bg-seasalt transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <ChefHat className="h-4 w-4" />
+                  <span className="text-sm">{t('featuresMenu.aiAssistant')}</span>
+                </Link>
+                <Link
+                  href="/#translation-demo"
+                  className="flex items-center gap-3 px-6 py-3 min-h-[48px] text-eerie-black/70 hover:text-spanish-orange hover:bg-seasalt/50 active:bg-seasalt transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <Languages className="h-4 w-4" />
+                  <span className="text-sm">{t('featuresMenu.allLanguages')}</span>
+                </Link>
+                <Link
+                  href="/analytics-demo"
+                  className="flex items-center gap-3 px-6 py-3 min-h-[48px] text-eerie-black/70 hover:text-spanish-orange hover:bg-seasalt/50 active:bg-seasalt transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <BarChart3 className="h-4 w-4" />
+                  <span className="text-sm">{t('featuresMenu.analyticsDashboard')}</span>
+                </Link>
+              </div>
+            </details>
+            
             <Link
               href="/pricing"
-              className="block px-4 py-2 text-eerie-black/80 hover:text-spanish-orange transition-colors duration-200"
+              className="flex items-center px-4 py-3 min-h-[48px] text-eerie-black/80 hover:text-spanish-orange hover:bg-seasalt/50 active:bg-seasalt transition-colors duration-200 touch-manipulation"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              {t('navigation.pricing')}
+              <span className="font-medium">{t('navigation.pricing')}</span>
             </Link>
-            <div className="px-4 pt-2">
+            
+            {/* Language Switcher in Mobile Menu */}
+            <div className="px-4 py-3 border-t border-cinereous/10 mt-2">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-medium text-eerie-black/60">{t('navigation.language')}</span>
+                <Languages className="h-4 w-4 text-eerie-black/40" />
+              </div>
+              <div className="block">
+                <LanguageSwitcher isMobile={true} />
+              </div>
+            </div>
+            
+            {/* CTA Button */}
+            <div className="px-4 pt-4 pb-2">
               <Link href="/auth" onClick={() => setIsMobileMenuOpen(false)}>
-                <Button className="w-full">{t('navigation.tryFree')}</Button>
+                <Button className="w-full h-12 text-base touch-manipulation">{t('navigation.tryFree')}</Button>
               </Link>
             </div>
           </div>

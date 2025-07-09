@@ -8,7 +8,8 @@
     "navigation": {
       "features": "Features",
       "pricing": "Pricing",
-      "tryFree": "Try Culi free"
+      "tryFree": "Try Culi free",
+      "language": "Language"
     },
     "featuresMenu": {
       "exploreAll": "Explore all features",

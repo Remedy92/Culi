@@ -31,7 +31,7 @@ const formSchema = z.object({
   acceptTerms: z.boolean().refine((val) => val === true, {
     message: "You must accept the terms of service to continue.",
   }),
-  marketingEmails: z.boolean().default(false),
+  marketingEmails: z.boolean(),
 })
 
 export default function OnboardingPage() {

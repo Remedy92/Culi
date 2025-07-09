@@ -57,7 +57,7 @@ export function Pricing() {
     },
   ];
   return (
-    <section id="pricing" className="py-24 lg:py-32 bg-seasalt">
+    <section id="pricing" className="py-16 md:py-20 lg:py-24 xl:py-32 bg-seasalt">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -66,7 +66,7 @@ export function Pricing() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold text-eerie-black mb-4">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-eerie-black mb-4">
             {t('title')}
           </h2>
         </motion.div>

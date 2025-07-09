@@ -11,7 +11,11 @@ const languages = [
   { code: 'fr', name: 'Français', flag: '🇫🇷' },
 ] as const;
 
-export default function LanguageSwitcher() {
+interface LanguageSwitcherProps {
+  isMobile?: boolean;
+}
+
+export default function LanguageSwitcher({ isMobile = false }: LanguageSwitcherProps) {
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
@@ -41,11 +45,36 @@ export default function LanguageSwitcher() {
     setIsOpen(false);
   };
 
+  // Mobile version - simple buttons
+  if (isMobile) {
+    return (
+      <div className="flex gap-2">
+        {languages.map((lang) => (
+          <button
+            key={lang.code}
+            onClick={() => handleLanguageChange(lang.code)}
+            className={`flex items-center gap-2 px-3 py-2 min-h-[44px] min-w-[44px] rounded-lg transition-colors touch-manipulation ${
+              locale === lang.code 
+                ? 'bg-spanish-orange text-white' 
+                : 'bg-seasalt text-eerie-black hover:bg-cinereous/20 active:bg-cinereous/30'
+            }`}
+            aria-label={`Switch to ${lang.name}`}
+            aria-current={locale === lang.code ? 'true' : 'false'}
+          >
+            <span className="text-base">{lang.flag}</span>
+            <span className="text-sm font-medium">{lang.code.toUpperCase()}</span>
+          </button>
+        ))}
+      </div>
+    );
+  }
+
+  // Desktop dropdown version
   return (
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        className="flex items-center gap-2 px-3 py-2 min-h-[44px] text-sm font-medium text-eerie-black hover:text-spanish-orange rounded-lg hover:bg-seasalt transition-colors touch-manipulation"
         aria-label="Select language"
         aria-haspopup="true"
         aria-expanded={isOpen}
@@ -56,19 +85,20 @@ export default function LanguageSwitcher() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 py-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+        <div className="absolute right-0 mt-2 py-2 w-48 bg-timberwolf rounded-lg shadow-warm-lg border border-cinereous/20 z-50">
           {languages.map((lang) => (
             <button
               key={lang.code}
               onClick={() => handleLanguageChange(lang.code)}
-              className={`flex items-center gap-3 w-full px-4 py-2 text-sm text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
-                locale === lang.code ? 'bg-gray-50 dark:bg-gray-700' : ''
+              className={`flex items-center gap-3 w-full px-4 py-3 min-h-[44px] text-sm text-left hover:bg-seasalt transition-colors ${
+                locale === lang.code ? 'bg-seasalt text-spanish-orange font-medium' : 'text-eerie-black'
               }`}
+              aria-current={locale === lang.code ? 'true' : 'false'}
             >
               <span className="text-lg">{lang.flag}</span>
               <span>{lang.name}</span>
               {locale === lang.code && (
-                <span className="ml-auto text-blue-600 dark:text-blue-400">✓</span>
+                <span className="ml-auto text-spanish-orange">✓</span>
               )}
             </button>
           ))}

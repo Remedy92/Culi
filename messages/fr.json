@@ -8,7 +8,8 @@
     "navigation": {
       "features": "Fonctionnalités",
       "pricing": "Tarifs",
-      "tryFree": "Essayer Culi gratuitement"
+      "tryFree": "Essayer Culi gratuitement",
+      "language": "Langue"
     },
     "featuresMenu": {
       "exploreAll": "Explorer toutes les fonctionnalités",
