@@ -70,6 +70,7 @@
   "translationDemo": {
     "title": "See the magic of translation",
     "description": "Hover over menu items to see how Culi instantly translates dishes from any language",
+    "descriptionMobile": "Tap on menu items to see how Culi instantly translates dishes from any language",
     "languages": {
       "chinese": "Chinese",
       "spanish": "Spanish",

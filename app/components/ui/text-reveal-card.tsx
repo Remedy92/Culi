@@ -9,20 +9,37 @@ export const TextRevealCard = ({
   revealText,
   children,
   className,
+  showInitialAnimation = false,
 }: {
   text: string;
   revealText: string;
   children?: React.ReactNode;
   className?: string;
+  showInitialAnimation?: boolean;
 }) => {
   const [isMouseOver, setIsMouseOver] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [hasShownAnimation, setHasShownAnimation] = useState(false);
 
   useEffect(() => {
     // Check if device supports touch
     setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
   }, []);
+
+  useEffect(() => {
+    // Show initial animation on mobile for first card
+    if (showInitialAnimation && isTouchDevice && !hasShownAnimation) {
+      // Brief reveal animation
+      setTimeout(() => {
+        setIsClicked(true);
+        setTimeout(() => {
+          setIsClicked(false);
+          setHasShownAnimation(true);
+        }, 800);
+      }, 1000);
+    }
+  }, [showInitialAnimation, isTouchDevice, hasShownAnimation]);
 
   const isRevealed = isMouseOver || isClicked;
 
@@ -87,7 +104,7 @@ export const TextRevealCard = ({
         </motion.div>
 
         {/* Mobile indicator */}
-        {isTouchDevice && !isClicked && (
+        {isTouchDevice && !isClicked && !hasShownAnimation && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -95,6 +112,25 @@ export const TextRevealCard = ({
           >
             <span className="text-xs text-warm-taupe/60 font-medium">Tap</span>
             <Languages className="h-4 w-4 text-warm-taupe/60" />
+          </motion.div>
+        )}
+        
+        {/* Tap animation indicator */}
+        {showInitialAnimation && isTouchDevice && !hasShownAnimation && (
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ 
+              scale: [0, 1.5, 0],
+              opacity: [0, 0.5, 0]
+            }}
+            transition={{
+              duration: 1.5,
+              delay: 0.8,
+              times: [0, 0.5, 1]
+            }}
+            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+          >
+            <div className="w-20 h-20 rounded-full bg-terracotta/20 border-2 border-terracotta/30" />
           </motion.div>
         )}
       </div>

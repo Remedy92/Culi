@@ -3,9 +3,22 @@
 import { motion } from "framer-motion"
 import { TextRevealCard } from "./ui/text-reveal-card"
 import { useTranslations } from 'next-intl'
+import { useEffect, useState } from 'react'
 
 export function TranslationDemo() {
   const t = useTranslations('translationDemo');
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    // Check if device is mobile
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   
   const menuItems = [
     {
@@ -53,7 +66,9 @@ export function TranslationDemo() {
             {t('title')}
           </h2>
           <p className="text-base md:text-lg text-dark-umber/80 max-w-2xl mx-auto px-4 sm:px-0">
-            {t('description')}
+            {isMobile 
+              ? t('descriptionMobile')
+              : t('description')}
           </p>
         </motion.div>
 
@@ -70,6 +85,7 @@ export function TranslationDemo() {
                 text={item.original}
                 revealText={item.translated}
                 className="h-full"
+                showInitialAnimation={index === 0}
               >
                 <div className="space-y-2 mb-6">
                   <span className="text-sm font-medium text-terracotta">

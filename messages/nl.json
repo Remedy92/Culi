@@ -70,6 +70,7 @@
   "translationDemo": {
     "title": "Zie de magie van vertaling",
     "description": "Beweeg over menu-items om te zien hoe Culi direct gerechten vertaalt uit elke taal",
+    "descriptionMobile": "Tik op menu-items om te zien hoe Culi direct gerechten vertaalt uit elke taal",
     "languages": {
       "chinese": "Chinees",
       "spanish": "Spaans",
