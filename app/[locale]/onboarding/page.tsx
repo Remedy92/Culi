@@ -39,8 +39,22 @@ export default function OnboardingPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [showForm, setShowForm] = useState(false)
   const [showSecondMessage, setShowSecondMessage] = useState(false)
+  const [reducedMotion, setReducedMotion] = useState(false)
   const router = useRouter()
   const supabase = createClient()
+  
+  // Check for reduced motion preference
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setReducedMotion(mediaQuery.matches)
+    
+    const handleChange = (e: MediaQueryListEvent) => {
+      setReducedMotion(e.matches)
+    }
+    
+    mediaQuery.addEventListener('change', handleChange)
+    return () => mediaQuery.removeEventListener('change', handleChange)
+  }, [])
 
   // Show second message after first one completes
   useEffect(() => {
@@ -50,19 +64,31 @@ export default function OnboardingPage() {
     return () => clearTimeout(timer)
   }, [])
 
-  // Scroll to form when shown
+  // Scroll to form when shown with mobile-friendly behavior
   useEffect(() => {
     if (showForm) {
+      // Delay to allow animation to start
       setTimeout(() => {
         const formElement = document.querySelector('.legal-requirements-form')
         if (formElement) {
-          formElement.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'start',
-            inline: 'nearest'
-          })
+          // Use different scroll behavior for mobile vs desktop
+          const isMobile = window.innerWidth < 640
+          if (isMobile) {
+            // On mobile, scroll to center the form with some top offset
+            const elementRect = formElement.getBoundingClientRect()
+            const absoluteElementTop = elementRect.top + window.pageYOffset
+            const middle = absoluteElementTop - (window.innerHeight / 3)
+            window.scrollTo({ top: middle, behavior: 'smooth' })
+          } else {
+            // On desktop, use standard scroll into view
+            formElement.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'start',
+              inline: 'nearest'
+            })
+          }
         }
-      }, 300)
+      }, 400)
     }
   }, [showForm])
 
@@ -154,14 +180,14 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 px-4 py-8 pb-24 md:pb-8">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 px-4 py-6 pb-32 sm:pb-8 safe-area-inset">
       {/* Header */}
-      <div className="w-full mb-12">
-        <div className="flex items-center justify-center gap-3">
-          <CuliCurveLogo size={36} />
+      <div className="w-full mb-8 sm:mb-12">
+        <div className="flex items-center justify-center gap-2 sm:gap-3">
+          <CuliCurveLogo size={32} className="sm:w-9 sm:h-9" />
           <div className="relative">
-            <span className="text-3xl font-black text-eerie-black">
-              <span className="text-4xl font-serif">C</span>uli
+            <span className="text-2xl sm:text-3xl font-black text-eerie-black">
+              <span className="text-3xl sm:text-4xl font-serif">C</span>uli
             </span>
           </div>
         </div>
@@ -169,44 +195,59 @@ export default function OnboardingPage() {
 
       <div className="max-w-2xl mx-auto">
         {/* Chat Interface */}
-        <div className="space-y-4 mb-8">
+        <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
           {/* Culi's Message */}
           <div className="flex items-start gap-3">
-            <div className="flex-shrink-0 w-10 h-10 bg-white rounded-full shadow-warm flex items-center justify-center">
-              <CuliCurveLogo size={24} />
+            <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full shadow-warm flex items-center justify-center">
+              <CuliCurveLogo size={20} className="sm:w-6 sm:h-6" />
             </div>
-            <div className="bg-white rounded-2xl rounded-tl-none shadow-warm-lg p-4 max-w-md">
+            <div className="bg-white rounded-2xl rounded-tl-none shadow-warm-lg p-3 sm:p-4 max-w-[85%] sm:max-w-md">
               <div className="space-y-2">
-                <TypewriterEffectSmooth
-                  words={[
-                    { text: "Hi!" },
-                    { text: "I'm" },
-                    { text: "Culi," },
-                    { text: "your" },
-                    { text: "AI" },
-                    { text: "menu" },
-                    { text: "assistant." },
-                    { text: "Let's" },
-                    { text: "get" },
-                    { text: "your" },
-                    { text: "restaurant" },
-                    { text: "set" },
-                    { text: "up!" }
-                  ]}
-                  className="text-base text-eerie-black"
-                />
-                {showSecondMessage && (
-                  <TypewriterEffectSmooth
-                    words={[
-                      { text: "What's" },
-                      { text: "the" },
-                      { text: "name" },
-                      { text: "of" },
-                      { text: "your" },
-                      { text: "restaurant?" }
-                    ]}
-                    className="text-base text-eerie-black"
-                  />
+                {reducedMotion ? (
+                  <>
+                    <p className="text-sm sm:text-base text-eerie-black">
+                      Hi! I&apos;m Culi, your AI menu assistant. Let&apos;s get your restaurant set up!
+                    </p>
+                    {showSecondMessage && (
+                      <p className="text-sm sm:text-base text-eerie-black">
+                        What&apos;s the name of your restaurant?
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <TypewriterEffectSmooth
+                      words={[
+                        { text: "Hi!" },
+                        { text: "I'm" },
+                        { text: "Culi," },
+                        { text: "your" },
+                        { text: "AI" },
+                        { text: "menu" },
+                        { text: "assistant." },
+                        { text: "Let's" },
+                        { text: "get" },
+                        { text: "your" },
+                        { text: "restaurant" },
+                        { text: "set" },
+                        { text: "up!" }
+                      ]}
+                      className="text-sm sm:text-base text-eerie-black"
+                    />
+                    {showSecondMessage && (
+                      <TypewriterEffectSmooth
+                        words={[
+                          { text: "What's" },
+                          { text: "the" },
+                          { text: "name" },
+                          { text: "of" },
+                          { text: "your" },
+                          { text: "restaurant?" }
+                        ]}
+                        className="text-sm sm:text-base text-eerie-black"
+                      />
+                    )}
+                  </>
                 )}
               </div>
             </div>
@@ -218,12 +259,12 @@ export default function OnboardingPage() {
               <button
                 type="button"
                 onClick={() => setShowForm(false)}
-                className="bg-spanish-orange text-white rounded-2xl rounded-tr-none shadow-warm-lg p-4 max-w-md relative group hover:bg-opacity-90 transition-all cursor-pointer"
+                className="bg-spanish-orange text-white rounded-2xl rounded-tr-none shadow-warm-lg p-3 sm:p-4 max-w-[85%] sm:max-w-md relative group hover:bg-opacity-90 transition-all cursor-pointer touch-manipulation"
                 title="Click to edit restaurant name"
               >
                 <div className="flex items-center gap-2">
-                  <p>{form.watch("restaurantName")}</p>
-                  <Edit2 className="w-4 h-4 text-white/70" />
+                  <p className="text-sm sm:text-base">{form.watch("restaurantName")}</p>
+                  <Edit2 className="w-3 h-3 sm:w-4 sm:h-4 text-white/70" />
                 </div>
               </button>
             </div>
@@ -232,35 +273,41 @@ export default function OnboardingPage() {
           {/* Culi's Follow-up */}
           {showForm && (
             <div className="flex items-start gap-3 animate-fade-in">
-              <div className="flex-shrink-0 w-10 h-10 bg-white rounded-full shadow-warm flex items-center justify-center">
-                <CuliCurveLogo size={24} />
+              <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full shadow-warm flex items-center justify-center">
+                <CuliCurveLogo size={20} className="sm:w-6 sm:h-6" />
               </div>
-              <div className="bg-white rounded-2xl rounded-tl-none shadow-warm-lg p-4 max-w-md">
-                <TypewriterEffectSmooth
-                  words={[
-                    { text: "Great!" },
-                    { text: "Before" },
-                    { text: "we" },
-                    { text: "continue," },
-                    { text: "I" },
-                    { text: "need" },
-                    { text: "you" },
-                    { text: "to" },
-                    { text: "review" },
-                    { text: "and" },
-                    { text: "accept" },
-                    { text: "our" },
-                    { text: "policies." }
-                  ]}
-                  className="text-base text-eerie-black"
-                />
+              <div className="bg-white rounded-2xl rounded-tl-none shadow-warm-lg p-3 sm:p-4 max-w-[85%] sm:max-w-md">
+                {reducedMotion ? (
+                  <p className="text-sm sm:text-base text-eerie-black">
+                    Great! Before we continue, I need you to review and accept our policies.
+                  </p>
+                ) : (
+                  <TypewriterEffectSmooth
+                    words={[
+                      { text: "Great!" },
+                      { text: "Before" },
+                      { text: "we" },
+                      { text: "continue," },
+                      { text: "I" },
+                      { text: "need" },
+                      { text: "you" },
+                      { text: "to" },
+                      { text: "review" },
+                      { text: "and" },
+                      { text: "accept" },
+                      { text: "our" },
+                      { text: "policies." }
+                    ]}
+                    className="text-sm sm:text-base text-eerie-black"
+                  />
+                )}
               </div>
             </div>
           )}
         </div>
 
         {/* Chat Input Section */}
-        <div className={`${showForm ? '' : 'fixed bottom-0 left-0 right-0'} bg-white/95 backdrop-blur-md border-t border-gray-100 shadow-lg p-4 md:static md:bg-transparent md:border-0 md:p-0 md:shadow-none transition-all duration-300`}>
+        <div className={`${showForm ? '' : 'fixed bottom-4 left-4 right-4 sm:static sm:bottom-auto sm:left-auto sm:right-auto'} bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-none border border-gray-100 sm:border-t sm:border-x-0 sm:border-b-0 shadow-lg p-3 sm:p-4 md:static md:bg-transparent md:border-0 md:p-0 md:shadow-none transition-all duration-300 safe-area-bottom`}>
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -277,7 +324,7 @@ export default function OnboardingPage() {
                             <Input 
                               placeholder="Type your restaurant name..." 
                               disabled={isLoading}
-                              className="flex-1 bg-white rounded-full px-6 py-5 text-lg focus:outline-none focus:ring-2 focus:ring-spanish-orange/20 placeholder:text-gray-400 shadow-sm border-0"
+                              className="flex-1 bg-white rounded-full px-4 py-3 sm:px-6 sm:py-5 text-base sm:text-lg focus:outline-none focus:ring-2 focus:ring-spanish-orange/20 placeholder:text-gray-400 shadow-sm border-0 placeholder:text-sm sm:placeholder:text-base"
                               {...field} 
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter' && field.value && !showForm) {
@@ -289,7 +336,7 @@ export default function OnboardingPage() {
                             <button
                               type="button"
                               onClick={() => field.value && setShowForm(true)}
-                              className="flex-shrink-0 w-12 h-12 bg-spanish-orange text-white rounded-full flex items-center justify-center hover:bg-opacity-90 transition-all hover:scale-105 disabled:opacity-50 disabled:scale-100 disabled:hover:scale-100 shadow-sm"
+                              className="flex-shrink-0 w-[52px] h-[52px] sm:w-12 sm:h-12 bg-spanish-orange text-white rounded-full flex items-center justify-center hover:bg-opacity-90 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:scale-100 disabled:hover:scale-100 shadow-sm touch-manipulation"
                               disabled={!field.value || isLoading}
                             >
                               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -308,26 +355,26 @@ export default function OnboardingPage() {
 
               {showForm && (
                 <div className="max-w-2xl mx-auto">
-                  <div className="bg-white rounded-3xl shadow-warm-xl p-6 md:p-8 mt-6 animate-fade-in legal-requirements-form">
+                  <div className="bg-white rounded-2xl sm:rounded-3xl shadow-warm-xl p-4 sm:p-6 md:p-8 mt-4 sm:mt-6 animate-fade-in legal-requirements-form">
                     <h3 className="text-sm font-medium text-eerie-black mb-4">Legal Requirements</h3>
                 
                 <FormField
                   control={form.control}
                   name="acceptPrivacy"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-3">
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-3 touch-manipulation">
                       <FormControl>
                         <Checkbox
                           checked={field.value}
                           onCheckedChange={field.onChange}
                           disabled={isLoading}
-                          className="mt-0.5"
+                          className="mt-0.5 w-5 h-5 sm:w-4 sm:h-4"
                         />
                       </FormControl>
                       <div className="space-y-1 leading-relaxed">
-                        <FormLabel className="text-base font-normal cursor-pointer select-none">
+                        <FormLabel className="text-sm sm:text-base font-normal cursor-pointer select-none leading-relaxed">
                           I accept the{' '}
-                          <a href="/privacy" target="_blank" className="text-spanish-orange hover:underline">
+                          <a href="/privacy" target="_blank" className="text-spanish-orange hover:underline underline-offset-2 touch-manipulation inline-block py-1">
                             Privacy Policy
                           </a>
                         </FormLabel>
@@ -341,19 +388,19 @@ export default function OnboardingPage() {
                   control={form.control}
                   name="acceptTerms"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-3">
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-3 touch-manipulation">
                       <FormControl>
                         <Checkbox
                           checked={field.value}
                           onCheckedChange={field.onChange}
                           disabled={isLoading}
-                          className="mt-0.5"
+                          className="mt-0.5 w-5 h-5 sm:w-4 sm:h-4"
                         />
                       </FormControl>
                       <div className="space-y-1 leading-relaxed">
-                        <FormLabel className="text-base font-normal cursor-pointer select-none">
+                        <FormLabel className="text-sm sm:text-base font-normal cursor-pointer select-none leading-relaxed">
                           I accept the{' '}
-                          <a href="/terms" target="_blank" className="text-spanish-orange hover:underline">
+                          <a href="/terms" target="_blank" className="text-spanish-orange hover:underline underline-offset-2 touch-manipulation inline-block py-1">
                             Terms of Service
                           </a>
                         </FormLabel>
@@ -369,17 +416,17 @@ export default function OnboardingPage() {
                   control={form.control}
                   name="marketingEmails"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-3">
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-3 touch-manipulation">
                       <FormControl>
                         <Checkbox
                           checked={field.value}
                           onCheckedChange={field.onChange}
                           disabled={isLoading}
-                          className="mt-0.5"
+                          className="mt-0.5 w-5 h-5 sm:w-4 sm:h-4"
                         />
                       </FormControl>
                       <div className="space-y-1 leading-relaxed">
-                        <FormLabel className="text-base font-normal cursor-pointer select-none text-gray-600">
+                        <FormLabel className="text-sm sm:text-base font-normal cursor-pointer select-none text-gray-600">
                           Send me tips and updates about Culi (optional)
                         </FormLabel>
                       </div>
@@ -394,7 +441,7 @@ export default function OnboardingPage() {
                 <div className="max-w-2xl mx-auto mt-6 animate-fade-in">
                   <Button
                     type="submit"
-                    className="w-full py-6 text-lg"
+                    className="w-full py-4 sm:py-6 text-base sm:text-lg touch-manipulation"
                     size="lg"
                     disabled={isLoading || !form.watch("acceptPrivacy") || !form.watch("acceptTerms")}
                   >
@@ -414,12 +461,12 @@ export default function OnboardingPage() {
 
           {showForm && (
             <div className="max-w-2xl mx-auto mt-8 animate-fade-in">
-              <div className="p-4 bg-timberwolf/30 rounded-2xl">
-                <h3 className="font-medium text-eerie-black mb-2 flex items-center">
-                  <CheckCircle className="w-5 h-5 mr-2 text-spanish-orange" />
+              <div className="p-3 sm:p-4 bg-timberwolf/30 rounded-xl sm:rounded-2xl">
+                <h3 className="font-medium text-eerie-black mb-2 flex items-center text-sm sm:text-base">
+                  <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-spanish-orange flex-shrink-0" />
                   What happens next?
                 </h3>
-                <ul className="space-y-1 text-sm text-cinereous">
+                <ul className="space-y-1 text-xs sm:text-sm text-cinereous">
                   <li>• Upload your menu (PDF, image, or text)</li>
                   <li>• Culi&apos;s AI will extract and understand your dishes</li>
                   <li>• Get a QR code for guests to scan</li>
