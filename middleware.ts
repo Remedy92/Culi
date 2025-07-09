@@ -21,6 +21,7 @@ const publicRoutes = ['/auth', '/auth/callback', '/', '/app'];
 
 export default async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+  const searchParams = request.nextUrl.searchParams;
   
   // Skip middleware for API routes, static files, and Next.js internals
   if (
@@ -32,6 +33,15 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Handle Supabase auth callback at root URL
+  const code = searchParams.get('code');
+  if (code && pathname === '/') {
+    // Redirect to the proper auth callback with default locale
+    const redirectUrl = new URL(`/${defaultLocale}/auth/callback`, request.url);
+    redirectUrl.searchParams.set('code', code);
+    return NextResponse.redirect(redirectUrl);
+  }
+
   // Create response and apply i18n middleware first
   let response = intlMiddleware(request);
   
@@ -41,6 +51,12 @@ export default async function middleware(request: NextRequest) {
   );
   
   if (!pathnameHasLocale) {
+    // Handle auth callback for paths without locale
+    if (code) {
+      const redirectUrl = new URL(`/${defaultLocale}/auth/callback`, request.url);
+      redirectUrl.searchParams.set('code', code);
+      return NextResponse.redirect(redirectUrl);
+    }
     return response;
   }
 
