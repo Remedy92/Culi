@@ -28,7 +28,7 @@ export function HowItWorks() {
     },
   ];
   return (
-    <section id="how-it-works" className="py-16 md:py-24 lg:py-32 xl:py-40 bg-timberwolf relative overflow-hidden">
+    <section id="how-it-works" className="py-16 md:py-20 lg:py-24 bg-timberwolf relative overflow-hidden">
       {/* Subtle background decoration */}
       <div className="absolute inset-0">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-96 w-96 rounded-full bg-spanish-orange/5 blur-3xl" />

@@ -31,7 +31,7 @@ export function Features() {
     },
   ];
   return (
-    <section id="features" className="py-16 md:py-24 lg:py-32 xl:py-40 bg-seasalt relative overflow-hidden">
+    <section id="features" className="py-16 md:py-20 lg:py-24 bg-seasalt relative overflow-hidden">
       {/* Subtle background decoration */}
       <div className="absolute inset-0">
         <div className="absolute top-0 right-0 h-64 w-64 rounded-full bg-spanish-orange/5 blur-3xl" />

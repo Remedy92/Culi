@@ -57,7 +57,7 @@ export function Pricing() {
     },
   ];
   return (
-    <section id="pricing" className="py-16 md:py-20 lg:py-24 xl:py-32 bg-seasalt">
+    <section id="pricing" className="py-12 md:py-16 lg:py-20 bg-seasalt">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

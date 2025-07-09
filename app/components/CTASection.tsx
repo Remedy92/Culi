@@ -8,7 +8,7 @@ import { useTranslations } from 'next-intl'
 export function CTASection() {
   const t = useTranslations('cta');
   return (
-    <section className="py-16 md:py-24 lg:py-32 xl:py-40 bg-timberwolf relative overflow-hidden">
+    <section className="py-16 md:py-20 lg:py-24 bg-timberwolf relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-spanish-orange/10 blur-3xl" />
@@ -22,10 +22,10 @@ export function CTASection() {
           transition={{ duration: 0.6 }}
           className="space-y-8"
         >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-eerie-black">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-eerie-black">
             {t('title')}
           </h2>
-          <p className="text-lg md:text-xl lg:text-2xl text-eerie-black/80 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-eerie-black/80 max-w-2xl mx-auto">
             {t('description')}
           </p>
           

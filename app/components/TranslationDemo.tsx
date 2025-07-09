@@ -34,7 +34,7 @@ export function TranslationDemo() {
     },
   ];
   return (
-    <section id="translation-demo" className="py-16 md:py-24 lg:py-32 bg-cream relative overflow-hidden">
+    <section id="translation-demo" className="py-16 md:py-20 lg:py-24 bg-cream relative overflow-hidden">
       {/* Subtle background decoration - simplified for mobile */}
       <div className="absolute inset-0">
         <div className="absolute top-0 left-1/4 h-32 w-32 md:h-64 md:w-64 rounded-full bg-terracotta/5 blur-2xl md:blur-3xl" />
