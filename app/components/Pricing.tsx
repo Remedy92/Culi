@@ -32,7 +32,7 @@ const plans = [
       "Unlimited QR codes",
     ],
     highlighted: true,
-    cta: "Start Free Trial",
+    cta: "Start with Culi",
     overage: "€0.10 per extra interaction",
   },
   {
@@ -48,7 +48,7 @@ const plans = [
       "Custom analytics reports",
     ],
     highlighted: false,
-    cta: "Start Free Trial",
+    cta: "Start with Culi",
     overage: "€0.05 per extra interaction",
   },
 ]
@@ -65,11 +65,8 @@ export function Pricing() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl font-bold text-eerie-black mb-4">
-            Start Free, Scale As You Grow
+            Start with Culi, Scale As You Grow
           </h2>
-          <p className="text-lg text-eerie-black/80 max-w-2xl mx-auto">
-            No credit card required. 14-day free trial on paid plans.
-          </p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

@@ -135,3 +135,4 @@ AI_GATEWAY_API_KEY= (optional, for Vercel AI Gateway)
 
 - use supabase mcp
 - never overcapitulize text
+- always check lint errors

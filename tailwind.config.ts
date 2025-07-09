@@ -6,33 +6,6 @@ const config: Config = {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  safelist: [
-    // Grid columns
-    'grid-cols-1',
-    'grid-cols-6',
-    'grid-cols-12',
-    'md:grid-cols-6',
-    'lg:grid-cols-12',
-    // Column spans
-    'col-span-1',
-    'col-span-2',
-    'col-span-3',
-    'col-span-6',
-    'col-span-12',
-    'md:col-span-2',
-    'md:col-span-3',
-    'md:col-span-6',
-    'lg:col-span-3',
-    'lg:col-span-6',
-    'lg:col-span-12',
-    // Row spans
-    'row-span-1',
-    'row-span-2',
-    'md:row-span-1',
-    'md:row-span-2',
-    // Auto rows
-    'auto-rows-[160px]',
-  ],
   theme: {
     extend: {
       colors: {

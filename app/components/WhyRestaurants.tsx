@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { TrendingUp, Users, Heart, Shield, Globe, Clock, Bot, GraduationCap, ChefHat, Zap, BookOpen, BarChart3 } from "lucide-react"
+import { TrendingUp, Users, Heart, Globe, Clock, GraduationCap, ChefHat, Zap, BookOpen, BarChart3 } from "lucide-react"
 import { BentoGrid, BentoCard } from "@/app/components/ui/bento-grid"
 import { useState, useEffect } from "react"
 
@@ -210,7 +210,7 @@ export function WhyRestaurants() {
                     Build Guest Loyalty
                   </h3>
                   <p className="text-eerie-black/70 text-sm">
-                    Show you care about every guest's needs, from dietary restrictions to language preferences.
+                    Show you care about every guest&apos;s needs, from dietary restrictions to language preferences.
                   </p>
                 </div>
                 <div className="mt-auto space-y-2">
