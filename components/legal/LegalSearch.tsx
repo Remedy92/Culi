@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   CommandDialog,
@@ -11,6 +11,7 @@ import {
   CommandList,
 } from '@/components/ui/command'
 import { Search, FileText, Shield, Cookie, Scale } from 'lucide-react'
+import './LegalSearchDialog.css'
 
 interface SearchItem {
   id: string
@@ -160,13 +161,47 @@ export function LegalSearch() {
   const [search, setSearch] = useState('')
   const router = useRouter()
 
-  // Filter search results
+  // Enhanced fuzzy search with ranking
   const filteredItems = searchableContent.filter(item => {
+    if (!search.trim()) return true
+    
     const searchLower = search.toLowerCase()
-    return (
-      item.title.toLowerCase().includes(searchLower) ||
-      item.description.toLowerCase().includes(searchLower)
+    const titleLower = item.title.toLowerCase()
+    const descLower = item.description.toLowerCase()
+    
+    // Exact matches get priority
+    if (titleLower === searchLower) return true
+    
+    // Title contains search
+    if (titleLower.includes(searchLower)) return true
+    
+    // Description contains search
+    if (descLower.includes(searchLower)) return true
+    
+    // Check if all search words appear in title or description
+    const searchWords = searchLower.split(' ').filter(word => word.length > 2)
+    return searchWords.every(word => 
+      titleLower.includes(word) || descLower.includes(word)
     )
+  }).sort((a, b) => {
+    // Sort by relevance
+    const searchLower = search.toLowerCase()
+    const aTitle = a.title.toLowerCase()
+    const bTitle = b.title.toLowerCase()
+    
+    // Exact title matches first
+    if (aTitle === searchLower) return -1
+    if (bTitle === searchLower) return 1
+    
+    // Title starts with search
+    if (aTitle.startsWith(searchLower) && !bTitle.startsWith(searchLower)) return -1
+    if (!aTitle.startsWith(searchLower) && bTitle.startsWith(searchLower)) return 1
+    
+    // Title includes search
+    if (aTitle.includes(searchLower) && !bTitle.includes(searchLower)) return -1
+    if (!aTitle.includes(searchLower) && bTitle.includes(searchLower)) return 1
+    
+    return 0
   })
 
   // Group items by page
@@ -182,6 +217,7 @@ export function LegalSearch() {
 
   const handleSelect = useCallback((item: SearchItem) => {
     setOpen(false)
+    setSearch('') // Clear search after selection
     if (item.section) {
       router.push(`${item.page}#${item.section}`)
     } else {
@@ -195,50 +231,63 @@ export function LegalSearch() {
         e.preventDefault()
         setOpen((open) => !open)
       }
+      
+      // Close on Escape
+      if (e.key === "Escape" && open) {
+        setOpen(false)
+        setSearch('')
+      }
     }
 
     document.addEventListener("keydown", down)
     return () => document.removeEventListener("keydown", down)
-  }, [])
+  }, [open])
 
   return (
     <>
       {/* Search Trigger Button */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 flex items-center gap-2 px-4 py-2 bg-spanish-orange text-white rounded-full shadow-warm-lg hover:bg-spanish-orange/90 transition-all duration-200 hover:scale-105"
+        className="fixed bottom-6 right-6 flex items-center gap-2.5 px-5 py-3 bg-white/90 backdrop-blur-md rounded-full shadow-[0_8px_32px_rgba(58,51,48,0.12)] border border-cinereous/10 hover:bg-white hover:shadow-[0_12px_40px_rgba(58,51,48,0.16)] transition-all duration-300 group"
+        aria-label="Search legal documents (Command+K)"
       >
-        <Search className="h-4 w-4" />
-        <span className="text-sm font-medium">Search</span>
-        <kbd className="ml-2 pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border border-white/20 bg-white/10 px-1.5 font-mono text-[10px] font-medium">
+        <Search className="h-4 w-4 text-spanish-orange group-hover:scale-110 transition-transform duration-300" />
+        <span className="text-sm font-medium text-eerie-black">Search</span>
+        <kbd className="ml-1 pointer-events-none inline-flex h-5 select-none items-center gap-0.5 rounded bg-cinereous/10 px-1.5 font-mono text-[10px] font-medium text-eerie-black/70 border border-cinereous/20">
           <span className="text-xs">⌘</span>K
         </kbd>
       </button>
 
-      <CommandDialog open={open} onOpenChange={setOpen}>
+      <CommandDialog 
+        open={open} 
+        onOpenChange={setOpen}
+        className="search-dialog-content"
+      >
         <CommandInput
-          placeholder="Search legal pages..."
+          placeholder="Search legal documents..."
           value={search}
           onValueChange={setSearch}
         />
         <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
+          <CommandEmpty>
+            No results found. Try searching for &quot;privacy&quot;, &quot;terms&quot;, &quot;cookies&quot;, or &quot;GDPR&quot;.
+          </CommandEmpty>
           {Object.entries(groupedItems).map(([group, items]) => (
-            <CommandGroup key={group} heading={group}>
+            <CommandGroup key={group} heading={group} className="search-group">
               {items.map((item) => (
                 <CommandItem
                   key={item.id}
                   onSelect={() => handleSelect(item)}
-                  className="flex items-start gap-3 py-3"
+                  className="search-item flex items-start gap-3"
                 >
-                  <div className="mt-0.5 text-eerie-black/60">
-                    {item.icon}
+                  <div className="search-item-icon mt-0.5">
+                    {React.cloneElement(item.icon as React.ReactElement, { className: 'h-4 w-4' })}
                   </div>
                   <div className="flex-1">
-                    <div className="font-medium text-eerie-black">
+                    <div className="search-item-title">
                       {item.title}
                     </div>
-                    <div className="text-sm text-eerie-black/60">
+                    <div className="search-item-description">
                       {item.description}
                     </div>
                   </div>
