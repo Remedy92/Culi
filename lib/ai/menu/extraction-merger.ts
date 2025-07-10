@@ -51,12 +51,16 @@ export function mergeOCRWithAI(
       const priceMatch = aiItem.price ? findPriceInOCR(aiItem.name, ocrLines) : undefined;
       const descMatch = findDescriptionInOCR(aiItem.name, ocrLines, itemMatch?.lineIndex);
       
-      const mergedDescription = descMatch?.text || aiItem.description || '';
+      const mergedDescription = descMatch?.text || (aiItem.description === null ? '' : aiItem.description) || '';
+      
+      // Handle price: use null for unknown prices
+      const finalPrice = priceMatch?.value || 
+                        (aiItem.price !== null && aiItem.price !== undefined ? aiItem.price : null);
       
       const item: MenuItem = {
         id: generateUUID(),
         name: itemMatch?.text || aiItem.name,
-        price: (priceMatch?.value || aiItem.price || 0) as z.infer<typeof ConfidenceSchema>,
+        price: finalPrice as z.infer<typeof PriceSchema>,
         description: mergedDescription || undefined,
         allergens: inferAllergensFromText(mergedDescription),
         dietaryTags: inferDietaryTags(mergedDescription + ' ' + (itemMatch?.text || aiItem.name)),
@@ -277,7 +281,7 @@ export function inferDietaryTags(text: string): DietaryTag[] {
 }
 
 function calculateItemConfidence(
-  aiItem: { confidence?: number; price?: number; description?: string },
+  aiItem: { confidence?: number; price?: number | null; description?: string },
   textMatch: TextMatch | null,
   priceMatch: PriceMatch | null,
   descMatch: TextMatch | null

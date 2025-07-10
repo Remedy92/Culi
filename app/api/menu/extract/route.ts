@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { streamText } from 'ai';
+import { generateObject } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
+import { gateway } from '@ai-sdk/gateway';
 import { kv } from '@vercel/kv';
 import * as Sentry from '@sentry/nextjs';
 import { captureError, trackExtractionError, addBreadcrumb } from '@/lib/sentry';
@@ -13,7 +14,8 @@ import {
   ExtractedMenuSchema, 
   OCRResultSchema, 
   QuickAnalysisResultSchema,
-  ExtractedMenu 
+  ExtractedMenu,
+  MenuSectionSchema
 } from '@/lib/ai/menu/extraction-schemas';
 import { EXTRACTION_CONFIG } from '@/lib/config/extraction';
 
@@ -26,15 +28,13 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-// Configure AI Gateway for v5
-const gatewayOpenAI = process.env.AI_GATEWAY_API_KEY
-  ? createOpenAI({
-      baseURL: 'https://ai-gateway.vercel.sh/v1', // Vercel AI Gateway URL
-      apiKey: process.env.AI_GATEWAY_API_KEY,
-    })
-  : createOpenAI(); // Direct OpenAI fallback (uses OPENAI_API_KEY)
+// Configure AI providers
+const useGateway = !!process.env.AI_GATEWAY_API_KEY;
+const openai = createOpenAI(); // Direct OpenAI instance for fallback
 
-console.log('AI Gateway configured:', !!process.env.AI_GATEWAY_API_KEY);
+console.log('AI Gateway mode:', useGateway);
+console.log('Gateway key length:', process.env.AI_GATEWAY_API_KEY?.length || 0);
+console.log('OpenAI key length:', process.env.OPENAI_API_KEY?.length || 0);
 
 // Input validation
 const ExtractRequestSchema = z.object({
@@ -63,6 +63,9 @@ export async function POST(req: NextRequest) {
       input = ExtractRequestSchema.parse(body);
       
       validationSpan.end();
+      
+      // Track extraction start time
+      const extractionStartTime = Date.now();
 
     // Check cache first (unless force reprocess)
     if (!input.forceReprocess) {
@@ -110,18 +113,41 @@ export async function POST(req: NextRequest) {
 
     console.log('Starting parallel OCR and AI analysis...');
     
-    const [ocrResult, aiQuickAnalysis] = await Promise.all([
-      performOCR(input.thumbnailUrl).catch(err => {
-        console.error('OCR failed:', err);
-        throw err;
-      }),
-      performQuickAIAnalysis(input.thumbnailUrl).catch(err => {
-        console.error('AI analysis failed:', err);
-        throw err;
-      })
+    const results = await Promise.allSettled([
+      performOCR(input.thumbnailUrl),
+      performQuickAIAnalysis(input.thumbnailUrl)
     ]);
     
     console.log('Parallel processing completed');
+    
+    // Extract results with proper error handling
+    const ocrSettled = results[0];
+    const aiSettled = results[1];
+    
+    if (ocrSettled.status === 'rejected') {
+      console.error('OCR failed:', ocrSettled.reason);
+      span.end();
+      return NextResponse.json(
+        { error: 'OCR processing failed', message: ocrSettled.reason?.message || 'Unknown error' },
+        { status: 500 }
+      );
+    }
+    
+    const ocrResult = ocrSettled.value;
+    
+    // If AI fails, we can still use OCR results
+    let aiQuickAnalysis: z.infer<typeof QuickAnalysisResultSchema>;
+    if (aiSettled.status === 'rejected') {
+      console.error('AI analysis failed, using fallback:', aiSettled.reason);
+      // Use minimal AI results as fallback
+      aiQuickAnalysis = {
+        sections: [],
+        detectedLanguage: 'en',
+        detectedCurrency: 'EUR'
+      };
+    } else {
+      aiQuickAnalysis = aiSettled.value;
+    }
 
     parallelSpan.end();
 
@@ -217,10 +243,15 @@ export async function POST(req: NextRequest) {
 
     cacheSetSpan.end();
 
+    // Calculate processing time
+    const processingTime = Date.now() - extractionStartTime;
+    validatedResult.metadata.processingTime = processingTime;
+    
     // Track metrics
     span.setAttribute('extraction.items_extracted', items.length);
     span.setAttribute('extraction.confidence_score', validatedResult.overallConfidence);
     span.setAttribute('extraction.ocr_confidence', ocrResult.confidence);
+    span.setAttribute('extraction.processing_time', processingTime);
 
     span.end();
 
@@ -231,7 +262,7 @@ export async function POST(req: NextRequest) {
       metrics: {
         itemsExtracted: items.length,
         confidence: validatedResult.overallConfidence,
-        processingTime: validatedResult.metadata.processingTime
+        processingTime: processingTime
       }
     });
 
@@ -337,7 +368,8 @@ async function performOCR(
 }
 
 async function performQuickAIAnalysis(
-  imageUrl: string
+  imageUrl: string,
+  retryCount: number = 0
 ): Promise<z.infer<typeof QuickAnalysisResultSchema>> {
   const span = Sentry.startInactiveSpan({
     op: 'ai.quick',
@@ -346,18 +378,30 @@ async function performQuickAIAnalysis(
 
   console.log('Starting AI analysis...');
   const startTime = Date.now();
+  
+  // Create AbortController for proper stream cancellation
+  const abortController = new AbortController();
+  const timeoutId = setTimeout(() => {
+    console.log('AI analysis timeout triggered, aborting...');
+    abortController.abort();
+  }, 30000);
 
   try {
     // Use cheaper model for quick analysis
-    console.log('Initializing AI model:', EXTRACTION_CONFIG.AI.QUICK_ANALYSIS_MODEL);
-    console.log('Using AI Gateway:', !!process.env.AI_GATEWAY_API_KEY);
-    const model = gatewayOpenAI(EXTRACTION_CONFIG.AI.QUICK_ANALYSIS_MODEL);
+    const modelName = EXTRACTION_CONFIG.AI.QUICK_ANALYSIS_MODEL;
+    const model = useGateway 
+      ? gateway(`openai/${modelName}`)  // Gateway format with provider prefix
+      : openai(modelName);              // Direct OpenAI format
     
-    console.log('Calling AI API...');
+    console.log(`Using ${useGateway ? 'gateway' : 'direct'} model: ${useGateway ? 'openai/' : ''}${modelName}`);
+    console.log('Image URL:', imageUrl);
+    console.log('Prompt length:', QUICK_ANALYSIS_PROMPT.length);
+    console.log('Calling AI API with generateObject for structured output...');
     
-    // Add timeout to prevent hanging
-    const streamPromise = streamText({
+    // Use generateObject for guaranteed structured output
+    const { object } = await generateObject({
       model,
+      schema: QuickAnalysisResultSchema,
       messages: [{
         role: 'user',
         content: [
@@ -366,18 +410,13 @@ async function performQuickAIAnalysis(
         ]
       }],
       temperature: EXTRACTION_CONFIG.AI.TEMPERATURE,
-      maxOutputTokens: EXTRACTION_CONFIG.AI.MAX_TOKENS.QUICK  // v5 uses maxOutputTokens
+      maxTokens: EXTRACTION_CONFIG.AI.MAX_TOKENS.QUICK,
+      abortSignal: abortController.signal
     });
-    
-    const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('AI analysis timeout after 30 seconds')), 30000)
-    );
-    
-    const result = await Promise.race([streamPromise, timeoutPromise]) as Awaited<typeof streamPromise>;
 
-    console.log('Awaiting AI response text...');
-    const text = await result.text;
-    const parsed = JSON.parse(text);
+    console.log('AI response received');
+    
+    clearTimeout(timeoutId);
     
     const duration = Date.now() - startTime;
     console.log(`AI analysis completed in ${duration}ms`);
@@ -385,24 +424,52 @@ async function performQuickAIAnalysis(
     span.setAttribute('ai.duration', duration);
     span.end();
     
-    return QuickAnalysisResultSchema.parse(parsed);
+    // Object is already validated and typed!
+    return object;
   } catch (error) {
-    console.error('AI analysis error:', error);
+    clearTimeout(timeoutId);
+    
+    // Check if it's an abort error
+    if (error instanceof Error && error.name === 'AbortError') {
+      console.error('AI analysis timed out after 30 seconds');
+    } else {
+      console.error('AI analysis error:', error);
+    }
+    
     console.error('Error details:', {
       message: error instanceof Error ? error.message : 'Unknown error',
+      errorName: error instanceof Error ? error.name : 'Unknown',
       apiKeySet: !!process.env.OPENAI_API_KEY,
       apiKeyLength: process.env.OPENAI_API_KEY?.length || 0,
       usingGateway: !!process.env.AI_GATEWAY_API_KEY,
-      gatewayKeyLength: process.env.AI_GATEWAY_API_KEY?.length || 0
+      gatewayKeyLength: process.env.AI_GATEWAY_API_KEY?.length || 0,
+      retryCount
     });
+    
+    // Retry logic for gateway failures (up to 3 attempts)
+    const isGatewayError = error instanceof Error && 
+      (error.message.includes('401') || 
+       error.message.includes('429') || 
+       error.message.includes('503') ||
+       error.message.includes('AI_GATEWAY') ||
+       error.message.includes('gateway') ||
+       error.name === 'AbortError');
+    
+    if (isGatewayError && retryCount < 2 && useGateway) {
+      console.log(`Retrying AI analysis (attempt ${retryCount + 2}/3)...`);
+      // Exponential backoff: 1s, 2s
+      await new Promise(resolve => setTimeout(resolve, (retryCount + 1) * 1000));
+      return performQuickAIAnalysis(imageUrl, retryCount + 1);
+    }
     
     span.setStatus({ code: 2, message: 'internal_error' });
     span.end();
     
-    addBreadcrumb('AI quick analysis failed', 'ai', { imageUrl });
+    addBreadcrumb('AI quick analysis failed', 'ai', { imageUrl, retryCount });
     captureError(error, { 
       operation: 'quick_ai_analysis',
-      imageUrl 
+      imageUrl,
+      retryCount 
     });
     
     // Return minimal structure on error
@@ -423,11 +490,22 @@ async function enhanceWithFullResolution(
     op: 'ai.enhance',
     description: 'Full resolution enhancement'
   });
+  
+  // Create AbortController for enhancement timeout
+  const abortController = new AbortController();
+  const timeoutId = setTimeout(() => {
+    console.log('Enhancement timeout triggered, aborting...');
+    abortController.abort();
+  }, 40000); // 40 seconds for enhancement
 
   try {
     // Use better model for enhancement
-    console.log('Using enhancement model with gateway:', !!process.env.AI_GATEWAY_API_KEY);
-    const model = gatewayOpenAI(EXTRACTION_CONFIG.AI.ENHANCEMENT_MODEL);
+    const modelName = EXTRACTION_CONFIG.AI.ENHANCEMENT_MODEL;
+    const model = useGateway 
+      ? gateway(`openai/${modelName}`)  // Gateway format with provider prefix
+      : openai(modelName);              // Direct OpenAI format
+    
+    console.log(`Using ${useGateway ? 'gateway' : 'direct'} enhancement model: ${useGateway ? 'openai/' : ''}${modelName}`);
     
     const enhancementPrompt = `
 You have:
@@ -440,8 +518,18 @@ Current extraction: ${JSON.stringify(currentExtraction)}
 
 Return only the enhanced sections/items that need updating.`;
 
-    const result = await streamText({
+    // Define enhancement schema for partial updates
+    const EnhancementResultSchema = z.object({
+      sections: z.array(MenuSectionSchema).optional(),
+      metadata: z.object({
+        enhancedAt: z.string().optional(),
+        enhancedItems: z.number().optional()
+      }).optional()
+    });
+    
+    const { object } = await generateObject({
       model,
+      schema: EnhancementResultSchema,
       messages: [{
         role: 'user',
         content: [
@@ -450,14 +538,22 @@ Return only the enhanced sections/items that need updating.`;
         ]
       }],
       temperature: EXTRACTION_CONFIG.AI.TEMPERATURE,
-      maxOutputTokens: EXTRACTION_CONFIG.AI.MAX_TOKENS.ENHANCEMENT  // v5 uses maxOutputTokens
+      maxTokens: EXTRACTION_CONFIG.AI.MAX_TOKENS.ENHANCEMENT,
+      abortSignal: abortController.signal
     });
-
-    const enhancement = await result.text;
+    clearTimeout(timeoutId);
     span.end();
     
-    return JSON.parse(enhancement);
+    return object;
   } catch (error) {
+    clearTimeout(timeoutId);
+    
+    if (error instanceof Error && error.name === 'AbortError') {
+      console.error('Enhancement timed out after 40 seconds');
+    } else {
+      console.error('Enhancement error:', error);
+    }
+    
     span.setStatus({ code: 2, message: 'internal_error' });
     span.end();
     

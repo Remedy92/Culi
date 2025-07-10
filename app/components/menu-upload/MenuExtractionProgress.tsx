@@ -9,14 +9,12 @@ import {
   Loader2,
   Sparkles,
   ListChecks,
-  AlertTriangle
+  AlertTriangle,
+  Clock
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { 
-  MenuExtractionParser, 
-  type ExtractionUpdate 
-} from '@/lib/ai/menu/extraction-parser';
 import type { ExtractedMenu } from '@/lib/ai/menu/extraction-schemas';
+import type { ProgressUpdate } from '@/lib/utils/progress-tracker';
 
 interface MenuExtractionProgressProps {
   menuId: string;
@@ -52,28 +50,53 @@ export function MenuExtractionProgress({
     { id: 'ocr', label: 'Text Recognition (OCR)', status: 'pending' },
     { id: 'ai', label: 'AI Analysis', status: 'pending' },
     { id: 'merge', label: 'Merging Results', status: 'pending' },
-    { id: 'validate', label: 'Validation', status: 'pending' }
+    { id: 'validation', label: 'Validation', status: 'pending' }
   ]);
   const [errors, setErrors] = useState<string[]>([]);
+  const [warningMessage, setWarningMessage] = useState<string | null>(null);
+  const [extractionTime, setExtractionTime] = useState(0);
   const announcerRef = useRef<HTMLDivElement>(null);
-  const parserRef = useRef<MenuExtractionParser | null>(null);
+  const startTimeRef = useRef<number>(Date.now());
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const isExtractingRef = useRef(false);
 
   useEffect(() => {
+    // Prevent duplicate extraction requests
+    if (isExtractingRef.current) {
+      console.log('Extraction already in progress, skipping duplicate request');
+      return;
+    }
+    
+    isExtractingRef.current = true;
     startExtraction();
+    
+    // Start timer
+    startTimeRef.current = Date.now();
+    timerRef.current = setInterval(() => {
+      setExtractionTime(Math.floor((Date.now() - startTimeRef.current) / 1000));
+    }, 1000);
+    
     return () => {
-      // Cleanup if component unmounts
-      if (parserRef.current) {
-        parserRef.current = null;
+      // Cleanup
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
       }
+      // Abort any ongoing request
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      isExtractingRef.current = false;
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [menuId]);
 
   const startExtraction = async () => {
     try {
-      updateMilestone('ocr', 'active', 'Processing image with OCR...');
+      // Create a new abort controller for this request
+      abortControllerRef.current = new AbortController();
       
-      const response = await fetch('/api/menu/extract', {
+      const response = await fetch('/api/menu/extract-stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -81,7 +104,8 @@ export function MenuExtractionProgress({
           restaurantId,
           thumbnailUrl,
           enhancedUrl
-        })
+        }),
+        signal: abortControllerRef.current.signal
       });
 
       if (!response.ok) {
@@ -89,86 +113,148 @@ export function MenuExtractionProgress({
         throw new Error(error.error || 'Extraction failed');
       }
 
-      const data = await response.json();
-      
-      if (data.extraction) {
-        // Non-streaming response
-        handleExtractionComplete(data.extraction);
-      } else if (response.body) {
-        // Streaming response
-        handleStreamingResponse(response.body);
+      if (!response.body) {
+        throw new Error('No response body');
       }
+
+      await handleStreamingResponse(response.body);
     } catch (error) {
+      // Only show error if not aborted
+      if (error instanceof Error && error.name === 'AbortError') {
+        console.log('Extraction aborted');
+        return;
+      }
+      
       console.error('Extraction error:', error);
-      updateMilestone('ocr', 'error', 'Failed to process');
+      setErrors([error instanceof Error ? error.message : 'Extraction failed']);
       onError?.(error instanceof Error ? error.message : 'Extraction failed');
+    } finally {
+      isExtractingRef.current = false;
     }
   };
 
   const handleStreamingResponse = async (body: ReadableStream) => {
     const reader = body.getReader();
     const decoder = new TextDecoder();
-    
-    parserRef.current = new MenuExtractionParser(
-      handleExtractionUpdate,
-      handleExtractionComplete
-    );
+    let buffer = '';
 
     try {
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
         
-        const chunk = decoder.decode(value);
-        parserRef.current.processChunk(chunk);
+        buffer += decoder.decode(value, { stream: true });
+        
+        // Process complete events
+        const lines = buffer.split('\n');
+        
+        for (let i = 0; i < lines.length - 1; i++) {
+          const line = lines[i].trim();
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+              handleProgressUpdate(data);
+            } catch (e) {
+              console.error('Failed to parse event:', e, line);
+            }
+          }
+        }
+        
+        // Keep the last line in buffer if it's incomplete
+        buffer = lines[lines.length - 1];
       }
-      
-      parserRef.current.flush();
     } catch (error) {
       console.error('Streaming error:', error);
       onError?.('Failed to process streaming response');
     }
   };
 
-  const handleExtractionUpdate = (update: ExtractionUpdate) => {
-    switch (update.type) {
-      case 'thinking':
-        setCurrentStep(update.message || 'Processing...');
+  const handleProgressUpdate = (data: ProgressUpdate & { 
+    extraction?: ExtractedMenu;
+    stats?: { confidence: number; lines: number; textLength: number };
+    metrics?: { itemsExtracted: number; confidence: number; processingTime: number };
+    error?: string;
+  }) => {
+    // Update progress
+    if (data.progress >= 0) {
+      setProgress(data.progress);
+    }
+    
+    // Update message
+    if (data.message) {
+      setCurrentStep(data.message);
+      announce(data.message);
+    }
+    
+    // Update milestones based on stage
+    switch (data.stage) {
+      case 'ocr_start':
+      case 'ocr_processing':
+        updateMilestone('ocr', 'active', data.message);
         break;
-        
-      case 'section_found':
-        setSectionsFound(prev => prev + 1);
-        updateMilestone('ai', 'active', `Found section: ${update.content?.name}`);
-        announce(`Found menu section: ${update.content?.name}`);
-        break;
-        
-      case 'item_found':
-        setItemsFound(prev => prev + 1);
-        if (itemsFound === 0) {
-          updateMilestone('ai', 'active', 'Extracting menu items...');
+      case 'ocr_complete':
+        updateMilestone('ocr', 'completed', `${data.stats?.confidence || 0}% confidence`);
+        if (data.stats) {
+          setSectionsFound(1); // OCR found text
         }
-        announce(`Found item: ${update.content?.name}`);
         break;
-        
-      case 'progress':
-        setProgress(update.progress || 0);
+      case 'ai_start':
+      case 'ai_processing':
+        updateMilestone('ai', 'active', data.message);
         break;
-        
+      case 'ai_complete':
+      case 'ai_fallback':
+        updateMilestone('ai', 'completed');
+        break;
+      case 'merge_start':
+      case 'merge_processing':
+        updateMilestone('merge', 'active', data.message);
+        break;
+      case 'validation':
+      case 'save_start':
+      case 'items_saved':
+        updateMilestone('validation', 'active', data.message);
+        break;
+      case 'complete':
+        updateMilestone('merge', 'completed');
+        updateMilestone('validation', 'completed');
+        if (data.extraction) {
+          handleExtractionComplete(data.extraction);
+        }
+        if (data.metrics) {
+          setItemsFound(data.metrics.itemsExtracted || 0);
+        }
+        break;
       case 'error':
-        setErrors(prev => [...prev, update.message || 'Unknown error']);
+        if (data.error) {
+          setErrors([data.error]);
+          onError?.(data.error);
+        }
+        break;
+      case 'warning':
+      case 'offer_alternative':
+      case 'timeout_warning':
+        setWarningMessage(data.message);
         break;
     }
   };
 
   const handleExtractionComplete = (extraction: ExtractedMenu) => {
-    updateMilestone('ocr', 'completed');
-    updateMilestone('ai', 'completed');
-    updateMilestone('merge', 'completed');
-    updateMilestone('validate', 'completed');
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
     
     setProgress(100);
     setCurrentStep('Extraction complete!');
     announce('Menu extraction completed successfully');
+    
+    // Count total items
+    const totalItems = extraction.sections.reduce(
+      (sum, section) => sum + section.items.length, 
+      0
+    );
+    setItemsFound(totalItems);
+    setSectionsFound(extraction.sections.length);
     
     onComplete(extraction);
   };
@@ -210,6 +296,12 @@ export function MenuExtractionProgress({
           Extracting Menu Information
         </h3>
         <p className="mt-1 text-sm text-gray-600">{currentStep}</p>
+        {extractionTime > 0 && (
+          <div className="mt-2 flex items-center justify-center gap-1 text-xs text-gray-500">
+            <Clock className="h-3 w-3" />
+            <span>{extractionTime}s</span>
+          </div>
+        )}
       </div>
 
       {/* Progress bar */}
@@ -289,6 +381,26 @@ export function MenuExtractionProgress({
         )}
       </AnimatePresence>
 
+      {/* Warnings */}
+      <AnimatePresence>
+        {warningMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="rounded-lg border border-yellow-200 bg-yellow-50 p-4"
+            role="alert"
+          >
+            <div className="flex items-start space-x-3">
+              <Clock className="h-5 w-5 text-yellow-600 flex-shrink-0 animate-pulse" />
+              <div className="flex-1">
+                <p className="text-sm text-yellow-800">{warningMessage}</p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Errors */}
       <AnimatePresence>
         {errors.length > 0 && (
@@ -303,7 +415,7 @@ export function MenuExtractionProgress({
               <AlertTriangle className="h-5 w-5 text-red-600 flex-shrink-0" />
               <div className="flex-1">
                 <h4 className="font-medium text-red-900">
-                  Some items need attention
+                  Extraction failed
                 </h4>
                 <ul className="mt-2 space-y-1 text-sm text-red-700">
                   {errors.map((error, index) => (

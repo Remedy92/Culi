@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { MenuUploadZone, MenuExtractionProgress } from '@/app/components/menu-upload';
+import { MenuUploadZone, MenuExtractionProgress, MenuExtractionResults } from '@/app/components/menu-upload';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, ArrowRight } from 'lucide-react';
 import type { ExtractedMenu } from '@/lib/ai/menu/extraction-schemas';
@@ -138,45 +138,29 @@ export default function TestMenuPage() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="text-center"
               >
-                <CheckCircle className="mx-auto h-16 w-16 text-green-500" />
-                <h2 className="mt-4 text-2xl font-semibold text-gray-900">
-                  Extraction Complete!
-                </h2>
-                <p className="mt-2 text-gray-600">
-                  Successfully extracted {extraction.items?.length || 0} menu items
-                  across {extraction.sections?.length || 0} sections
-                </p>
-
-                <div className="mt-6 text-left">
-                  <h3 className="font-semibold text-gray-900 mb-2">Summary:</h3>
-                  <div className="bg-gray-50 rounded p-4 space-y-2">
-                    <p className="text-sm">
-                      <span className="font-medium">Confidence:</span>{' '}
-                      {extraction.overallConfidence}%
-                    </p>
-                    <p className="text-sm">
-                      <span className="font-medium">Processing Time:</span>{' '}
-                      {extraction.metadata?.processingTime}ms
-                    </p>
-                    <p className="text-sm">
-                      <span className="font-medium">Method:</span>{' '}
-                      {extraction.metadata?.extractionMethod}
-                    </p>
-                  </div>
+                <div className="mb-6 text-center">
+                  <CheckCircle className="mx-auto h-12 w-12 text-green-500" />
+                  <h2 className="mt-3 text-xl font-semibold text-gray-900">
+                    Extraction Complete!
+                  </h2>
                 </div>
+                
+                <MenuExtractionResults 
+                  extraction={extraction} 
+                  className="mb-6"
+                />
 
-                <div className="mt-6 space-y-3">
+                <div className="mt-6 flex gap-3">
                   <button
                     onClick={() => console.log('Full extraction:', extraction)}
-                    className="w-full rounded-md bg-primary px-4 py-2 text-white hover:bg-primary/90"
+                    className="flex-1 rounded-md bg-gray-600 px-4 py-2 text-white hover:bg-gray-700"
                   >
-                    View Full Results (Console)
+                    Log to Console
                   </button>
                   <button
                     onClick={reset}
-                    className="w-full rounded-md border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-50"
+                    className="flex-1 rounded-md border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-50"
                   >
                     Test Another Menu
                   </button>

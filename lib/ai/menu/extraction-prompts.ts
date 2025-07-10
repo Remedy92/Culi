@@ -87,8 +87,42 @@ Analyze this menu image thumbnail and extract basic structure.
 This is a quick pass - focus on identifying sections and items only.
 Don't worry about perfect accuracy - this will be refined with OCR data.
 
-Return JSON with sections and rough item detection.
-Include confidence scores for each element.`;
+Return JSON matching this EXACT schema structure:
+{
+  "sections": [
+    {
+      "name": "Section Name",
+      "confidence": 80,
+      "items": [
+        {
+          "name": "Item Name",
+          "price": 12.50,
+          "description": "",
+          "confidence": 75
+        }
+      ]
+    }
+  ],
+  "detectedLanguage": "en",
+  "detectedCurrency": "EUR",
+  "menuType": "restaurant"
+}
+
+CRITICAL RULES FOR NULL HANDLING:
+- For missing descriptions: Use empty string "" (NOT null)
+- For unclear prices: Use null (NEVER use 0 unless the item is explicitly free)
+- NEVER use null for name or confidence fields
+- Valid examples:
+  * Item with description: {"name": "Pizza", "price": 12.50, "description": "Tomato and cheese", "confidence": 90}
+  * Item without description: {"name": "Coffee", "price": 3.50, "description": "", "confidence": 85}
+  * Item with unknown price: {"name": "Daily Special", "price": null, "description": "", "confidence": 70}
+  * Free item: {"name": "Water", "price": 0, "description": "Complimentary", "confidence": 95}
+  * Market price item: {"name": "Fresh Fish", "price": null, "description": "Market price", "confidence": 85}
+
+OTHER RULES:
+- Confidence scores must be 0-100
+- Only include items you can clearly see
+- menuType options: restaurant, cafe, bar, bakery, other`;
 
 export const ENHANCEMENT_PROMPT = `
 You have access to:

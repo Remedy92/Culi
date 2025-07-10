@@ -4,7 +4,7 @@ import { z } from 'zod';
 export type Price = z.infer<typeof PriceSchema>;
 export type Confidence = z.infer<typeof ConfidenceSchema>;
 
-export const PriceSchema = z.number().positive().brand('Price');
+export const PriceSchema = z.number().nonnegative().nullable().brand('Price');
 export const ConfidenceSchema = z.number().min(0).max(100).brand('Confidence');
 
 // Enums for consistency
@@ -51,7 +51,7 @@ export const BoundingBoxSchema = z.object({
 export const MenuItemSchema = z.object({
   id: z.string().uuid(),
   name: z.string().min(1).max(100),
-  price: PriceSchema,
+  price: PriceSchema.optional(),
   description: z.string().max(500).optional(),
   allergens: z.array(AllergenEnum).default([]),
   dietaryTags: z.array(DietaryTagEnum).default([]),
@@ -114,8 +114,8 @@ export const QuickAnalysisResultSchema = z.object({
     confidence: z.number(),
     items: z.array(z.object({
       name: z.string(),
-      price: z.number().optional(),
-      description: z.string().optional(),
+      price: z.number().nullable().optional(),
+      description: z.string().nullable().optional(),
       confidence: z.number()
     }))
   })),

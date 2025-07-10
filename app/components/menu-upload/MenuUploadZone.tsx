@@ -62,7 +62,7 @@ export function MenuUploadZone({
 
   const handleFile = useCallback((file: File) => {
     // Validate file type
-    if (!EXTRACTION_CONFIG.UPLOAD.ALLOWED_TYPES.includes(file.type)) {
+    if (!EXTRACTION_CONFIG.UPLOAD.ALLOWED_TYPES.includes(file.type as typeof EXTRACTION_CONFIG.UPLOAD.ALLOWED_TYPES[number])) {
       onError?.('Please upload a JPEG, PNG, WebP, or PDF file');
       return;
     }
@@ -88,7 +88,7 @@ export function MenuUploadZone({
   }, [onError]);
 
   const uploadFile = useCallback(async () => {
-    if (!selectedFile) return;
+    if (!selectedFile || isUploading) return;
 
     setIsUploading(true);
     setUploadProgress(0);
@@ -132,7 +132,7 @@ export function MenuUploadZone({
       setIsUploading(false);
       setUploadProgress(0);
     }
-  }, [selectedFile, restaurantId, onUploadComplete, onError]);
+  }, [selectedFile, restaurantId, onUploadComplete, onError, isUploading]);
 
   const clearSelection = useCallback(() => {
     setSelectedFile(null);
@@ -244,7 +244,8 @@ export function MenuUploadZone({
                           e.stopPropagation();
                           uploadFile();
                         }}
-                        className="rounded-md bg-primary px-3 py-1 text-sm font-medium text-white hover:bg-primary/90"
+                        disabled={isUploading}
+                        className="rounded-md bg-primary px-3 py-1 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
                         aria-label="Upload file"
                       >
                         Upload
