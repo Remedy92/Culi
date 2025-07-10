@@ -136,3 +136,5 @@ AI_GATEWAY_API_KEY= (optional, for Vercel AI Gateway)
 - use supabase mcp
 - never overcapitulize text
 - always check lint errors
+- Sentry v9 no longer needs `autoDiscoverNodePerformanceMonitoringIntegrations()` - integrations are automatic
+- Webpack cache warnings about large strings are normal with Sentry/OpenTelemetry - use lazy loading for large libraries
