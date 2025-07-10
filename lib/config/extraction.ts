@@ -17,10 +17,10 @@ export const EXTRACTION_CONFIG = {
   AI: {
     QUICK_ANALYSIS_MODEL: 'gpt-4o-mini', // Cheaper model for initial analysis
     ENHANCEMENT_MODEL: 'gpt-4o', // Better model for low-confidence enhancement
-    TEMPERATURE: 0.1,
+    TEMPERATURE: 0, // Deterministic outputs for consistency
     MAX_TOKENS: {
-      QUICK: 2000,
-      ENHANCEMENT: 3000
+      QUICK: 1500, // Reduced to cap costs
+      ENHANCEMENT: 2000 // Reduced to cap costs
     }
   },
 
@@ -48,12 +48,12 @@ export const EXTRACTION_CONFIG = {
   // Image Processing
   IMAGE: {
     THUMBNAIL: {
-      SIZE: 1024,
-      QUALITY: 90
+      SIZE: 768, // Reduced from 1024 to improve processing time
+      QUALITY: 80 // Reduced from 90 to reduce token usage
     },
     ENHANCED: {
-      SIZE: 2048,
-      QUALITY: 95,
+      SIZE: 1536, // Reduced from 2048 for faster processing
+      QUALITY: 85, // Reduced from 95 to optimize tokens
       SHARPEN_SIGMA: 2
     }
   },
@@ -61,9 +61,16 @@ export const EXTRACTION_CONFIG = {
   // Processing Timeouts
   TIMEOUTS: {
     OCR: 30000, // 30 seconds
-    AI_QUICK: 20000, // 20 seconds
-    AI_ENHANCEMENT: 40000, // 40 seconds
-    TOTAL_EXTRACTION: 60000 // 60 seconds
+    AI_QUICK: 45000, // 45 seconds (increased for vision tasks)
+    AI_ENHANCEMENT: 60000, // 60 seconds (increased for complex menus)
+    TOTAL_EXTRACTION: 90000 // 90 seconds (increased to accommodate retries)
+  },
+
+  // Feature Flags
+  FEATURES: {
+    ENABLE_AI_FALLBACK: true, // Fallback to GPT-4o on timeout
+    ENABLE_GATEWAY_BYPASS: true, // Allow direct API calls on gateway timeout
+    EXPONENTIAL_BACKOFF: true // Use exponential backoff for retries
   }
 } as const;
 

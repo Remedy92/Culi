@@ -23,7 +23,7 @@ export async function POST(req: Request) {
         prompt,
       });
 
-      return result.toDataStreamResponse();
+      return result.toTextStreamResponse();
     } else {
       // Generate complete text response
       const result = await generateText({

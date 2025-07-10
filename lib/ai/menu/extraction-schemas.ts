@@ -41,6 +41,15 @@ export const DietaryTagEnum = z.enum([
   'paleo'
 ]);
 
+export const ChoiceGroupEnum = z.enum([
+  'starter',
+  'main',
+  'dessert',
+  'appetizer',
+  'side',
+  'drink'
+]);
+
 export const BoundingBoxSchema = z.object({
   x: z.number(),
   y: z.number(),
@@ -62,7 +71,11 @@ export const MenuItemSchema = z.object({
   modifiers: z.array(z.object({
     name: z.string(),
     price: z.number().optional()
-  })).optional()
+  })).optional(),
+  // Bundle support
+  isPartOfBundle: z.boolean().default(false),
+  bundleId: z.string().uuid().optional(),
+  choiceGroup: ChoiceGroupEnum.optional()
 });
 
 export const MenuSectionSchema = z.object({
@@ -71,7 +84,29 @@ export const MenuSectionSchema = z.object({
   description: z.string().max(200).optional(),
   confidence: ConfidenceSchema,
   items: z.array(MenuItemSchema),
-  displayOrder: z.number().int().min(0).default(0)
+  displayOrder: z.number().int().min(0).default(0),
+  // Bundle information
+  bundleInfo: z.object({
+    type: z.enum(['prix-fixe', 'multi-course', 'combo', 'lunch-special', 'dinner-with-drinks']),
+    courses: z.number().int().positive(),
+    sharedPrice: PriceSchema,
+    priceType: z.enum(['per-person', 'per-table', 'fixed']).default('fixed'),
+    description: z.string().optional(),
+    includedDrinks: z.object({
+      options: z.array(z.string()),
+      quantity: z.string().optional(),
+      conditions: z.string().optional()
+    }).optional(),
+    conditions: z.array(z.string()).optional(),
+    // Structured choices for bundles
+    choices: z.object({
+      starters: z.array(MenuItemSchema).default([]),
+      mains: z.array(MenuItemSchema).default([]),
+      desserts: z.array(MenuItemSchema).default([]),
+      sides: z.array(MenuItemSchema).optional(),
+      drinks: z.array(MenuItemSchema).optional()
+    }).optional()
+  }).optional()
 });
 
 export const ExtractedMenuSchema = z.object({
@@ -127,6 +162,7 @@ export const QuickAnalysisResultSchema = z.object({
 // Types
 export type AllergenType = z.infer<typeof AllergenEnum>;
 export type DietaryTag = z.infer<typeof DietaryTagEnum>;
+export type ChoiceGroup = z.infer<typeof ChoiceGroupEnum>;
 export type MenuItem = z.infer<typeof MenuItemSchema>;
 export type MenuSection = z.infer<typeof MenuSectionSchema>;
 export type ExtractedMenu = z.infer<typeof ExtractedMenuSchema>;

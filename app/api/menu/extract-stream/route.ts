@@ -194,6 +194,14 @@ export async function POST(req: NextRequest) {
         
         if (results[1].status === 'rejected') {
           console.error('AI analysis failed, using fallback:', results[1].reason);
+          
+          // Send warning to user about fallback
+          sendEvent({
+            stage: 'ai_fallback',
+            progress: 35,
+            message: 'AI analysis unavailable, using text-only extraction'
+          });
+          
           // Create a basic fallback with OCR data
           aiQuickAnalysis = {
             sections: [{
@@ -243,7 +251,7 @@ export async function POST(req: NextRequest) {
             section.items.forEach(item => {
               if (item.price !== null && item.price !== undefined && item.price <= 0) {
                 console.log(`Fixing invalid price ${item.price} for item ${item.name}`);
-                item.price = null;
+                item.price = undefined;
               }
             });
           });
@@ -434,7 +442,7 @@ async function performOCRWithProgress(
     const result = OCRResultSchema.parse({
       text: data.text || '',
       confidence: data.confidence || 0,
-      lines: ((data as Record<string, unknown>).lines as Array<Record<string, unknown>> || []).map((line) => ({
+      lines: ((data as unknown as Record<string, unknown>).lines as Array<Record<string, unknown>> || []).map((line) => ({
         text: line.text,
         bbox: {
           x: (line.bbox as Record<string, number>).x0,
@@ -444,7 +452,7 @@ async function performOCRWithProgress(
         },
         confidence: line.confidence as number
       })),
-      language: (data as Record<string, unknown>).language as string || 'unknown'
+      language: (data as unknown as Record<string, unknown>).language as string || 'unknown'
     });
     
     return result;
@@ -457,17 +465,36 @@ async function performOCRWithProgress(
 async function performAIAnalysisWithProgress(
   imageUrl: string,
   tracker: ProgressTracker,
-  retryCount: number = 0
+  retryCount: number = 0,
+  forceDirectAPI: boolean = false
 ): Promise<z.infer<typeof QuickAnalysisResultSchema>> {
-  // Start AI progress messages
-  const messages = [...EXTRACTION_PROGRESS_MESSAGES.ai];
+  // Start AI progress messages with extended timing
+  const messages = [
+    ...EXTRACTION_PROGRESS_MESSAGES.ai,
+    { delay: 20000, stage: 'ai_processing' as ProgressUpdateType['stage'], progress: 35, message: 'Extending analysis for complex menu...' },
+    { delay: 30000, stage: 'ai_processing' as ProgressUpdateType['stage'], progress: 38, message: 'This may take up to 60 seconds...' }
+  ];
   tracker.startTimedMessages(messages);
   
   try {
-    const modelName = EXTRACTION_CONFIG.AI.QUICK_ANALYSIS_MODEL;
-    const model = useGateway 
+    // Use GPT-4o on final retry if enabled
+    const modelName = (retryCount >= 2 && EXTRACTION_CONFIG.FEATURES.ENABLE_AI_FALLBACK)
+      ? EXTRACTION_CONFIG.AI.ENHANCEMENT_MODEL
+      : EXTRACTION_CONFIG.AI.QUICK_ANALYSIS_MODEL;
+    
+    // Determine if we should use gateway (can be overridden)
+    const shouldUseGateway = !forceDirectAPI && useGateway && 
+      EXTRACTION_CONFIG.FEATURES.ENABLE_GATEWAY_BYPASS;
+    
+    const model = shouldUseGateway
       ? gateway(`openai/${modelName}`)
       : openai(modelName);
+    
+    // Calculate timeout with exponential backoff
+    const baseTimeout = EXTRACTION_CONFIG.TIMEOUTS.AI_QUICK;
+    const timeout = EXTRACTION_CONFIG.FEATURES.EXPONENTIAL_BACKOFF
+      ? Math.min(baseTimeout * Math.pow(1.5, retryCount), EXTRACTION_CONFIG.TIMEOUTS.AI_ENHANCEMENT)
+      : baseTimeout;
     
     // Use generateObject for structured output with proper timeout
     const { object } = await generateObject({
@@ -482,7 +509,7 @@ async function performAIAnalysisWithProgress(
       }],
       temperature: EXTRACTION_CONFIG.AI.TEMPERATURE,
       maxRetries: 2,
-      abortSignal: AbortSignal.timeout(EXTRACTION_CONFIG.TIMEOUTS.AI_QUICK)
+      abortSignal: AbortSignal.timeout(timeout)
     });
     
     tracker.stopTimedMessages();
@@ -507,14 +534,40 @@ async function performAIAnalysisWithProgress(
   } catch (error) {
     tracker.stopTimedMessages();
     
-    // Retry logic
-    const isRetryable = error instanceof Error && 
-      (error.name === 'AbortError' || error.message.includes('gateway'));
+    // Enhanced retry logic with gateway bypass and model fallback
+    const isTimeout = error instanceof Error && error.name === 'AbortError';
+    const isGatewayError = error instanceof Error && 
+      (error.message.includes('gateway') || error.message.includes('504'));
+    const isRetryable = isTimeout || isGatewayError;
     
-    if (isRetryable && retryCount < 2 && useGateway) {
-      tracker.sendUpdate('ai_retry', 30 + (retryCount * 10), `Retrying AI analysis (attempt ${retryCount + 2}/3)...`);
-      await new Promise(resolve => setTimeout(resolve, (retryCount + 1) * 1000));
-      return performAIAnalysisWithProgress(imageUrl, tracker, retryCount + 1);
+    if (isRetryable && retryCount < 2) {
+      const nextRetry = retryCount + 1;
+      const retryMessage = isTimeout 
+        ? `Analysis taking longer than expected. Retrying (attempt ${nextRetry + 1}/3)...`
+        : `Gateway timeout. Trying direct API (attempt ${nextRetry + 1}/3)...`;
+      
+      tracker.sendUpdate('ai_retry', 30 + (retryCount * 10), retryMessage);
+      
+      // Add Sentry tracking for timeouts
+      if (typeof window !== 'undefined' && (window as any).Sentry) {
+        (window as any).Sentry.captureMessage(`AI Analysis Timeout - Retry ${nextRetry}`, {
+          level: 'warning',
+          extra: {
+            retryCount: nextRetry,
+            isTimeout,
+            isGatewayError,
+            model: retryCount >= 1 ? 'gpt-4o' : 'gpt-4o-mini'
+          }
+        });
+      }
+      
+      // Exponential backoff delay
+      const delay = Math.min(1000 * Math.pow(2, retryCount), 5000);
+      await new Promise(resolve => setTimeout(resolve, delay));
+      
+      // Force direct API on gateway errors
+      const forceDirectAPI = isGatewayError && nextRetry === 1;
+      return performAIAnalysisWithProgress(imageUrl, tracker, nextRetry, forceDirectAPI);
     }
     
     throw error;

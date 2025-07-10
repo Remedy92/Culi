@@ -25,10 +25,26 @@ This document provides a comprehensive guide to the production-grade menu extrac
 - **AI SDK v5 Upgrade**: Migrated from AI SDK v4 to v5
   - Updated from `@ai-sdk/openai` v0.x to v1.x
   - Changed `max_tokens` to `maxOutputTokens` in API calls
+  - Fixed `toDataStreamResponse()` to `toTextStreamResponse()` for v5 compatibility
   - Removed deprecated `@ai-sdk/openai/gateway` package
   - Implemented proper AI Gateway configuration using `createOpenAI` with custom `baseURL`
 - **OCR Performance**: Reduced languages from 6 to 2 (Dutch and English) for 10x faster processing
 - **Timeout Implementation**: Added 30-second timeouts for both OCR and AI analysis to prevent hanging
+- **Bundle Detection & Categorization**: Enhanced extraction system for menu bundles (prix-fixe, lunch menus, etc.)
+  - Added `ChoiceGroupEnum` for categorizing items (starter, main, dessert, side, drink)
+  - Implemented smart categorization using AI hints, food names, and position-based inference
+  - Added structured `choices` arrays in bundle sections for better organization
+  - Supports multilingual bundle detection (Dutch, French, German, Spanish)
+- **Streaming Extraction API**: New `/api/menu/extract-stream` endpoint
+  - Real-time progress updates via Server-Sent Events
+  - Parallel OCR and AI processing with progress tracking
+  - Enhanced error handling with retry logic
+- **AI Timeout Fixes**: Resolved gateway timeout issues
+  - Increased AI timeouts: quick analysis 20s→45s, enhancement 40s→60s
+  - Added exponential backoff for retries (30s → 45s → 60s)
+  - Implemented fallback chain: GPT-4o-mini (gateway) → GPT-4o-mini (direct) → GPT-4o → OCR-only
+  - Optimized image sizes for faster processing (thumbnail: 1024→768px, quality: 90→80)
+  - Added Vercel function configuration with 90s maxDuration
 
 ## Table of Contents
 
@@ -99,6 +115,11 @@ npm install @vercel/blob @vercel/kv sharp tesseract.js ai@^5.0.0 @ai-sdk/openai@
       "runtime": "nodejs20.x",
       "memory": 3008,
       "maxDuration": 60
+    },
+    "app/api/menu/extract-stream/route.ts": {
+      "runtime": "nodejs20.x",
+      "memory": 2048,
+      "maxDuration": 90
     }
   },
   "regions": ["iad1"]
@@ -156,13 +177,23 @@ export const EXTRACTION_CONFIG = {
     CONFIDENCE_THRESHOLD: 70,
     LANGUAGES: ['nld', 'eng'], // Reduced from 6 to 2 for performance
     PAGE_SEG_MODE: '4', // Single column of text of variable sizes - better for menus
-    PRESERVE_SPACES: '1'
+    PRESERVE_SPACES: '1',
+    CHAR_WHITELIST: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.,€$£¥-()/ '
   },
   AI: {
     QUICK_ANALYSIS_MODEL: 'gpt-4o-mini',
     ENHANCEMENT_MODEL: 'gpt-4o',
-    TEMPERATURE: 0.1,
-    MAX_TOKENS: { QUICK: 2000, ENHANCEMENT: 3000 }
+    TEMPERATURE: 0, // Changed to 0 for deterministic outputs
+    MAX_TOKENS: { 
+      QUICK: 1500, // Reduced to cap costs
+      ENHANCEMENT: 2000 // Reduced to cap costs
+    }
+  },
+  COST: {
+    DAILY_THRESHOLD: 50, // $50/day
+    PER_RESTAURANT_THRESHOLD: 5, // $5/restaurant/day
+    PER_EXTRACTION_TARGET: 0.10, // $0.10/extraction target
+    COST_SAVING_MODE_DURATION: 3600 // 1 hour in seconds
   },
   CACHE: {
     TTL: 86400, // 24 hours
@@ -170,11 +201,30 @@ export const EXTRACTION_CONFIG = {
   },
   UPLOAD: {
     MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB
-    ALLOWED_TYPES: ['image/jpeg', 'image/png', 'image/webp', 'application/pdf']
+    ALLOWED_TYPES: ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'],
+    ALLOWED_EXTENSIONS: ['jpg', 'jpeg', 'png', 'webp', 'pdf']
   },
   IMAGE: {
-    THUMBNAIL: { SIZE: 1024, QUALITY: 90 },
-    ENHANCED: { SIZE: 2048, QUALITY: 95, SHARPEN_SIGMA: 2 }
+    THUMBNAIL: { 
+      SIZE: 768, // Reduced from 1024 to improve processing time
+      QUALITY: 80 // Reduced from 90 to reduce token usage
+    },
+    ENHANCED: { 
+      SIZE: 1536, // Reduced from 2048 for faster processing
+      QUALITY: 85, // Reduced from 95 to optimize tokens
+      SHARPEN_SIGMA: 2 
+    }
+  },
+  TIMEOUTS: {
+    OCR: 30000, // 30 seconds
+    AI_QUICK: 45000, // 45 seconds (increased for vision tasks)
+    AI_ENHANCEMENT: 60000, // 60 seconds (increased for complex menus)
+    TOTAL_EXTRACTION: 90000 // 90 seconds (increased to accommodate retries)
+  },
+  FEATURES: {
+    ENABLE_AI_FALLBACK: true, // Fallback to GPT-4o on timeout
+    ENABLE_GATEWAY_BYPASS: true, // Allow direct API calls on gateway timeout
+    EXPONENTIAL_BACKOFF: true // Use exponential backoff for retries
   }
 } as const;
 ```
@@ -218,6 +268,20 @@ const thumbnailBuffer = await sharp(buffer)
 - Vercel KV caching to avoid reprocessing
 - Sentry span-based monitoring (v9 compatible)
 - AI SDK v5 with optional AI Gateway support
+
+### 3. Menu Extract Stream Endpoint (New)
+
+**Path**: `/app/api/menu/extract-stream/route.ts`
+
+**Features**:
+- Real-time extraction progress via Server-Sent Events (SSE)
+- Parallel OCR and AI processing with progress tracking
+- Enhanced retry logic with exponential backoff
+- Fallback chain: GPT-4o-mini (gateway) → GPT-4o-mini (direct) → GPT-4o → OCR-only
+- Gateway bypass on timeout for faster processing
+- Detailed progress milestones (OCR, AI Analysis, Merging, Validation)
+- Sentry tracking for timeout monitoring
+- 90-second maximum duration for complex menus
 
 **Key Implementation Details**:
 ```typescript
@@ -301,6 +365,11 @@ export const DietaryTagEnum = z.enum([
   'nut-free', 'halal', 'kosher', 'organic', 'spicy',
   'raw', 'low-carb', 'keto', 'paleo'
 ]);
+
+// Bundle categorization (NEW)
+export const ChoiceGroupEnum = z.enum([
+  'starter', 'main', 'dessert', 'appetizer', 'side', 'drink'
+]);
 ```
 
 ### 2. OCR + AI Merger
@@ -314,6 +383,14 @@ export const DietaryTagEnum = z.enum([
 - Intelligent allergen inference from descriptions
 - Dietary tag detection from text patterns
 - Confidence calculation per item
+- **NEW**: Bundle detection and categorization
+  - Identifies prix-fixe, multi-course, lunch specials, etc.
+  - Categorizes items as starter/main/dessert using:
+    - AI-generated descriptions (highest priority)
+    - Common food name patterns (multilingual)
+    - Position-based inference for ambiguous items
+  - Groups bundle items into structured `choices` arrays
+  - Handles implied bundles (e.g., items followed by "2-gangen €24.90")
 
 **Key Functions**:
 ```typescript
@@ -333,6 +410,27 @@ export function inferDietaryTags(text: string): DietaryTag[] {
   if (/\(v\)|vegan|plant[- ]based/.test(normalizedText)) tags.add('vegan');
   // ... more patterns
 }
+
+// Bundle item categorization (NEW)
+function categorizeChoiceGroup(
+  itemName: string,
+  sectionName: string,
+  itemIndex: number,
+  totalItems: number,
+  description?: string
+): ChoiceGroup | undefined {
+  // Priority 1: Check AI-generated descriptions
+  if (description && /\b(dessert|nagerecht|postre)\s*(choice|option)?/i.test(description)) 
+    return 'dessert';
+  
+  // Priority 2: Check common food names
+  const dessertNames = /\b(tiramisu|panna\s*cotta|crème\s*brûlée|ice\s*cream|gelato|pêche\s*melba)/i;
+  if (dessertNames.test(itemName)) return 'dessert';
+  
+  // Priority 3: Position-based inference
+  if (totalItems === 3 && itemIndex === 2) return 'dessert'; // Last of 3 items
+  // ... more logic
+}
 ```
 
 ### 3. AI Prompts
@@ -344,6 +442,12 @@ export function inferDietaryTags(text: string): DietaryTag[] {
 - OCR text grounding instructions
 - Multi-language support
 - Schema embedding in prompts
+- **NEW**: Enhanced bundle detection prompts
+  - Chain-of-Thought (CoT) reasoning for bundle identification
+  - Multilingual bundle keywords (menu, gangen, prix fixe, etc.)
+  - Examples for implied bundles and categorization
+  - Negative examples to prevent false positives
+  - Optimized for GPT-4o-mini with concise patterns
 
 ### 4. Streaming Parser
 
@@ -597,14 +701,16 @@ See `/docs/development/sentry-guide.md` for comprehensive usage instructions.
 lib/
 ├── ai/
 │   └── menu/
-│       ├── extraction-schemas.ts    # Zod schemas with branded types
-│       ├── extraction-merger.ts     # OCR + AI merging logic
-│       ├── extraction-prompts.ts    # AI prompts
+│       ├── extraction-schemas.ts    # Zod schemas with branded types (+ ChoiceGroupEnum)
+│       ├── extraction-merger.ts     # OCR + AI merging logic (+ bundle detection)
+│       ├── extraction-prompts.ts    # AI prompts (+ bundle examples)
 │       └── extraction-parser.ts     # Streaming parser
 ├── cache/
 │   └── redis.ts                     # Cache service utilities
 ├── config/
-│   └── extraction.ts                # Centralized configuration
+│   └── extraction.ts                # Centralized configuration (+ timeouts, features)
+├── utils/
+│   └── progress-tracker.ts          # SSE progress tracking (NEW)
 └── sentry/
     └── index.ts                     # Sentry utilities
 
@@ -613,12 +719,15 @@ app/
 │   └── menu/
 │       ├── upload/
 │       │   └── route.ts             # Upload endpoint
-│       └── extract/
-│           └── route.ts             # Extraction endpoint
+│       ├── extract/
+│       │   └── route.ts             # Extraction endpoint
+│       └── extract-stream/
+│           └── route.ts             # Streaming extraction (NEW)
 ├── components/
 │   ├── menu-upload/
 │   │   ├── MenuUploadZone.tsx      # Upload component
-│   │   └── MenuExtractionProgress.tsx # Progress component
+│   │   ├── MenuExtractionProgress.tsx # Progress component
+│   │   └── MenuExtractionResults.tsx  # Results display (NEW)
 │   └── sentry/
 │       └── ErrorBoundary.tsx        # React error boundary
 └── [locale]/
@@ -735,10 +844,18 @@ These are caused by large dependencies like:
    - Added 30-second timeout to prevent hanging
    - Changed page segmentation mode to 4 for better menu text detection
 
-7. **AI analysis hanging**:
-   - Upgraded to AI SDK v5 for better stability
-   - Added 30-second timeout on AI calls
-   - Proper error handling with fallback to empty structure
+7. **AI analysis hanging/timeouts**:
+   - Increased timeouts: AI_QUICK to 45s, AI_ENHANCEMENT to 60s
+   - Added exponential backoff for retries
+   - Implemented fallback chain: mini (gateway) → mini (direct) → gpt-4o → OCR-only
+   - Optimized image sizes to reduce processing time
+   - Added Vercel function config with 90s maxDuration for extract-stream
+
+8. **Bundle detection issues**:
+   - Items not categorized correctly: Check AI descriptions are being passed to categorizeChoiceGroup
+   - "Pêche melba" showing as main: Fixed by prioritizing description hints over position
+   - Missing bundles: Ensure prompts include Chain-of-Thought reasoning
+   - Use test page to verify bundle extraction accuracy
 
 ## Conclusion
 
@@ -749,6 +866,9 @@ This implementation provides a robust, production-ready menu extraction system w
 - **Performance**: Parallel processing, caching, optimized images, and reduced OCR languages
 - **Cost Control**: Tiered AI models, caching, and configurable thresholds
 - **AI SDK v5**: Latest version with proper gateway support and improved performance
+- **Bundle Detection**: Smart categorization of prix-fixe menus, lunch specials, and multi-course offerings
+- **Real-time Progress**: Server-Sent Events for live extraction updates
+- **Resilient Processing**: Exponential backoff, gateway bypass, and model fallbacks
 - **Monitoring**: Comprehensive Sentry v9 integration with span-based tracing
 - **Accessibility**: Full ARIA support and keyboard navigation
 - **Maintainability**: Centralized configuration and standardized patterns
