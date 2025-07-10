@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { streamText } from 'ai';
-import { openai } from '@ai-sdk/openai';
-import { createGateway } from '@ai-sdk/gateway';
+import { createOpenAI } from '@ai-sdk/openai';
 import { kv } from '@vercel/kv';
 import * as Sentry from '@sentry/nextjs';
 import { captureError, trackExtractionError, addBreadcrumb } from '@/lib/sentry';
@@ -27,13 +26,15 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-// Create gateway for optional fallback
-const gateway = process.env.AI_GATEWAY_API_KEY
-  ? createGateway({
+// Configure AI Gateway for v5
+const gatewayOpenAI = process.env.AI_GATEWAY_API_KEY
+  ? createOpenAI({
+      baseURL: 'https://ai-gateway.vercel.sh/v1', // Vercel AI Gateway URL
       apiKey: process.env.AI_GATEWAY_API_KEY,
-      baseURL: 'https://ai-gateway.vercel.sh/v1/ai',
     })
-  : null;
+  : createOpenAI(); // Direct OpenAI fallback (uses OPENAI_API_KEY)
+
+console.log('AI Gateway configured:', !!process.env.AI_GATEWAY_API_KEY);
 
 // Input validation
 const ExtractRequestSchema = z.object({
@@ -348,9 +349,14 @@ async function performQuickAIAnalysis(
 
   try {
     // Use cheaper model for quick analysis
-    const model = gateway ? gateway(`openai/${EXTRACTION_CONFIG.AI.QUICK_ANALYSIS_MODEL}`) : openai(EXTRACTION_CONFIG.AI.QUICK_ANALYSIS_MODEL);
+    console.log('Initializing AI model:', EXTRACTION_CONFIG.AI.QUICK_ANALYSIS_MODEL);
+    console.log('Using AI Gateway:', !!process.env.AI_GATEWAY_API_KEY);
+    const model = gatewayOpenAI(EXTRACTION_CONFIG.AI.QUICK_ANALYSIS_MODEL);
     
-    const result = await streamText({
+    console.log('Calling AI API...');
+    
+    // Add timeout to prevent hanging
+    const streamPromise = streamText({
       model,
       messages: [{
         role: 'user',
@@ -360,9 +366,16 @@ async function performQuickAIAnalysis(
         ]
       }],
       temperature: EXTRACTION_CONFIG.AI.TEMPERATURE,
-      maxTokens: EXTRACTION_CONFIG.AI.MAX_TOKENS.QUICK
+      maxOutputTokens: EXTRACTION_CONFIG.AI.MAX_TOKENS.QUICK  // v5 uses maxOutputTokens
     });
+    
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('AI analysis timeout after 30 seconds')), 30000)
+    );
+    
+    const result = await Promise.race([streamPromise, timeoutPromise]) as Awaited<typeof streamPromise>;
 
+    console.log('Awaiting AI response text...');
     const text = await result.text;
     const parsed = JSON.parse(text);
     
@@ -374,6 +387,15 @@ async function performQuickAIAnalysis(
     
     return QuickAnalysisResultSchema.parse(parsed);
   } catch (error) {
+    console.error('AI analysis error:', error);
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      apiKeySet: !!process.env.OPENAI_API_KEY,
+      apiKeyLength: process.env.OPENAI_API_KEY?.length || 0,
+      usingGateway: !!process.env.AI_GATEWAY_API_KEY,
+      gatewayKeyLength: process.env.AI_GATEWAY_API_KEY?.length || 0
+    });
+    
     span.setStatus({ code: 2, message: 'internal_error' });
     span.end();
     
@@ -404,7 +426,8 @@ async function enhanceWithFullResolution(
 
   try {
     // Use better model for enhancement
-    const model = gateway ? gateway(`openai/${EXTRACTION_CONFIG.AI.ENHANCEMENT_MODEL}`) : openai(EXTRACTION_CONFIG.AI.ENHANCEMENT_MODEL);
+    console.log('Using enhancement model with gateway:', !!process.env.AI_GATEWAY_API_KEY);
+    const model = gatewayOpenAI(EXTRACTION_CONFIG.AI.ENHANCEMENT_MODEL);
     
     const enhancementPrompt = `
 You have:
@@ -427,7 +450,7 @@ Return only the enhanced sections/items that need updating.`;
         ]
       }],
       temperature: EXTRACTION_CONFIG.AI.TEMPERATURE,
-      maxTokens: EXTRACTION_CONFIG.AI.MAX_TOKENS.ENHANCEMENT
+      maxOutputTokens: EXTRACTION_CONFIG.AI.MAX_TOKENS.ENHANCEMENT  // v5 uses maxOutputTokens
     });
 
     const enhancement = await result.text;
