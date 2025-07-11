@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Button } from "./ui/button"
+import { Button } from "@/components/ui/button"
 
 const chatMessages = [
   { type: "user", message: "¿Este plato tiene gluten?" },

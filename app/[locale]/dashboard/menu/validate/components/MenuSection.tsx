@@ -8,15 +8,15 @@ import {
   AccordionContent, 
   AccordionItem, 
   AccordionTrigger 
-} from '@/app/components/ui/accordion'
-import { Button } from '@/app/components/ui/button'
-import { Badge } from '@/app/components/ui/badge'
+} from '@/components/ui/accordion'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/app/components/ui/popover'
-import { AnimatedCircularProgressBar } from '@/app/components/ui/animated-circular-progress-bar'
+} from '@/components/ui/popover'
+import { AnimatedCircularProgressBar } from '@/components/ui/animated-circular-progress-bar'
 import type { MenuSection as MenuSectionType } from '@/lib/ai/menu/extraction-schemas'
 
 interface MenuSectionProps {
@@ -42,19 +42,19 @@ export const MenuSection = React.forwardRef<HTMLDivElement, MenuSectionProps>(
         <motion.div
           layout
           className={cn(
-            "group relative bg-white rounded-2xl shadow-warm-sm",
-            "hover:shadow-warm-md transition-all duration-200",
+            "group relative bg-white rounded-2xl shadow-sm",
+            "hover:shadow-md transition-all duration-200",
             "border border-transparent hover:border-gray-100"
           )}
           onMouseEnter={() => setShowDragHandle(true)}
           onMouseLeave={() => setShowDragHandle(false)}
         >
           {/* Section Header */}
-          <AccordionTrigger 
-            onClick={onToggle}
-            className="w-full px-6 py-4 hover:no-underline"
-          >
-            <div className="flex items-center justify-between w-full">
+          <div className="flex items-center px-6 py-4">
+            <AccordionTrigger 
+              onClick={onToggle}
+              className="flex-1 hover:no-underline pr-2"
+            >
               <div className="flex items-center gap-3">
                 {/* Drag Handle */}
                 <motion.div
@@ -98,34 +98,34 @@ export const MenuSection = React.forwardRef<HTMLDivElement, MenuSectionProps>(
                   </span>
                 </div>
               </div>
+            </AccordionTrigger>
 
-              {/* Section Actions */}
-              <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <MoreVertical className="h-4 w-4" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-40" align="end">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
-                      onClick={onDelete}
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete Section
-                    </Button>
-                  </PopoverContent>
-                </Popover>
-              </div>
+            {/* Section Actions - Now outside AccordionTrigger */}
+            <div className="flex items-center gap-2">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-40" align="end">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+                    onClick={onDelete}
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete Section
+                  </Button>
+                </PopoverContent>
+              </Popover>
             </div>
-          </AccordionTrigger>
+          </div>
 
           {/* Section Content */}
           <AccordionContent>

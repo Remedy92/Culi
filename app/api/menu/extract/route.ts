@@ -163,6 +163,9 @@ export async function POST(req: NextRequest) {
 
     // Validate extraction result
     const validatedResult = ExtractedMenuSchema.parse(mergedResult);
+    
+    // Track warnings for non-critical issues
+    const warnings: string[] = [];
 
     // Check if enhancement needed
     if (validatedResult.overallConfidence < EXTRACTION_CONFIG.OCR.CONFIDENCE_THRESHOLD && input.enhancedUrl) {
@@ -181,6 +184,8 @@ export async function POST(req: NextRequest) {
 
       if (enhancedResult) {
         Object.assign(validatedResult, enhancedResult);
+      } else {
+        warnings.push('Enhancement skipped due to processing error');
       }
     }
 
@@ -271,6 +276,7 @@ export async function POST(req: NextRequest) {
       extraction: validatedResult,
       menuId: input.menuId,
       hasExtractedData: !!updatedMenu.extracted_data,
+      warnings: warnings.length > 0 ? warnings : undefined,
       metrics: {
         itemsExtracted: items.length,
         confidence: validatedResult.overallConfidence,

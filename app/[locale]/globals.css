@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:is(.dark *));
+/* @custom-variant dark (&:is(.dark *)); */
 @config "../../tailwind.config.ts";
 
 :root {
@@ -579,40 +579,40 @@ body {
 @layer components {
   /* Button presets */
   .btn-primary {
-    @apply inline-flex items-center justify-center whitespace-nowrap rounded-full px-lg py-sm text-sm font-medium bg-primary text-primary-foreground shadow-warm-md hover:bg-primary/90 hover:shadow-warm-lg hover:scale-105 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+    @apply inline-flex items-center justify-center whitespace-nowrap rounded-full px-6 py-3 text-sm font-medium bg-primary text-primary-foreground shadow-md hover:bg-primary/90 hover:shadow-lg hover:scale-105 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
   }
   
   .btn-secondary {
-    @apply inline-flex items-center justify-center whitespace-nowrap rounded-full px-lg py-sm text-sm font-medium bg-secondary text-secondary-foreground shadow-warm-sm hover:bg-secondary/90 hover:shadow-warm-md transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+    @apply inline-flex items-center justify-center whitespace-nowrap rounded-full px-6 py-3 text-sm font-medium bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/90 hover:shadow-md transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
   }
   
   /* Card presets */
   .card-base {
-    @apply rounded-large bg-background border border-neutral-200 dark:border-neutral-700 shadow-warm-md transition-all duration-200;
+    @apply rounded-lg bg-background border border-neutral-200 dark:border-neutral-700 shadow-md transition-all duration-200;
   }
   
   .card-interactive {
-    @apply rounded-large bg-background border border-neutral-200 dark:border-neutral-700 shadow-warm-md transition-all duration-200 hover:shadow-warm-lg hover:scale-[1.02] cursor-pointer;
+    @apply rounded-lg bg-background border border-neutral-200 dark:border-neutral-700 shadow-md transition-all duration-200 hover:shadow-lg hover:scale-[1.02] cursor-pointer;
   }
   
   /* Input presets */
   .input-base {
-    @apply flex w-full rounded-full border border-neutral-300 dark:border-neutral-600 bg-background px-md py-sm text-sm text-foreground shadow-warm-sm placeholder:text-foreground/50 transition-all duration-200 hover:shadow-warm-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50;
+    @apply flex w-full rounded-full border border-neutral-300 dark:border-neutral-600 bg-background px-4 py-3 text-sm text-foreground shadow-sm placeholder:text-foreground/50 transition-all duration-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50;
   }
   
   /* Badge presets */
   .badge-base {
-    @apply inline-flex items-center rounded-full px-sm py-xs text-xs font-medium transition-colors;
+    @apply inline-flex items-center rounded-full px-3 py-2 text-xs font-medium transition-colors;
   }
   
   /* Menu item card specific styles */
   .menu-item-card {
-    @apply rounded-large bg-background border border-neutral-200 dark:border-neutral-700 shadow-warm-md transition-all duration-200 hover:shadow-warm-lg hover:scale-[1.02] cursor-pointer p-lg space-y-md;
+    @apply rounded-lg bg-background border border-neutral-200 dark:border-neutral-700 shadow-md transition-all duration-200 hover:shadow-lg hover:scale-[1.02] cursor-pointer p-6 space-y-4;
   }
   
   /* AI processing states */
   .ai-processing {
-    @apply flex items-center gap-sm text-sm;
+    @apply flex items-center gap-3 text-sm;
   }
   
   .ai-processing-indicator {

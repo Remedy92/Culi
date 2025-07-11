@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { TextRevealCard } from "./ui/text-reveal-card"
+import { TextRevealCard } from "@/components/ui/text-reveal-card"
 import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 

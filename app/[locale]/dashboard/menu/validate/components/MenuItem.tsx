@@ -4,13 +4,13 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { MoreVertical, Edit, Trash2, AlertTriangle, Leaf } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { Button } from '@/app/components/ui/button'
-import { Badge } from '@/app/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/app/components/ui/popover'
+} from '@/components/ui/popover'
 import type { MenuItem as MenuItemType } from '@/lib/ai/menu/extraction-schemas'
 
 interface MenuItemProps {

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Button } from "./ui/button"
+import { Button } from "@/components/ui/button"
 import { Menu, X, ChefHat, Languages, BarChart3 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { motion, useScroll, useTransform } from "framer-motion"
@@ -15,7 +15,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-} from "./ui/navigation-menu"
+} from "@/components/ui/navigation-menu"
 import { useTranslations } from 'next-intl'
 import LanguageSwitcher from './LanguageSwitcher'
 

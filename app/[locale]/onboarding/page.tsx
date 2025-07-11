@@ -7,16 +7,16 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/browser'
-import { Button } from '@/app/components/ui/button'
-import { Checkbox } from '@/app/components/ui/checkbox'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Form,
   FormField,
   FormItem,
   FormMessage,
-} from '@/app/components/ui/form'
+} from '@/components/ui/form'
 import { CuliCurveLogo, CuliLogoLoading } from '@/app/components/CuliCurveLogo'
-import { TypewriterEffectSmooth } from '@/app/components/ui/typewriter-effect'
+import { TypewriterEffectSmooth } from '@/components/ui/typewriter-effect'
 import { CheckCircle, Edit2 } from 'lucide-react'
 
 const formSchema = z.object({

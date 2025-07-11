@@ -74,7 +74,7 @@ export const MenuItemSchema = z.object({
   })).optional(),
   // Bundle support
   isPartOfBundle: z.boolean().default(false),
-  bundleId: z.string().uuid().optional(),
+  bundleId: z.string().uuid().or(z.literal('')).optional().transform(val => val === '' ? undefined : val),
   choiceGroup: ChoiceGroupEnum.optional()
 });
 

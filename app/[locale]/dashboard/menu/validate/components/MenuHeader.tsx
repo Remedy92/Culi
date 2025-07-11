@@ -5,8 +5,8 @@ import { motion } from 'framer-motion'
 import { Save, Brain, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { CuliCurveLogo } from '@/app/components/CuliCurveLogo'
-import { Button } from '@/app/components/ui/button'
-import { Progress } from '@/app/components/ui/progress'
+import { Button } from '@/components/ui/button'
+import { Progress } from '@/components/ui/progress'
 
 interface MenuHeaderProps {
   hasChanges: boolean
@@ -61,10 +61,10 @@ export function MenuHeader({
       animate={{ y: 0 }}
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        scrolled ? "bg-white/80 backdrop-blur-md shadow-warm-sm" : "bg-transparent"
+        scrolled ? "bg-white/80 backdrop-blur-md shadow-sm" : "bg-transparent"
       )}
     >
-      <div className="max-w-container-full mx-auto px-4">
+      <div className="max-w-4xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo and Title */}
           <div className="flex items-center gap-3">

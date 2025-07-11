@@ -9,10 +9,10 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-} from '@/app/components/ui/sheet'
-import { Button } from '@/app/components/ui/button'
-import { Progress } from '@/app/components/ui/progress'
-import { Sparkles } from '@/app/components/ui/sparkles'
+} from '@/components/ui/sheet'
+import { Button } from '@/components/ui/button'
+import { Progress } from '@/components/ui/progress'
+import { Sparkles } from '@/components/ui/sparkles'
 import type { ExtractedMenu } from '@/lib/ai/menu/extraction-schemas'
 
 interface AIPanelProps {
@@ -189,7 +189,7 @@ export function AIPanel({
           exit={{ opacity: 0, x: 100 }}
           className="fixed right-4 top-20 w-80 h-[calc(100vh-6rem)] z-40"
         >
-          <div className="h-full bg-white/95 backdrop-blur-md rounded-2xl shadow-warm-lg border border-gray-100 overflow-hidden">
+          <div className="h-full bg-white/95 backdrop-blur-md rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
             <div className="p-4 border-b flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Brain className="h-5 w-5 text-spanish-orange" />

@@ -2,8 +2,8 @@
 
 import { motion } from "framer-motion"
 import { TrendingUp, Users, Heart, Globe, Clock, GraduationCap, ChefHat, Zap, BookOpen, BarChart3 } from "lucide-react"
-import { BentoGrid, BentoCard } from "@/app/components/ui/bento-grid"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/app/components/ui/card"
+import { BentoGrid, BentoCard } from "@/components/ui/bento-grid"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { useState, useEffect } from "react"
 import { useTranslations } from 'next-intl'
 

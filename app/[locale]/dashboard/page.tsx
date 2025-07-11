@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { Card } from '@/app/components/ui/card'
-import { Button } from '@/app/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 import { TLLogo } from '@/app/components/TLLogo'
 import { 
   Upload, 

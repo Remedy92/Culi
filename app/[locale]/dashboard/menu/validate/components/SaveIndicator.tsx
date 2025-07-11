@@ -74,7 +74,7 @@ export function SaveIndicator({ status, lastSaved }: SaveIndicatorProps) {
           className={cn(
             "fixed bottom-6 left-6 z-40",
             "px-4 py-2 rounded-full",
-            "bg-white shadow-warm-md border",
+            "bg-white shadow-md border",
             "flex items-center gap-2 text-sm"
           )}
         >

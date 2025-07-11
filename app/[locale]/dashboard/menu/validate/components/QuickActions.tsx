@@ -4,8 +4,8 @@ import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Save, Brain } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { Button } from '@/app/components/ui/button'
-import { MagicCard } from '@/app/components/ui/magic-card'
+import { Button } from '@/components/ui/button'
+import { MagicCard } from '@/components/ui/magic-card'
 
 interface QuickActionsProps {
   hasChanges: boolean
@@ -49,7 +49,7 @@ export function QuickActions({
         transition={{ delay: 0.5 }}
       >
         <MagicCard
-          className="p-0 rounded-full shadow-warm-lg"
+          className="p-0 rounded-full shadow-lg"
           gradientSize={200}
           gradientColor="#C65D2C"
           gradientOpacity={0.3}

@@ -7,8 +7,8 @@ import { createClient } from '@/lib/supabase/browser'
 import { toast } from 'sonner'
 import { Loader2, Plus } from 'lucide-react'
 
-import { Accordion } from '@/app/components/ui/accordion'
-import { Button } from '@/app/components/ui/button'
+import { Accordion } from '@/components/ui/accordion'
+import { Button } from '@/components/ui/button'
 import type { ExtractedMenu, MenuItem, MenuSection } from '@/lib/ai/menu/extraction-schemas'
 
 // Import new components

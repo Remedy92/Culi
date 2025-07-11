@@ -14,9 +14,9 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CuliLogoLoading } from '@/app/components/CuliCurveLogo';
-import { TextGenerateEffect } from '@/app/components/ui/text-generate-effect';
-import { Sparkles } from '@/app/components/ui/sparkles';
-import { AnimatedCircularProgressBar } from '@/app/components/ui/animated-circular-progress-bar';
+import { TextGenerateEffect } from '@/components/ui/text-generate-effect';
+import { Sparkles } from '@/components/ui/sparkles';
+import { AnimatedCircularProgressBar } from '@/components/ui/animated-circular-progress-bar';
 import type { ExtractedMenu } from '@/lib/ai/menu/extraction-schemas';
 import type { ProgressUpdate } from '@/lib/utils/progress-tracker';
 

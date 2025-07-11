@@ -5,11 +5,11 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 
-import { CuliCurveLogo, CuliLogoLoading } from '@/app/components/CuliCurveLogo'
-import { Button } from '@/app/components/ui/button'
-import { FileUpload } from '@/app/components/ui/file-upload'
-import { MultiStepLoader } from '@/app/components/ui/multi-step-loader'
-import { AnimatedModal } from '@/app/components/ui/animated-modal'
+import { CuliCurveLogo } from '@/app/components/CuliCurveLogo'
+import { Button } from '@/components/ui/button'
+import { FileUpload } from '@/components/ui/file-upload'
+import { AnimatedModal } from '@/components/ui/animated-modal'
+import { AnalysisProgressModal } from './components/AnalysisProgressModal'
 import { EXTRACTION_CONFIG } from '@/lib/config/extraction'
 import { FileText, Sparkles, QrCode, CheckCircle } from 'lucide-react'
 
@@ -21,26 +21,6 @@ interface MenuUploadClientProps {
   locale: string
 }
 
-const loadingStates = [
-  {
-    text: "Reading your menu with OCR technology",
-  },
-  {
-    text: "AI is understanding your dishes",
-  },
-  {
-    text: "Extracting prices and descriptions",
-  },
-  {
-    text: "Identifying allergens and dietary options",
-  },
-  {
-    text: "Organizing menu sections",
-  },
-  {
-    text: "Finalizing menu structure",
-  },
-]
 
 export default function MenuUploadClient({ restaurantId, locale }: MenuUploadClientProps) {
   const [currentStep, setCurrentStep] = useState<Step>('upload')
@@ -48,7 +28,16 @@ export default function MenuUploadClient({ restaurantId, locale }: MenuUploadCli
   const [isUploading, setIsUploading] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [showModal, setShowModal] = useState(true)
+  const [filePreview, setFilePreview] = useState<string | undefined>()
+  const [extractionError, setExtractionError] = useState<string | undefined>()
   const router = useRouter()
+  
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      localStorage.removeItem('lastMenuId')
+    }
+  }, [])
 
   const handleFileChange = (files: File[]) => {
     if (files.length === 0) return
@@ -56,6 +45,17 @@ export default function MenuUploadClient({ restaurantId, locale }: MenuUploadCli
     const file = files[0]
     // Validation is now handled by FileUpload component
     setSelectedFile(file)
+    
+    // Create preview for images
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setFilePreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    } else {
+      setFilePreview(undefined)
+    }
   }
 
   const uploadFile = async () => {
@@ -83,6 +83,7 @@ export default function MenuUploadClient({ restaurantId, locale }: MenuUploadCli
       // Start extraction animation after successful upload
       setIsUploading(false)
       setIsExtracting(true)
+      setExtractionError(undefined)
       setCurrentStep('extracting')
       
       // Validate URLs exist
@@ -117,15 +118,34 @@ export default function MenuUploadClient({ restaurantId, locale }: MenuUploadCli
           throw new Error('Extraction completed but data was not saved properly')
         }
         
-        // Wait a bit to ensure database consistency and animation
-        await new Promise(resolve => setTimeout(resolve, 2000))
+        // Show any warnings as non-blocking toasts
+        if (extractData.warnings?.length > 0) {
+          extractData.warnings.forEach((warning: string) => {
+            toast.warning(warning)
+          })
+        }
         
-        // Navigate to validation page with extraction already done
-        router.push(`/${locale}/dashboard/menu/validate?menuId=${data.menu.id}`)
+        // Store menu ID for navigation
+        localStorage.setItem('lastMenuId', data.menu.id)
+        
+        // Show success toast with metrics
+        const itemCount = extractData.metrics?.itemsExtracted || 0
+        const confidence = extractData.metrics?.confidence || 0
+        toast.success(`Menu analysis complete! Found ${itemCount} items (${confidence}% confidence)`)
+        
+        // Navigate after a brief delay to show success state
+        // Don't rely on modal callback - navigate directly
+        setTimeout(() => {
+          console.log('Navigating to validation page with menuId:', data.menu.id)
+          setIsExtracting(false)
+          router.push(`/${locale}/dashboard/menu/validate?menuId=${data.menu.id}`)
+        }, 1500) // Show success animation briefly
         
       } catch (extractError) {
         console.error('Extraction error:', extractError)
-        toast.error(extractError instanceof Error ? extractError.message : 'AI analysis failed. Please try again.')
+        const errorMessage = extractError instanceof Error ? extractError.message : 'AI analysis failed. Please try again.'
+        setExtractionError(errorMessage)
+        toast.error(errorMessage)
         setIsExtracting(false)
         setCurrentStep('upload')
       }
@@ -143,6 +163,13 @@ export default function MenuUploadClient({ restaurantId, locale }: MenuUploadCli
     localStorage.setItem('menuUploadSkipped', 'true')
     router.push(`/${locale}/dashboard`)
   }
+  
+  const handleRetryExtraction = () => {
+    setExtractionError(undefined)
+    if (selectedFile) {
+      uploadFile()
+    }
+  }
 
   // Check if modal was already shown/skipped
   useEffect(() => {
@@ -154,11 +181,14 @@ export default function MenuUploadClient({ restaurantId, locale }: MenuUploadCli
 
   return (
     <>
-      <MultiStepLoader 
-        loadingStates={loadingStates} 
-        loading={isExtracting} 
-        duration={10000}
-        loop={true}
+      <AnalysisProgressModal
+        open={isExtracting}
+        fileName={selectedFile?.name}
+        fileSize={selectedFile?.size}
+        filePreview={filePreview}
+        error={extractionError}
+        onRetry={handleRetryExtraction}
+        // Navigation now handled directly in extraction response
       />
 
       {/* Welcome Modal */}
@@ -264,7 +294,10 @@ export default function MenuUploadClient({ restaurantId, locale }: MenuUploadCli
 
                   <FileUpload 
                     onChange={handleFileChange}
-                    onRemove={() => setSelectedFile(null)}
+                    onRemove={() => {
+                      setSelectedFile(null)
+                      setFilePreview(undefined)
+                    }}
                     value={selectedFile}
                     accept={{
                       'image/jpeg': ['.jpg', '.jpeg'],
@@ -288,17 +321,7 @@ export default function MenuUploadClient({ restaurantId, locale }: MenuUploadCli
                         size="lg"
                         disabled={isUploading}
                       >
-                        {isUploading ? (
-                          <>
-                            <CuliLogoLoading size={16} color="#ffffff" className="mr-2" />
-                            Uploading...
-                          </>
-                        ) : (
-                          <>
-                            <CuliCurveLogo size={16} color="#ffffff" className="mr-2" />
-                            Start AI analysis
-                          </>
-                        )}
+                        {isUploading ? 'Uploading...' : 'Start AI analysis'}
                       </Button>
                     </motion.div>
                   )}

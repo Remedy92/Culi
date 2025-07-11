@@ -1,8 +1,8 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Button } from "./ui/button"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "./ui/card"
+import { Button } from "@/components/ui/button"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { Check } from "lucide-react"
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'

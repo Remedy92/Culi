@@ -8,11 +8,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@/app/components/ui/dialog'
-import { Button } from '@/app/components/ui/button'
-import { Input } from '@/app/components/ui/input'
-import { Label } from '@/app/components/ui/label'
-import { Badge } from '@/app/components/ui/badge'
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Badge } from '@/components/ui/badge'
 import type { MenuItem, MenuSection } from '@/lib/ai/menu/extraction-schemas'
 
 interface EditDialogProps {
@@ -42,6 +42,13 @@ export function EditDialog({
     }
   }, [data])
 
+  const handleSave = useCallback(() => {
+    if (formData) {
+      onSave(formData)
+      onOpenChange(false)
+    }
+  }, [formData, onSave, onOpenChange])
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (open) {
@@ -57,13 +64,6 @@ export function EditDialog({
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [open, formData, handleSave, onOpenChange])
-
-  const handleSave = useCallback(() => {
-    if (formData) {
-      onSave(formData)
-      onOpenChange(false)
-    }
-  }, [formData, onSave, onOpenChange])
 
   const addAllergen = () => {
     if (allergenInput.trim() && formData) {
