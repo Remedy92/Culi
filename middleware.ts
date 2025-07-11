@@ -1,6 +1,6 @@
 import createMiddleware from 'next-intl/middleware';
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@supabase/ssr'
+import { createMiddlewareClient } from '@/lib/supabase/middleware'
 
 // Supported locales
 export const locales = ['en', 'nl', 'fr', 'de', 'es', 'it'] as const;
@@ -37,7 +37,8 @@ export default async function middleware(request: NextRequest) {
   const code = searchParams.get('code');
   if (code && pathname === '/') {
     // Redirect to the proper auth callback with default locale
-    const redirectUrl = new URL(`/${defaultLocale}/auth/callback`, request.url);
+    const origin = request.nextUrl.origin;
+    const redirectUrl = new URL(`/${defaultLocale}/auth/callback`, origin);
     redirectUrl.searchParams.set('code', code);
     return NextResponse.redirect(redirectUrl);
   }
@@ -53,7 +54,8 @@ export default async function middleware(request: NextRequest) {
   if (!pathnameHasLocale) {
     // Handle auth callback for paths without locale
     if (code) {
-      const redirectUrl = new URL(`/${defaultLocale}/auth/callback`, request.url);
+      const origin = request.nextUrl.origin;
+      const redirectUrl = new URL(`/${defaultLocale}/auth/callback`, origin);
       redirectUrl.searchParams.set('code', code);
       return NextResponse.redirect(redirectUrl);
     }
@@ -71,29 +73,23 @@ export default async function middleware(request: NextRequest) {
 
   if (isProtectedRoute) {
     // Create a Supabase client
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return request.cookies.getAll()
-          },
-          setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              response.cookies.set(name, value, options)
-            )
-          },
-        },
-      }
-    )
+    const supabase = createMiddlewareClient(request, response)
 
     // Check if user is authenticated
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
-      // Redirect to auth page with locale
-      const redirectUrl = new URL(`/${locale}/auth`, request.url);
+    try {
+      const { data: { session }, error } = await supabase.auth.getSession()
+      
+      if (error || !session) {
+        // Redirect to auth page with locale
+        const origin = request.nextUrl.origin;
+        const redirectUrl = new URL(`/${locale}/auth`, origin);
+        return NextResponse.redirect(redirectUrl);
+      }
+    } catch (error) {
+      // Handle any auth errors gracefully
+      console.error('Auth error in middleware:', error);
+      const origin = request.nextUrl.origin;
+      const redirectUrl = new URL(`/${locale}/auth`, origin);
       return NextResponse.redirect(redirectUrl);
     }
   }

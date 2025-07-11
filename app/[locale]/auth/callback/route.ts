@@ -26,10 +26,10 @@ export async function GET(request: Request) {
         ? `/${locale}/dashboard` 
         : `/${locale}/onboarding`
       
-      return NextResponse.redirect(new URL(redirectTo, request.url))
+      return NextResponse.redirect(new URL(redirectTo, requestUrl.origin))
     }
   }
 
   // Error or no code - redirect to auth page
-  return NextResponse.redirect(new URL(`/${locale}/auth`, request.url))
+  return NextResponse.redirect(new URL(`/${locale}/auth`, requestUrl.origin))
 }

@@ -3,6 +3,7 @@
 import * as Sentry from '@sentry/nextjs';
 import React, { useEffect } from 'react';
 import { AlertCircle } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -70,12 +71,17 @@ function DefaultErrorFallback({
   error: Error; 
   resetError: () => void;
 }) {
+  const pathname = usePathname();
+  
   useEffect(() => {
     // Log error details in development
     if (process.env.NODE_ENV === 'development') {
       console.error('Error Boundary caught:', error);
     }
   }, [error]);
+  
+  // Extract locale from pathname
+  const locale = pathname?.split('/')[1] || 'en';
 
   return (
     <div className="min-h-[400px] flex items-center justify-center p-4">
@@ -108,7 +114,7 @@ function DefaultErrorFallback({
             Try Again
           </button>
           <button
-            onClick={() => window.location.href = '/'}
+            onClick={() => window.location.href = `/${locale}`}
             className="flex-1 px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
           >
             Go Home

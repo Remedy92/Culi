@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -35,13 +35,40 @@ const formSchema = z.object({
   marketingEmails: z.boolean(),
 })
 
-export default function OnboardingPage() {
+export default function OnboardingPage({
+  params
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const resolvedParams = use(params)
+  const locale = resolvedParams.locale
   const [isLoading, setIsLoading] = useState(false)
   const [showForm, setShowForm] = useState(false)
   const [showSecondMessage, setShowSecondMessage] = useState(false)
   const [reducedMotion, setReducedMotion] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const router = useRouter()
   const supabase = createClient()
+  
+  // Check if user already has a restaurant
+  useEffect(() => {
+    const checkExistingRestaurant = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        // Use SECURITY DEFINER function to avoid RLS recursion
+        const { data: hasRestaurant } = await supabase
+          .rpc('user_has_restaurant')
+          .single()
+        
+        if (hasRestaurant) {
+          console.log('User already has a restaurant, redirecting to menu')
+          router.push(`/${locale}/dashboard/menu`)
+        }
+      }
+    }
+    
+    checkExistingRestaurant()
+  }, [locale, router, supabase])
   
   // Check for reduced motion preference
   useEffect(() => {
@@ -103,13 +130,22 @@ export default function OnboardingPage() {
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log('Form submission started', values)
     setIsLoading(true)
+    setErrorMessage(null)
+
+    // Declare variables outside inner try block for proper scoping
+    let restaurantId: string | null = null
+    let membershipCreated = false
 
     try {
       // Get the current user
       const { data: { user }, error: userError } = await supabase.auth.getUser()
       
+      console.log('Current user:', user)
+      
       if (userError) {
+        console.error('Auth error:', userError)
         throw new Error('Authentication error: ' + userError.message)
       }
       
@@ -128,22 +164,85 @@ export default function OnboardingPage() {
         throw new Error('Restaurant name must contain at least one letter or number')
       }
 
-      // Create the restaurant
-      const { error: restaurantError } = await supabase
-        .from('restaurants')
-        .insert({
+      // First check if user already has a restaurant using SECURITY DEFINER function
+      const { data: existingRestaurant } = await supabase
+        .rpc('get_user_restaurant')
+        .single()
+      
+      if (existingRestaurant) {
+        console.log('User already has a restaurant:', existingRestaurant)
+        toast.success('You already have a restaurant! Redirecting...')
+        router.push(`/${locale}/dashboard/menu`)
+        return
+      }
+
+      console.log('Creating restaurant with slug:', slug)
+
+      // Generate UUID client-side to avoid recursion issues
+      restaurantId = crypto.randomUUID()
+
+      try {
+        // Step 1: Create the restaurant without .select() to avoid triggering policies
+        const { error: restaurantError } = await supabase
+          .from('restaurants')
+          .insert({
+            id: restaurantId,
+            name: values.restaurantName,
+            slug,
+            owner_id: user.id,
+            email: user.email || '',
+          })
+
+        if (restaurantError) {
+          if (restaurantError.code === '23505') { // Unique violation - expected error
+            const message = 'A restaurant with this name already exists. Please choose a different name.'
+            setErrorMessage(message)
+            toast.error(message)
+            setIsLoading(false)
+            return // Exit early for expected errors
+          }
+          
+          // Only log and throw unexpected errors
+          console.error('Restaurant creation error:', restaurantError)
+          throw new Error(restaurantError.message || 'Failed to create restaurant')
+        }
+
+        // Step 2: Create owner membership to avoid recursion when selecting
+        const { error: memberError } = await supabase
+          .from('restaurant_members')
+          .insert({
+            restaurant_id: restaurantId,
+            user_id: user.id,
+            role: 'owner',
+            accepted_at: new Date().toISOString(),
+          })
+
+        if (memberError) {
+          // Only log unexpected membership errors
+          if (!memberError.message?.includes('already exists')) {
+            console.error('Membership creation error:', memberError)
+          }
+          throw new Error('Failed to create restaurant membership: ' + memberError.message)
+        }
+
+        membershipCreated = true
+
+        // Step 3: Use the data we already have instead of SELECT (avoids recursion)
+        const restaurantData = {
+          id: restaurantId,
           name: values.restaurantName,
           slug,
           owner_id: user.id,
-          email: user.email,
-        })
-
-      if (restaurantError) {
-        if (restaurantError.code === '23505') { // Unique violation
-          throw new Error('A restaurant with this name already exists. Please choose a different name.')
+          email: user.email || '',
+          // Default values from database
+          tier: 'free',
+          monthly_conversations: 0,
+          monthly_tokens_used: 0,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         }
-        throw new Error(restaurantError.message || 'Failed to create restaurant')
-      }
+
+        console.log('Restaurant created:', restaurantData)
 
       // Record GDPR consents
       const consents = [
@@ -153,28 +252,65 @@ export default function OnboardingPage() {
       ]
 
       for (const consent of consents) {
-        const { error: consentError } = await supabase
-          .from('gdpr_consents')
-          .insert({
-            user_id: user.id,
-            email: user.email!,
-            ...consent,
-            given_at: consent.consent_given ? new Date().toISOString() : null,
-          })
-          
-        if (consentError) {
-          // Continue with other consents even if one fails - non-critical error
+        try {
+          const { error: consentError } = await supabase
+            .from('gdpr_consents')
+            .insert({
+              user_id: user.id,
+              email: user.email || '',
+              ...consent,
+              given_at: consent.consent_given ? new Date().toISOString() : null,
+            })
+            
+          if (consentError) {
+            console.warn('GDPR consent error (non-critical):', consentError)
+            // Continue with other consents even if one fails - non-critical error
+          }
+        } catch (consentError) {
+          console.warn('GDPR consent error (non-critical):', consentError)
+          // Continue - GDPR consent errors shouldn't block restaurant creation
         }
       }
 
+      console.log('Restaurant created successfully')
       toast.success('Welcome to Culi! Your restaurant has been created.')
       
-      // Get locale from URL
-      const locale = window.location.pathname.split('/')[1]
-      router.push(`/${locale}/dashboard`)
+      // Redirect to menu upload instead of dashboard
+      router.push(`/${locale}/dashboard/menu`)
+      } catch (creationError) {
+        // Rollback on error: delete partial data
+        console.error('Rolling back due to error:', creationError)
+        
+        try {
+          // Delete membership if it was created
+          if (membershipCreated && restaurantId) {
+            await supabase
+              .from('restaurant_members')
+              .delete()
+              .eq('restaurant_id', restaurantId)
+              .eq('user_id', user.id)
+          }
+          
+          // Delete restaurant
+          if (restaurantId) {
+            await supabase
+              .from('restaurants')
+              .delete()
+              .eq('id', restaurantId)
+          }
+        } catch (cleanupError) {
+          console.error('Rollback error:', cleanupError)
+        }
+        
+        throw creationError // Re-throw the original error
+      }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Something went wrong')
+      // Don't log here - we've already logged unexpected errors where they occurred
+      const message = error instanceof Error ? error.message : 'Something went wrong'
+      setErrorMessage(message)
+      toast.error(message)
     } finally {
+      // Always set loading to false
       setIsLoading(false)
     }
   }
@@ -310,7 +446,10 @@ export default function OnboardingPage() {
         <div className={`${showForm ? '' : 'fixed bottom-4 left-4 right-4 sm:static sm:bottom-auto sm:left-auto sm:right-auto'} bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-none border border-gray-100 sm:border-t sm:border-x-0 sm:border-b-0 shadow-lg p-3 sm:p-4 md:static md:bg-transparent md:border-0 md:p-0 md:shadow-none transition-all duration-300 safe-area-bottom`}>
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={(e) => {
+              e.preventDefault()
+              form.handleSubmit(onSubmit)(e)
+            }} className="space-y-6">
               {/* Restaurant Name Input - Chat Style */}
               {!showForm && (
                 <div className="max-w-2xl mx-auto">
@@ -326,7 +465,13 @@ export default function OnboardingPage() {
                                 placeholder="Type your restaurant name..." 
                                 disabled={isLoading}
                                 className="flex-1 h-10 sm:h-12 px-4 bg-transparent border-0 text-sm sm:text-base focus:outline-none focus:ring-0 placeholder:text-gray-400 placeholder:text-sm"
-                                {...field} 
+                                {...field}
+                                onChange={(e) => {
+                                  field.onChange(e) // Call the original onChange
+                                  if (errorMessage) {
+                                    setErrorMessage(null) // Clear error when typing
+                                  }
+                                }}
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter' && field.value && !showForm) {
                                     e.preventDefault()
@@ -357,6 +502,11 @@ export default function OnboardingPage() {
 
               {showForm && (
                 <div className="max-w-2xl mx-auto">
+                  {errorMessage && (
+                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 animate-fade-in">
+                      <p className="text-sm">{errorMessage}</p>
+                    </div>
+                  )}
                   <div className="bg-white rounded-2xl sm:rounded-3xl shadow-warm-xl p-4 sm:p-6 md:p-8 mt-4 sm:mt-6 animate-fade-in legal-requirements-form">
                     <h3 className="text-sm font-medium text-eerie-black mb-4">Legal Requirements</h3>
                 

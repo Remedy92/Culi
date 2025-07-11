@@ -549,8 +549,8 @@ async function performAIAnalysisWithProgress(
       tracker.sendUpdate('ai_retry', 30 + (retryCount * 10), retryMessage);
       
       // Add Sentry tracking for timeouts
-      if (typeof window !== 'undefined' && (window as any).Sentry) {
-        (window as any).Sentry.captureMessage(`AI Analysis Timeout - Retry ${nextRetry}`, {
+      if (typeof window !== 'undefined' && (window as Window & { Sentry?: { captureMessage: (message: string, options: Record<string, unknown>) => void } }).Sentry) {
+        (window as Window & { Sentry: { captureMessage: (message: string, options: Record<string, unknown>) => void } }).Sentry.captureMessage(`AI Analysis Timeout - Retry ${nextRetry}`, {
           level: 'warning',
           extra: {
             retryCount: nextRetry,
