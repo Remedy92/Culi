@@ -138,3 +138,5 @@ AI_GATEWAY_API_KEY= (optional, for Vercel AI Gateway)
 - always check lint errors
 - Sentry v9 no longer needs `autoDiscoverNodePerformanceMonitoringIntegrations()` - integrations are automatic
 - Webpack cache warnings about large strings are normal with Sentry/OpenTelemetry - use lazy loading for large libraries
+- for UI/UX always remember: The goal: Make it accessible, clear, and reliable without adding visual noise. True minimalism means every element serves a purpose.
+- 

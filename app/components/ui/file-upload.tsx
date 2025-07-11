@@ -1,171 +1,160 @@
-"use client";
-import { cn } from "@/lib/utils";
-import React, { useRef, useState } from "react";
-import { motion } from "framer-motion";
-import { IconUpload } from "@tabler/icons-react";
-import { useDropzone } from "react-dropzone";
+"use client"
 
-const mainVariant = {
-  initial: {
-    x: 0,
-    y: 0,
-  },
-  animate: {
-    x: 20,
-    y: -20,
-    opacity: 0.9,
-  },
-};
+import React, { useCallback } from "react"
+import { useDropzone, FileRejection } from "react-dropzone"
+import { Upload, X, File, FileText, Image } from "lucide-react"
+import { cn } from "@/lib/utils"
 
-const secondaryVariant = {
-  initial: {
-    opacity: 0,
-  },
-  animate: {
-    opacity: 1,
-  },
-};
+interface FileUploadProps {
+  onChange?: (files: File[]) => void
+  onRemove?: () => void
+  className?: string
+  accept?: Record<string, string[]>
+  maxSize?: number
+  multiple?: boolean
+  value?: File | null
+}
 
-export const FileUpload = ({
+export function FileUpload({
   onChange,
+  onRemove,
   className,
-}: {
-  onChange?: (files: File[]) => void;
-  className?: string;
-}) => {
-  const [files, setFiles] = useState<File[]>([]);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  accept,
+  maxSize,
+  multiple = false,
+  value,
+}: FileUploadProps) {
+  const [error, setError] = React.useState<string | null>(null)
+  const [isHovered, setIsHovered] = React.useState(false)
 
-  const handleFileChange = (newFiles: File[]) => {
-    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-    if (onChange) {
-      onChange(newFiles);
-    }
-  };
+  const onDrop = useCallback(
+    (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
+      setError(null)
+      
+      if (rejectedFiles.length > 0) {
+        const rejection = rejectedFiles[0]
+        if (rejection.errors[0]?.code === "file-too-large") {
+          setError(`File size must be less than ${maxSize ? maxSize / 1024 / 1024 : 10}MB`)
+        } else if (rejection.errors[0]?.code === "file-invalid-type") {
+          setError("Invalid file type")
+        } else {
+          setError("Failed to upload file")
+        }
+        return
+      }
 
-  const handleClick = () => {
-    fileInputRef.current?.click();
-  };
+      if (acceptedFiles.length > 0) {
+        onChange?.(acceptedFiles)
+      }
+    },
+    [onChange, maxSize]
+  )
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    multiple: false,
-    noClick: true,
-    onDrop: handleFileChange,
-    onDropRejected: (error) => {
-      console.log(error);
-    },
-  });
+    onDrop,
+    accept,
+    maxSize,
+    multiple,
+  })
+
+  const getFileIcon = (file: File) => {
+    if (file.type.startsWith('image/')) {
+      return <Image className="w-5 h-5 text-gray-600" aria-hidden="true" alt="" />
+    }
+    if (file.type === 'application/pdf') {
+      return <FileText className="w-5 h-5 text-gray-600" aria-hidden="true" />
+    }
+    return <File className="w-5 h-5 text-gray-600" aria-hidden="true" />
+  }
+
+  const handleRemove = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    onRemove?.()
+  }
 
   return (
-    <div className={cn("w-full", className)} {...getRootProps()}>
-      <motion.div
-        onClick={handleClick}
-        whileHover="animate"
-        className="p-10 group/file block rounded-lg cursor-pointer w-full relative overflow-hidden"
+    <div className={cn("w-full", className)}>
+      <div
+        {...getRootProps()}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        role="button"
+        tabIndex={0}
+        aria-label={value ? `Selected file: ${value.name}. Press Enter to change or Delete to remove` : "Upload area. Click or drag a file here to upload"}
+        aria-describedby={error ? "file-upload-error" : "file-upload-description"}
+        className={cn(
+          "relative border-2 rounded-lg p-6 transition-all cursor-pointer",
+          "focus:outline-none focus:ring-2 focus:ring-spanish-orange focus:ring-offset-2",
+          !value && (
+            isDragActive
+              ? "border-spanish-orange bg-spanish-orange/5 border-dashed"
+              : "border-gray-200 hover:border-gray-300 bg-gray-50 border-dashed"
+          ),
+          value && "border-gray-200 bg-white hover:border-gray-300 border-solid",
+          error && "border-red-300"
+        )}
       >
-        <input
-          {...getInputProps()}
-          ref={fileInputRef}
-          type="file"
-          onChange={(e) => handleFileChange(Array.from(e.target.files || []))}
-          className="hidden"
-        />
-        <div className="flex flex-col items-center justify-center">
-          <p className="relative z-20 font-sans font-bold text-neutral-700 dark:text-neutral-300 text-base">
-            Upload file
-          </p>
-          <p className="relative z-20 font-sans font-normal text-neutral-400 dark:text-neutral-400 text-base mt-2">
-            Drag or drop your files here or click to upload
-          </p>
-          <div className="relative w-full mt-10 max-w-container-narrow mx-auto">
-            {files.length > 0 &&
-              files.map((file, idx) => (
-                <motion.div
-                  key={"file" + idx}
-                  layoutId={idx === 0 ? "file-upload" : "file-upload-" + idx}
-                  className={cn(
-                    "relative overflow-hidden z-40 bg-white dark:bg-neutral-900 flex flex-col items-start justify-start md:h-24 p-4 mt-4 w-full mx-auto rounded-md",
-                    "shadow-sm"
-                  )}
-                >
-                  <div className="flex justify-between w-full items-center gap-4">
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      layout
-                      className="text-base text-neutral-700 dark:text-neutral-300 truncate max-w-container-prose"
-                    >
-                      {file.name}
-                    </motion.p>
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      layout
-                      className="rounded-lg px-2 py-1 w-fit flex-shrink-0 text-sm text-neutral-600 dark:bg-neutral-800 dark:text-white shadow-input"
-                    >
-                      {(file.size / (1024 * 1024)).toFixed(2)} MB
-                    </motion.p>
-                  </div>
-
-                  <div className="flex text-sm md:flex-row flex-col items-start md:items-center w-full mt-2 justify-between text-neutral-600 dark:text-neutral-400">
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      layout
-                      className="px-1 py-0.5 rounded-md bg-gray-100 dark:bg-neutral-800 "
-                    >
-                      {file.type}
-                    </motion.p>
-
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      layout
-                    >
-                      modified{" "}
-                      {new Date(file.lastModified).toLocaleDateString()}
-                    </motion.p>
-                  </div>
-                </motion.div>
-              ))}
-            {!files.length && (
-              <motion.div
-                layoutId="file-upload"
-                variants={mainVariant}
-                transition={{
-                  type: "spring",
-                  stiffness: 300,
-                  damping: 20,
-                }}
-                className={cn(
-                  "relative group-hover/file:shadow-2xl z-40 bg-white dark:bg-neutral-900 flex items-center justify-center h-32 mt-4 w-full max-w-[8rem] mx-auto rounded-md",
-                  "shadow-[0px_10px_50px_rgba(0,0,0,0.1)]"
-                )}
-              >
-                {isDragActive ? (
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="text-neutral-600 flex flex-col items-center"
-                  >
-                    Drop it
-                    <IconUpload className="h-4 w-4 text-neutral-600 dark:text-neutral-400" />
-                  </motion.p>
-                ) : (
-                  <IconUpload className="h-4 w-4 text-neutral-600 dark:text-neutral-300" />
-                )}
-              </motion.div>
-            )}
-
-            {!files.length && (
-              <motion.div
-                variants={secondaryVariant}
-                className="absolute opacity-0 border border-dashed border-spanish-orange inset-0 z-30 bg-transparent flex items-center justify-center h-32 mt-4 w-full max-w-[8rem] mx-auto rounded-md"
-              ></motion.div>
-            )}
+        <input {...getInputProps()} aria-hidden="true" />
+        
+        {!value ? (
+          // Empty state - Drop zone
+          <div className="flex flex-col items-center">
+            <div className={cn(
+              "w-12 h-12 rounded-full flex items-center justify-center mb-3 transition-colors",
+              isDragActive ? "bg-spanish-orange/10" : "bg-gray-100"
+            )}>
+              <Upload className={cn(
+                "w-6 h-6 transition-colors",
+                isDragActive ? "text-spanish-orange" : "text-gray-600"
+              )} />
+            </div>
+            <p className="text-sm font-medium text-gray-700 mb-1">
+              {isDragActive ? "Drop your file here" : "Click to upload or drag and drop"}
+            </p>
+            <p id="file-upload-description" className="text-xs text-gray-600">
+              PDF, JPG, PNG or WebP (max {maxSize ? maxSize / 1024 / 1024 : 10}MB)
+            </p>
           </div>
-        </div>
-      </motion.div>
+        ) : (
+          // File selected state - Replace entire drop zone
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gray-50 rounded flex items-center justify-center flex-shrink-0">
+                {getFileIcon(value)}
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-gray-900 truncate">
+                  {value.name}
+                </p>
+                <p className="text-xs text-gray-600">
+                  {(value.size / 1024 / 1024).toFixed(2)} MB
+                  {isHovered && <span className="ml-2">• Click to change file</span>}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={handleRemove}
+              className="p-1.5 rounded-md hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-spanish-orange focus:ring-offset-2"
+              aria-label="Remove file"
+              type="button"
+            >
+              <X className="w-4 h-4 text-gray-600" aria-hidden="true" />
+            </button>
+          </div>
+        )}
+      </div>
+      
+      {/* Error Message */}
+      {error && (
+        <p id="file-upload-error" className="mt-2 text-sm text-red-600 text-center" role="alert">
+          {error}
+        </p>
+      )}
+      
+      {/* Live region for screen reader announcements */}
+      <div className="sr-only" aria-live="polite" aria-atomic="true">
+        {value && `File selected: ${value.name}, ${(value.size / 1024 / 1024).toFixed(2)} MB`}
+      </div>
     </div>
-  );
-};
+  )
+}

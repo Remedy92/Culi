@@ -1,22 +1,20 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Sparkles as SparklesIcon, ArrowRight } from 'lucide-react'
+import { Sparkles as SparklesIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { CuliCurveLogo } from '@/app/components/CuliCurveLogo'
-import { TextGenerateEffect } from '@/app/components/ui/text-generate-effect'
-import { HoverBorderGradient } from '@/app/components/ui/hover-border-gradient'
-import { Sparkles } from '@/app/components/ui/sparkles'
-import { BackgroundBeams } from '@/app/components/ui/background-beams'
-import { Spotlight } from '@/app/components/ui/spotlight'
+import { Button } from '@/app/components/ui/button'
 import { FileUpload } from '@/app/components/ui/file-upload'
 import { MultiStepLoader } from '@/app/components/ui/multi-step-loader'
+import { AnimatedModal } from '@/app/components/ui/animated-modal'
 import { EXTRACTION_CONFIG } from '@/lib/config/extraction'
+import { FileText, Sparkles, QrCode, CheckCircle } from 'lucide-react'
 
-type Step = 'welcome' | 'upload' | 'extracting' | 'complete'
+type Step = 'upload' | 'extracting' | 'complete'
 
 
 interface MenuUploadClientProps {
@@ -46,35 +44,25 @@ const loadingStates = [
 ]
 
 export default function MenuUploadClient({ restaurantId, locale }: MenuUploadClientProps) {
-  const [currentStep, setCurrentStep] = useState<Step>('welcome')
+  const [currentStep, setCurrentStep] = useState<Step>('upload')
   const [isExtracting, setIsExtracting] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [showModal, setShowModal] = useState(true)
   const router = useRouter()
 
   const handleFileChange = (files: File[]) => {
     if (files.length === 0) return
     
     const file = files[0]
-    
-    // Validate file
-    if (!EXTRACTION_CONFIG.UPLOAD.ALLOWED_TYPES.includes(file.type as typeof EXTRACTION_CONFIG.UPLOAD.ALLOWED_TYPES[number])) {
-      toast.error('Please upload a JPEG, PNG, WebP, or PDF file')
-      return
-    }
-
-    if (file.size > EXTRACTION_CONFIG.UPLOAD.MAX_FILE_SIZE) {
-      toast.error(`File size must be less than ${EXTRACTION_CONFIG.UPLOAD.MAX_FILE_SIZE / 1024 / 1024}MB`)
-      return
-    }
-
+    // Validation is now handled by FileUpload component
     setSelectedFile(file)
   }
 
   const uploadFile = async () => {
     if (!selectedFile || !restaurantId) return
 
-    setIsExtracting(true)
-    setCurrentStep('extracting')
+    setIsUploading(true)
 
     try {
       const formData = new FormData()
@@ -93,6 +81,11 @@ export default function MenuUploadClient({ restaurantId, locale }: MenuUploadCli
 
       const data = await response.json()
       
+      // Start extraction animation after successful upload
+      setIsUploading(false)
+      setIsExtracting(true)
+      setCurrentStep('extracting')
+      
       // Navigate to validation
       setTimeout(() => {
         router.push(`/${locale}/dashboard/menu/validate?menuId=${data.menu.id}`)
@@ -101,10 +94,24 @@ export default function MenuUploadClient({ restaurantId, locale }: MenuUploadCli
     } catch (error) {
       console.error('Upload error:', error)
       toast.error(error instanceof Error ? error.message : 'Upload failed')
+      setIsUploading(false)
       setIsExtracting(false)
       setCurrentStep('upload')
     }
   }
+
+  const handleSkip = () => {
+    localStorage.setItem('menuUploadSkipped', 'true')
+    router.push(`/${locale}/dashboard`)
+  }
+
+  // Check if modal was already shown/skipped
+  useEffect(() => {
+    const hasSkipped = localStorage.getItem('menuUploadSkipped')
+    if (hasSkipped) {
+      setShowModal(false)
+    }
+  }, [])
 
   return (
     <>
@@ -114,120 +121,147 @@ export default function MenuUploadClient({ restaurantId, locale }: MenuUploadCli
         duration={3000}
         loop={false}
       />
+
+      {/* Welcome Modal */}
+      <AnimatedModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title="Get your menu on Culi"
+        description="AI-powered menu assistant in minutes"
+        showCloseButton={false}
+      >
+        <div className="space-y-4">
+          {/* Process Steps - Minimalist */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="flex-shrink-0 w-9 h-9 bg-spanish-orange/10 rounded-full flex items-center justify-center">
+                <FileText className="w-4.5 h-4.5 text-spanish-orange" />
+              </div>
+              <p className="text-sm font-medium text-eerie-black">Upload menu</p>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <div className="flex-shrink-0 w-9 h-9 bg-spanish-orange/10 rounded-full flex items-center justify-center">
+                <Sparkles className="w-4.5 h-4.5 text-spanish-orange" />
+              </div>
+              <p className="text-sm font-medium text-eerie-black">AI extracts content</p>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <div className="flex-shrink-0 w-9 h-9 bg-spanish-orange/10 rounded-full flex items-center justify-center">
+                <CheckCircle className="w-4.5 h-4.5 text-spanish-orange" />
+              </div>
+              <p className="text-sm font-medium text-eerie-black">Review & edit</p>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <div className="flex-shrink-0 w-9 h-9 bg-spanish-orange/10 rounded-full flex items-center justify-center">
+                <QrCode className="w-4.5 h-4.5 text-spanish-orange" />
+              </div>
+              <p className="text-sm font-medium text-eerie-black">Get QR code</p>
+            </div>
+          </div>
+
+          {/* Action Buttons - Smaller */}
+          <div className="flex gap-2 pt-2">
+            <Button
+              onClick={() => setShowModal(false)}
+              className="flex-1 bg-spanish-orange hover:bg-spanish-orange/90"
+              size="default"
+            >
+              Get Started
+            </Button>
+            <Button
+              onClick={handleSkip}
+              variant="outline"
+              className="flex-1"
+              size="default"
+            >
+              Skip for now
+            </Button>
+          </div>
+        </div>
+      </AnimatedModal>
       
-      <div className="min-h-screen bg-seasalt relative overflow-hidden">
-        {/* Background Effects */}
-        <BackgroundBeams className="opacity-30" />
-        <Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill="var(--spanish-orange)" />
-        
-        <div className="relative z-10">
-          {/* Header */}
-          <div className="py-8 text-center">
+      <div className="min-h-screen bg-seasalt">
+        <div>
+          {/* Header - matching onboarding style */}
+          <div className="w-full py-8">
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center justify-center gap-3"
+              className="flex items-center justify-center gap-2 sm:gap-3"
             >
-              <CuliCurveLogo size={40} />
-              <h1 className="text-2xl font-black text-eerie-black">
-                Menu Upload
-              </h1>
+              <CuliCurveLogo size={32} className="sm:w-9 sm:h-9" />
+              <div className="relative">
+                <span className="text-2xl sm:text-3xl font-black text-eerie-black">
+                  <span className="text-3xl sm:text-4xl font-serif">C</span>uli
+                </span>
+              </div>
             </motion.div>
           </div>
 
           {/* Main Content */}
           <div className="max-w-container-wide mx-auto px-4">
             <AnimatePresence mode="wait">
-              {/* Welcome Step */}
-              {currentStep === 'welcome' && (
-                <motion.div
-                  key="welcome"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  className="text-center py-16"
-                >
-                  <div className="mb-8">
-                    <TextGenerateEffect
-                      words="Let's add your menu to Culi's AI brain"
-                      className="text-3xl font-bold text-eerie-black"
-                    />
-                  </div>
-                  
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1.5 }}
-                  >
-                    <HoverBorderGradient
-                      containerClassName="rounded-full"
-                      className="px-8 py-4 text-lg font-medium"
-                      onClick={() => setCurrentStep('upload')}
-                    >
-                      <span className="flex items-center gap-2">
-                        Get Started
-                        <ArrowRight className="w-5 h-5" />
-                      </span>
-                    </HoverBorderGradient>
-                  </motion.div>
-                </motion.div>
-              )}
-
-              {/* Upload Step */}
+              {/* Upload Step - Now the default step */}
               {currentStep === 'upload' && (
                 <motion.div
                   key="upload"
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  className="py-8"
+                  className="py-8 max-w-container-narrow mx-auto"
                 >
+                  {/* Page Context */}
                   <div className="text-center mb-8">
-                    <h2 className="text-2xl font-bold text-eerie-black mb-2">
-                      Upload Your Menu
-                    </h2>
-                    <p className="text-cinereous">
-                      Drag and drop or click to browse
+                    <h1 className="text-2xl font-semibold text-eerie-black mb-2">
+                      Add your menu
+                    </h1>
+                    <p className="text-base text-gray-600">
+                      Upload your menu to get started with Culi
                     </p>
                   </div>
 
-                  <div className="relative">
-                    <Sparkles
-                      className="absolute inset-0 z-0"
-                      particleColor="var(--spanish-orange)"
-                      particleDensity={20}
-                      minSize={0.4}
-                      maxSize={0.8}
+                  <FileUpload 
+                    onChange={handleFileChange}
+                    onRemove={() => setSelectedFile(null)}
+                    value={selectedFile}
+                    accept={{
+                      'image/jpeg': ['.jpg', '.jpeg'],
+                      'image/png': ['.png'],
+                      'image/webp': ['.webp'],
+                      'application/pdf': ['.pdf']
+                    }}
+                    maxSize={EXTRACTION_CONFIG.UPLOAD.MAX_FILE_SIZE}
+                  />
+                  
+                  {selectedFile && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-6 text-center"
                     >
-                      <span className="sr-only">Sparkle effect</span>
-                    </Sparkles>
-                    
-                    <div className="relative z-10 bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-warm-xl">
-                      <FileUpload 
-                        onChange={handleFileChange}
-                        className="max-w-container-narrow mx-auto"
-                      />
-                      
-                      {selectedFile && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="mt-6 text-center"
-                        >
-                          <HoverBorderGradient
-                            containerClassName="rounded-full"
-                            className="px-8 py-3 font-medium"
-                            onClick={uploadFile}
-                          >
-                            <span className="flex items-center gap-2">
-                              <SparklesIcon className="w-4 h-4" />
-                              Start AI Analysis
-                            </span>
-                          </HoverBorderGradient>
-                        </motion.div>
-                      )}
-                    </div>
-                  </div>
+                      <Button
+                        onClick={uploadFile}
+                        className="bg-eerie-black hover:bg-eerie-black/90 text-white"
+                        size="lg"
+                        disabled={isUploading}
+                      >
+                        {isUploading ? (
+                          <>
+                            <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            Uploading...
+                          </>
+                        ) : (
+                          <>
+                            <SparklesIcon className="w-4 h-4 mr-2" />
+                            Start AI analysis
+                          </>
+                        )}
+                      </Button>
+                    </motion.div>
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>
