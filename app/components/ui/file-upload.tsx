@@ -1,9 +1,21 @@
 "use client"
 
-import React, { useCallback } from "react"
+import React, { useCallback, useEffect } from "react"
 import { useDropzone, FileRejection } from "react-dropzone"
 import { Upload, X, File, FileText, Image } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { CuliLogoLoading } from "@/app/components/CuliCurveLogo"
+
+interface FileUploadTexts {
+  uploadPrompt?: string
+  dropPrompt?: string
+  fileTypes?: string
+  clickToChange?: string
+  removeFile?: string
+  errorTooLarge?: string
+  errorInvalidType?: string
+  errorGeneric?: string
+}
 
 interface FileUploadProps {
   onChange?: (files: File[]) => void
@@ -13,6 +25,8 @@ interface FileUploadProps {
   maxSize?: number
   multiple?: boolean
   value?: File | null
+  loading?: boolean
+  texts?: FileUploadTexts
 }
 
 export function FileUpload({
@@ -23,9 +37,44 @@ export function FileUpload({
   maxSize,
   multiple = false,
   value,
+  loading = false,
+  texts = {},
 }: FileUploadProps) {
   const [error, setError] = React.useState<string | null>(null)
   const [isHovered, setIsHovered] = React.useState(false)
+  const [previewUrl, setPreviewUrl] = React.useState<string | null>(null)
+  
+  // Default texts
+  const {
+    uploadPrompt = "Click to upload or drag and drop",
+    dropPrompt = "Drop your file here",
+    fileTypes = `PDF, JPG, PNG or WebP (max ${maxSize ? maxSize / 1024 / 1024 : 10}MB)`,
+    clickToChange = "Click to change file",
+    removeFile = "Remove file",
+    errorTooLarge = `File size must be less than ${maxSize ? maxSize / 1024 / 1024 : 10}MB`,
+    errorInvalidType = "Invalid file type",
+    errorGeneric = "Failed to upload file",
+  } = texts
+  
+  // Check if touch device
+  const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0)
+  
+  // Adjust text for touch devices
+  const displayUploadPrompt = isTouchDevice ? "Tap to browse files" : uploadPrompt
+
+  // Create and cleanup preview URLs for image files
+  useEffect(() => {
+    if (value && value.type.startsWith('image/')) {
+      const url = URL.createObjectURL(value)
+      setPreviewUrl(url)
+      return () => {
+        URL.revokeObjectURL(url)
+        setPreviewUrl(null)
+      }
+    } else {
+      setPreviewUrl(null)
+    }
+  }, [value])
 
   const onDrop = useCallback(
     (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
@@ -34,11 +83,11 @@ export function FileUpload({
       if (rejectedFiles.length > 0) {
         const rejection = rejectedFiles[0]
         if (rejection.errors[0]?.code === "file-too-large") {
-          setError(`File size must be less than ${maxSize ? maxSize / 1024 / 1024 : 10}MB`)
+          setError(errorTooLarge)
         } else if (rejection.errors[0]?.code === "file-invalid-type") {
-          setError("Invalid file type")
+          setError(errorInvalidType)
         } else {
-          setError("Failed to upload file")
+          setError(errorGeneric)
         }
         return
       }
@@ -47,7 +96,7 @@ export function FileUpload({
         onChange?.(acceptedFiles)
       }
     },
-    [onChange, maxSize]
+    [onChange, errorTooLarge, errorInvalidType, errorGeneric]
   )
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -55,6 +104,7 @@ export function FileUpload({
     accept,
     maxSize,
     multiple,
+    disabled: loading,
   })
 
   const getFileIcon = (file: File) => {
@@ -82,8 +132,10 @@ export function FileUpload({
         tabIndex={0}
         aria-label={value ? `Selected file: ${value.name}. Press Enter to change or Delete to remove` : "Upload area. Click or drag a file here to upload"}
         aria-describedby={error ? "file-upload-error" : "file-upload-description"}
+        aria-busy={loading}
         className={cn(
-          "relative border-2 rounded-lg p-6 transition-all cursor-pointer",
+          "relative border-2 rounded-lg p-6 transition-all",
+          loading ? "cursor-not-allowed opacity-60" : "cursor-pointer",
           "focus:outline-none focus:ring-2 focus:ring-spanish-orange focus:ring-offset-2",
           !value && (
             isDragActive
@@ -109,18 +161,27 @@ export function FileUpload({
               )} />
             </div>
             <p className="text-sm font-medium text-gray-700 mb-1">
-              {isDragActive ? "Drop your file here" : "Click to upload or drag and drop"}
+              {isDragActive ? dropPrompt : displayUploadPrompt}
             </p>
             <p id="file-upload-description" className="text-xs text-gray-600">
-              PDF, JPG, PNG or WebP (max {maxSize ? maxSize / 1024 / 1024 : 10}MB)
+              {fileTypes}
             </p>
           </div>
         ) : (
           // File selected state - Replace entire drop zone
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gray-50 rounded flex items-center justify-center flex-shrink-0">
-                {getFileIcon(value)}
+              <div className="w-10 h-10 bg-gray-50 rounded flex items-center justify-center flex-shrink-0 overflow-hidden">
+                {previewUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img 
+                    src={previewUrl} 
+                    alt={value.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  getFileIcon(value)
+                )}
               </div>
               <div className="min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">
@@ -128,18 +189,26 @@ export function FileUpload({
                 </p>
                 <p className="text-xs text-gray-600">
                   {(value.size / 1024 / 1024).toFixed(2)} MB
-                  {isHovered && <span className="ml-2">• Click to change file</span>}
+                  {isHovered && <span className="ml-2">• {clickToChange}</span>}
                 </p>
               </div>
             </div>
             <button
               onClick={handleRemove}
               className="p-1.5 rounded-md hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-spanish-orange focus:ring-offset-2"
-              aria-label="Remove file"
+              aria-label={removeFile}
               type="button"
+              disabled={loading}
             >
               <X className="w-4 h-4 text-gray-600" aria-hidden="true" />
             </button>
+          </div>
+        )}
+        
+        {/* Loading overlay */}
+        {loading && (
+          <div className="absolute inset-0 bg-white/80 rounded-lg flex items-center justify-center">
+            <CuliLogoLoading size={32} color="#C65D2C" />
           </div>
         )}
       </div>

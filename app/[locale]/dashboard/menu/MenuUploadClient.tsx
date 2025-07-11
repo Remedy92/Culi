@@ -3,10 +3,9 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Sparkles as SparklesIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { CuliCurveLogo } from '@/app/components/CuliCurveLogo'
+import { CuliCurveLogo, CuliLogoLoading } from '@/app/components/CuliCurveLogo'
 import { Button } from '@/app/components/ui/button'
 import { FileUpload } from '@/app/components/ui/file-upload'
 import { MultiStepLoader } from '@/app/components/ui/multi-step-loader'
@@ -234,6 +233,7 @@ export default function MenuUploadClient({ restaurantId, locale }: MenuUploadCli
                       'application/pdf': ['.pdf']
                     }}
                     maxSize={EXTRACTION_CONFIG.UPLOAD.MAX_FILE_SIZE}
+                    loading={isUploading}
                   />
                   
                   {selectedFile && (
@@ -250,12 +250,12 @@ export default function MenuUploadClient({ restaurantId, locale }: MenuUploadCli
                       >
                         {isUploading ? (
                           <>
-                            <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            <CuliLogoLoading size={16} color="#ffffff" className="mr-2" />
                             Uploading...
                           </>
                         ) : (
                           <>
-                            <SparklesIcon className="w-4 h-4 mr-2" />
+                            <CuliCurveLogo size={16} color="#ffffff" className="mr-2" />
                             Start AI analysis
                           </>
                         )}
