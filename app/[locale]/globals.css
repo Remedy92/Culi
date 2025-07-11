@@ -6,6 +6,72 @@
 :root {
   --background: #FBF8F4;
   --foreground: #3A3330;
+  
+  /* Semantic color variables for light mode */
+  --color-success: #059669;
+  --color-success-light: #10B981;
+  --color-success-dark: #047857;
+  --color-success-background: #D1FAE5;
+  --color-success-foreground: #064E3B;
+  
+  --color-warning: #F59E0B;
+  --color-warning-light: #FCD34D;
+  --color-warning-dark: #D97706;
+  --color-warning-background: #FEF3C7;
+  --color-warning-foreground: #78350F;
+  
+  --color-error: #DC2626;
+  --color-error-light: #EF4444;
+  --color-error-dark: #B91C1C;
+  --color-error-background: #FEE2E2;
+  --color-error-foreground: #7F1D1D;
+  
+  --color-info: #3B82F6;
+  --color-info-light: #60A5FA;
+  --color-info-dark: #2563EB;
+  --color-info-background: #DBEAFE;
+  --color-info-foreground: #1E3A8A;
+}
+
+/* Dark mode color overrides */
+.dark {
+  --background: #2A2220;
+  --foreground: #FBF8F4;
+  
+  /* Adjusted spanish-orange for dark mode - desaturated */
+  --color-spanish-orange: #D97749;
+  --color-spanish-orange-light: #E08A5C;
+  --color-spanish-orange-dark: #C65D2C;
+  
+  /* Adjusted cinereous for dark mode */
+  --color-cinereous: #C4ADA0;
+  --color-cinereous-light: #D4C5BF;
+  --color-cinereous-dark: #B59B88;
+  
+  /* Dark mode semantic colors */
+  --color-success: #10B981;
+  --color-success-light: #34D399;
+  --color-success-dark: #059669;
+  --color-success-background: #064E3B;
+  --color-success-foreground: #D1FAE5;
+  
+  --color-warning: #FCD34D;
+  --color-warning-light: #FDE68A;
+  --color-warning-dark: #F59E0B;
+  --color-warning-background: #78350F;
+  --color-warning-foreground: #FEF3C7;
+  
+  --color-error: #EF4444;
+  --color-error-light: #F87171;
+  --color-error-dark: #DC2626;
+  --color-error-background: #7F1D1D;
+  --color-error-foreground: #FEE2E2;
+  
+  --color-info: #60A5FA;
+  --color-info-light: #93BBFC;
+  --color-info-dark: #3B82F6;
+  --color-info-background: #1E3A8A;
+  --color-info-foreground: #DBEAFE;
 }
 
 @theme inline {
@@ -75,14 +141,16 @@ body {
   --leading-relaxed: 1.625;
   --leading-loose: 1.75;
   
-  /* Mobile-First Spacing System */
-  --space-xs: clamp(0.25rem, 1vw, 0.5rem);
-  --space-sm: clamp(0.5rem, 1.5vw, 0.75rem);
-  --space-md: clamp(1rem, 2vw, 1.5rem);
-  --space-lg: clamp(1.5rem, 3vw, 2rem);
-  --space-xl: clamp(2rem, 4vw, 2.5rem);
-  --space-2xl: clamp(2.5rem, 5vw, 3.5rem);
-  --space-3xl: clamp(3rem, 6vw, 5rem);
+  /* Mobile-First Spacing System - Refined for better control */
+  --space-xs: clamp(0.25rem, 0.25rem + 0.25vw, 0.5rem);     /* 4px → 8px */
+  --space-sm: clamp(0.5rem, 0.5rem + 0.25vw, 0.75rem);      /* 8px → 12px */
+  --space-md: clamp(0.75rem, 0.75rem + 0.5vw, 1rem);        /* 12px → 16px */
+  --space-lg: clamp(1rem, 1rem + 0.5vw, 1.5rem);            /* 16px → 24px */
+  --space-xl: clamp(1.5rem, 1.5rem + 0.5vw, 2rem);          /* 24px → 32px */
+  --space-2xl: clamp(2rem, 2rem + 0.5vw, 2.5rem);           /* 32px → 40px */
+  --space-3xl: clamp(2.5rem, 2.5rem + 0.5vw, 3rem);         /* 40px → 48px */
+  --space-4xl: clamp(3rem, 3rem + 0.5vw, 4rem);             /* 48px → 64px */
+  --space-5xl: clamp(4rem, 4rem + 0.5vw, 5rem);             /* 64px → 80px */
   
   /* Touch-Friendly Sizes */
   --touch-target-min: 44px;
@@ -486,5 +554,59 @@ body {
 @layer base {
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Component-specific utility classes */
+@layer components {
+  /* Button presets */
+  .btn-primary {
+    @apply inline-flex items-center justify-center whitespace-nowrap rounded-full px-lg py-sm text-sm font-medium bg-primary text-primary-foreground shadow-warm-md hover:bg-primary/90 hover:shadow-warm-lg hover:scale-105 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  }
+  
+  .btn-secondary {
+    @apply inline-flex items-center justify-center whitespace-nowrap rounded-full px-lg py-sm text-sm font-medium bg-secondary text-secondary-foreground shadow-warm-sm hover:bg-secondary/90 hover:shadow-warm-md transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  }
+  
+  /* Card presets */
+  .card-base {
+    @apply rounded-large bg-background border border-neutral-200 dark:border-neutral-700 shadow-warm-md transition-all duration-200;
+  }
+  
+  .card-interactive {
+    @apply rounded-large bg-background border border-neutral-200 dark:border-neutral-700 shadow-warm-md transition-all duration-200 hover:shadow-warm-lg hover:scale-[1.02] cursor-pointer;
+  }
+  
+  /* Input presets */
+  .input-base {
+    @apply flex w-full rounded-full border border-neutral-300 dark:border-neutral-600 bg-background px-md py-sm text-sm text-foreground shadow-warm-sm placeholder:text-foreground/50 transition-all duration-200 hover:shadow-warm-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  
+  /* Badge presets */
+  .badge-base {
+    @apply inline-flex items-center rounded-full px-sm py-xs text-xs font-medium transition-colors;
+  }
+  
+  /* Menu item card specific styles */
+  .menu-item-card {
+    @apply rounded-large bg-background border border-neutral-200 dark:border-neutral-700 shadow-warm-md transition-all duration-200 hover:shadow-warm-lg hover:scale-[1.02] cursor-pointer p-lg space-y-md;
+  }
+  
+  /* AI processing states */
+  .ai-processing {
+    @apply flex items-center gap-sm text-sm;
+  }
+  
+  .ai-processing-indicator {
+    @apply h-2 w-2 rounded-full animate-pulse;
+  }
+  
+  /* Progress bar styles */
+  .progress-bar {
+    @apply h-2 w-full overflow-hidden rounded-full bg-neutral-200 dark:bg-neutral-700;
+  }
+  
+  .progress-bar-fill {
+    @apply h-full rounded-full bg-primary transition-all duration-300 ease-out;
   }
 }

@@ -1,22 +1,46 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
+import { cva, type VariantProps } from "class-variance-authority"
 
-export type InputProps = React.InputHTMLAttributes<HTMLInputElement>
+const inputVariants = cva(
+  "flex w-full border bg-background text-foreground shadow-warm-sm transition-all duration-200 placeholder:text-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:border-transparent hover:shadow-warm-md disabled:cursor-not-allowed disabled:opacity-50 file:border-0 file:bg-transparent file:text-sm file:font-medium",
+  {
+    variants: {
+      variant: {
+        default: "border-neutral-300 dark:border-neutral-600",
+        error: "border-error dark:border-error focus:ring-error",
+        success: "border-success dark:border-success focus:ring-success",
+      },
+      size: {
+        default: "h-10 px-md py-sm text-sm",
+        sm: "h-9 px-sm py-xs text-xs",
+        lg: "h-12 px-lg py-md text-base",
+      },
+      rounded: {
+        default: "rounded-full",
+        medium: "rounded-medium",
+        small: "rounded-small",
+        none: "rounded-none",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+      rounded: "default",
+    },
+  }
+)
+
+export interface InputProps
+  extends React.InputHTMLAttributes<HTMLInputElement>,
+    VariantProps<typeof inputVariants> {}
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, ...props }, ref) => {
+  ({ className, type, variant, size, rounded, ...props }, ref) => {
     return (
       <input
         type={type}
-        className={cn(
-          "flex h-10 w-full rounded-full border border-cinereous/30 bg-white px-4 py-2 text-sm text-eerie-black shadow-warm transition-all duration-200",
-          "placeholder:text-cinereous/70",
-          "focus:outline-none focus:ring-2 focus:ring-spanish-orange focus:ring-offset-2 focus:border-transparent",
-          "hover:shadow-warm-md",
-          "disabled:cursor-not-allowed disabled:opacity-50",
-          "file:border-0 file:bg-transparent file:text-sm file:font-medium",
-          className
-        )}
+        className={cn(inputVariants({ variant, size, rounded }), className)}
         ref={ref}
         {...props}
       />

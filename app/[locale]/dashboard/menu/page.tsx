@@ -27,6 +27,9 @@ export default async function MenuUploadPage({
     redirect(`/${locale}/onboarding`)
   }
 
+  // Type assertion since we know restaurant exists after the check above
+  const typedRestaurant = restaurant as { id: string }
+
   // Render the client component with the necessary data
-  return <MenuUploadClient restaurantId={restaurant.id} locale={locale} />
+  return <MenuUploadClient restaurantId={typedRestaurant.id} locale={locale} />
 }

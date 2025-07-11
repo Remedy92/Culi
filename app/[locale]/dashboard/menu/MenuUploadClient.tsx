@@ -198,7 +198,9 @@ export default function MenuUploadClient({ restaurantId, locale }: MenuUploadCli
                       particleDensity={20}
                       minSize={0.4}
                       maxSize={0.8}
-                    />
+                    >
+                      <span className="sr-only">Sparkle effect</span>
+                    </Sparkles>
                     
                     <div className="relative z-10 bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-warm-xl">
                       <FileUpload 
