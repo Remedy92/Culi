@@ -8,14 +8,11 @@ import * as z from 'zod'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/browser'
 import { Button } from '@/app/components/ui/button'
-import { Input } from '@/app/components/ui/input'
 import { Checkbox } from '@/app/components/ui/checkbox'
 import {
   Form,
-  FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@/app/components/ui/form'
 import { CuliCurveLogo, CuliLogoLoading } from '@/app/components/CuliCurveLogo'
@@ -32,7 +29,6 @@ const formSchema = z.object({
   acceptTerms: z.boolean().refine((val) => val === true, {
     message: "You must accept the terms of service to continue.",
   }),
-  marketingEmails: z.boolean(),
 })
 
 export default function OnboardingPage({
@@ -125,7 +121,6 @@ export default function OnboardingPage({
       restaurantName: "",
       acceptPrivacy: false,
       acceptTerms: false,
-      marketingEmails: false,
     },
   })
 
@@ -248,7 +243,6 @@ export default function OnboardingPage({
       const consents = [
         { consent_type: 'privacy_policy', consent_given: values.acceptPrivacy },
         { consent_type: 'terms_of_service', consent_given: values.acceptTerms },
-        { consent_type: 'marketing_emails', consent_given: values.marketingEmails },
       ]
 
       for (const consent of consents) {
@@ -316,7 +310,7 @@ export default function OnboardingPage({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 px-4 py-6 pb-32 sm:pb-8 safe-area-inset">
+    <div className="min-h-screen bg-seasalt px-4 py-6 pb-32 sm:pb-8 safe-area-inset">
       {/* Header */}
       <div className="w-full mb-8 sm:mb-12">
         <div className="flex items-center justify-center gap-2 sm:gap-3">
@@ -442,63 +436,67 @@ export default function OnboardingPage({
           )}
         </div>
 
-        {/* Chat Input Section */}
-        <div className={`${showForm ? '' : 'fixed bottom-4 left-4 right-4 sm:static sm:bottom-auto sm:left-auto sm:right-auto'} bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-none border border-gray-100 sm:border-t sm:border-x-0 sm:border-b-0 p-3 sm:p-4 md:static md:bg-transparent md:border-0 md:p-0 transition-all duration-300 safe-area-bottom`}>
+        {/* Chat Input Section - Minimalist */}
+        {!showForm && (
+          <div className="fixed bottom-0 left-0 right-0 p-4 safe-area-bottom sm:static sm:p-0">
+            <Form {...form}>
+              <form onSubmit={(e) => {
+                e.preventDefault()
+                form.handleSubmit(onSubmit)(e)
+              }}>
+                <FormField
+                  control={form.control}
+                  name="restaurantName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="relative max-w-container-narrow mx-auto">
+                        <input 
+                          type="text"
+                          placeholder="Type your restaurant name..." 
+                          disabled={isLoading}
+                          className="w-full h-12 sm:h-14 pl-4 pr-14 bg-white border border-gray-100 rounded-xlarge text-sm sm:text-base focus:!outline-none focus:!ring-0 focus:!ring-offset-0 focus:!border-gray-200 focus-visible:!outline-none focus-visible:!ring-0 placeholder:text-gray-400 transition-colors"
+                          {...field}
+                          onChange={(e) => {
+                            field.onChange(e)
+                            if (errorMessage) {
+                              setErrorMessage(null)
+                            }
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && field.value && !showForm) {
+                              e.preventDefault()
+                              setShowForm(true)
+                            }
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => field.value && setShowForm(true)}
+                          className="absolute right-2 top-2 bottom-2 w-8 h-8 sm:w-10 sm:h-10 bg-spanish-orange text-white rounded-large flex items-center justify-center hover:bg-opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                          disabled={!field.value || isLoading}
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 19V5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M5 12L12 5L19 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </button>
+                      </div>
+                      <FormMessage className="mt-2 text-center text-sm" />
+                    </FormItem>
+                  )}
+                />
+              </form>
+            </Form>
+          </div>
+        )}
 
+        {/* Legal Form Section */}
+        {showForm && (
           <Form {...form}>
             <form onSubmit={(e) => {
               e.preventDefault()
               form.handleSubmit(onSubmit)(e)
             }} className="space-y-6">
-              {/* Restaurant Name Input - Chat Style */}
-              {!showForm && (
-                <div className="max-w-container-narrow mx-auto">
-                  <FormField
-                    control={form.control}
-                    name="restaurantName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <div className="bg-white rounded-2xl border-minimal p-2">
-                            <div className="flex items-center gap-2">
-                              <Input 
-                                placeholder="Type your restaurant name..." 
-                                disabled={isLoading}
-                                className="flex-1 h-10 sm:h-12 px-4 bg-transparent border-0 text-sm sm:text-base focus:outline-none focus:ring-0 placeholder:text-gray-400 placeholder:text-sm"
-                                {...field}
-                                onChange={(e) => {
-                                  field.onChange(e) // Call the original onChange
-                                  if (errorMessage) {
-                                    setErrorMessage(null) // Clear error when typing
-                                  }
-                                }}
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter' && field.value && !showForm) {
-                                    e.preventDefault()
-                                    setShowForm(true)
-                                  }
-                                }}
-                              />
-                              <button
-                                type="button"
-                                onClick={() => field.value && setShowForm(true)}
-                                className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-spanish-orange text-white rounded-xl flex items-center justify-center hover:bg-opacity-90 transition-all disabled:opacity-50 touch-manipulation"
-                                disabled={!field.value || isLoading}
-                              >
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M12 19V5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                                  <path d="M5 12L12 5L19 12" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                                </svg>
-                              </button>
-                            </div>
-                          </div>
-                        </FormControl>
-                        <FormMessage className="mt-2 text-center" />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              )}
 
               {showForm && (
                 <div className="max-w-container-narrow mx-auto">
@@ -507,31 +505,42 @@ export default function OnboardingPage({
                       <p className="text-sm">{errorMessage}</p>
                     </div>
                   )}
-                  <div className="bg-white rounded-2xl sm:rounded-3xl border-minimal p-4 sm:p-6 md:p-8 mt-4 sm:mt-6 animate-fade-in legal-requirements-form">
-                    <h3 className="text-sm font-medium text-eerie-black mb-4">Legal Requirements</h3>
-                
-                <FormField
+                  <div className="mt-4 sm:mt-6 animate-fade-in">
+                    <h3 className="text-sm font-medium text-eerie-black mb-4 px-1">Legal Requirements</h3>
+                    
+                    <div className="space-y-3">
+                      <FormField
                   control={form.control}
                   name="acceptPrivacy"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-3 touch-manipulation">
-                      <FormControl>
+                    <FormItem>
+                      <label 
+                        htmlFor="privacy-checkbox"
+                        className="relative flex w-full items-start gap-3 rounded-large border border-gray-100 bg-white p-4 shadow-sm outline-none cursor-pointer hover:border-gray-200 transition-colors has-[:checked]:border-spanish-orange/30 has-[:checked]:bg-spanish-orange/5"
+                      >
                         <Checkbox
+                          id="privacy-checkbox"
                           checked={field.value}
                           onCheckedChange={field.onChange}
                           disabled={isLoading}
-                          className="mt-0.5 w-5 h-5 sm:w-4 sm:h-4"
+                          className="order-1 after:absolute after:inset-0 data-[state=checked]:bg-spanish-orange data-[state=checked]:border-spanish-orange"
+                          aria-describedby="privacy-description"
                         />
-                      </FormControl>
-                      <div className="space-y-1 leading-relaxed">
-                        <FormLabel className="text-sm sm:text-base font-normal cursor-pointer select-none leading-relaxed">
-                          I accept the{' '}
-                          <a href="/privacy" target="_blank" className="text-spanish-orange hover:underline underline-offset-2 touch-manipulation inline-block py-1">
-                            Privacy Policy
-                          </a>
-                        </FormLabel>
-                        <FormMessage />
-                      </div>
+                        <div className="grow">
+                          <span className="text-sm sm:text-base">
+                            I accept the{' '}
+                            <a 
+                              href="/privacy" 
+                              target="_blank" 
+                              className="text-spanish-orange hover:underline underline-offset-2"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              Privacy Policy
+                            </a>
+                          </span>
+                        </div>
+                      </label>
+                      <FormMessage id="privacy-description" className="mt-2 text-xs" />
                     </FormItem>
                   )}
                 />
@@ -540,51 +549,38 @@ export default function OnboardingPage({
                   control={form.control}
                   name="acceptTerms"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-3 touch-manipulation">
-                      <FormControl>
+                    <FormItem>
+                      <label 
+                        htmlFor="terms-checkbox"
+                        className="relative flex w-full items-start gap-3 rounded-large border border-gray-100 bg-white p-4 shadow-sm outline-none cursor-pointer hover:border-gray-200 transition-colors has-[:checked]:border-spanish-orange/30 has-[:checked]:bg-spanish-orange/5"
+                      >
                         <Checkbox
+                          id="terms-checkbox"
                           checked={field.value}
                           onCheckedChange={field.onChange}
                           disabled={isLoading}
-                          className="mt-0.5 w-5 h-5 sm:w-4 sm:h-4"
+                          className="order-1 after:absolute after:inset-0 data-[state=checked]:bg-spanish-orange data-[state=checked]:border-spanish-orange"
+                          aria-describedby="terms-description"
                         />
-                      </FormControl>
-                      <div className="space-y-1 leading-relaxed">
-                        <FormLabel className="text-sm sm:text-base font-normal cursor-pointer select-none leading-relaxed">
-                          I accept the{' '}
-                          <a href="/terms" target="_blank" className="text-spanish-orange hover:underline underline-offset-2 touch-manipulation inline-block py-1">
-                            Terms of Service
-                          </a>
-                        </FormLabel>
-                        <FormMessage />
-                      </div>
+                        <div className="grow">
+                          <span className="text-sm sm:text-base">
+                            I accept the{' '}
+                            <a 
+                              href="/terms" 
+                              target="_blank" 
+                              className="text-spanish-orange hover:underline underline-offset-2"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              Terms of Service
+                            </a>
+                          </span>
+                        </div>
+                      </label>
+                      <FormMessage id="terms-description" className="mt-2 text-xs" />
                     </FormItem>
                   )}
                 />
-
-                <div className="border-t border-gray-100 my-3"></div>
-
-                <FormField
-                  control={form.control}
-                  name="marketingEmails"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-3 touch-manipulation">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                          disabled={isLoading}
-                          className="mt-0.5 w-5 h-5 sm:w-4 sm:h-4"
-                        />
-                      </FormControl>
-                      <div className="space-y-1 leading-relaxed">
-                        <FormLabel className="text-sm sm:text-base font-normal cursor-pointer select-none text-gray-600">
-                          Send me tips and updates about Culi (optional)
-                        </FormLabel>
-                      </div>
-                    </FormItem>
-                  )}
-                />
+                    </div>
                   </div>
                 </div>
               )}
@@ -611,23 +607,24 @@ export default function OnboardingPage({
             </form>
           </Form>
 
-          {showForm && (
-            <div className="max-w-container-narrow mx-auto mt-8 animate-fade-in">
-              <div className="p-3 sm:p-4 bg-timberwolf/30 rounded-xl sm:rounded-2xl">
-                <h3 className="font-medium text-eerie-black mb-2 flex items-center text-sm sm:text-base">
-                  <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-spanish-orange flex-shrink-0" />
-                  What happens next?
-                </h3>
-                <ul className="space-y-1 text-xs sm:text-sm text-cinereous">
-                  <li>• Upload your menu (PDF, image, or text)</li>
-                  <li>• Culi&apos;s AI will extract and understand your dishes</li>
-                  <li>• Get a QR code for guests to scan</li>
-                  <li>• Start answering questions in any language!</li>
-                </ul>
-              </div>
+        )}
+
+        {showForm && (
+          <div className="max-w-container-narrow mx-auto mt-8 animate-fade-in">
+            <div className="p-3 sm:p-4 bg-timberwolf/30 rounded-xl sm:rounded-2xl">
+              <h3 className="font-medium text-eerie-black mb-2 flex items-center text-sm sm:text-base">
+                <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-spanish-orange flex-shrink-0" />
+                What happens next?
+              </h3>
+              <ul className="space-y-1 text-xs sm:text-sm text-cinereous">
+                <li>• Upload your menu (PDF, image, or text)</li>
+                <li>• Culi&apos;s AI will extract and understand your dishes</li>
+                <li>• Get a QR code for guests to scan</li>
+                <li>• Start answering questions in any language!</li>
+              </ul>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   )
