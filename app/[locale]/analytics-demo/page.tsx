@@ -22,7 +22,7 @@ export default function AnalyticsDemoPage() {
             <div className="absolute bottom-0 left-1/4 h-64 w-64 rounded-full bg-warm-taupe/5 blur-3xl" />
           </div>
           
-          <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16 text-center">
+          <div className="relative z-10 mx-auto max-w-container-full px-4 sm:px-6 lg:px-8 pt-16 text-center">
             <BlurFade delay={0.1} inView>
               <AnimatedGradientText className="mb-4">
                 Analytics Dashboard
@@ -36,7 +36,7 @@ export default function AnalyticsDemoPage() {
             </BlurFade>
             
             <BlurFade delay={0.3} inView>
-              <p className="text-lg text-dark-umber/70 max-w-2xl mx-auto">
+              <p className="text-lg text-dark-umber/70 max-w-container-narrow mx-auto">
                 Track guest interactions, popular dishes, and usage metrics in real-time
               </p>
             </BlurFade>
@@ -45,7 +45,7 @@ export default function AnalyticsDemoPage() {
 
         {/* Metrics Grid */}
         <section className="relative pb-24">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-container-full px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {/* Menu Views Card */}
               <BlurFade delay={0.4} inView>

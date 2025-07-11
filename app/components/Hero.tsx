@@ -115,7 +115,7 @@ export function Hero() {
         ))}
       </div>
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center py-20 md:py-20">
+      <div className="relative z-10 mx-auto max-w-container-full px-4 sm:px-6 lg:px-8 text-center py-20 md:py-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -143,7 +143,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: prefersReducedMotion ? 0 : 0.6, delay: prefersReducedMotion ? 0 : 0.2 }}
-            className="mx-auto max-w-2xl md:max-w-3xl lg:max-w-4xl text-lg sm:text-lg md:text-xl text-eerie-black/80 px-4 sm:px-0"
+            className="mx-auto max-w-container-prose md:max-w-container-standard lg:max-w-container-wide text-lg sm:text-lg md:text-xl text-eerie-black/80 px-4 sm:px-0"
           >
             {t.rich('description', {
               bold: (chunks) => <span className="font-bold text-eerie-black">{chunks}</span>

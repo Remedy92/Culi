@@ -321,7 +321,7 @@ export default function MenuValidationPage({
       <div className="min-h-screen bg-seasalt">
       {/* Header */}
       <div className="sticky top-0 z-40 bg-white shadow-warm">
-        <div className="max-w-7xl mx-auto px-4 py-4">
+        <div className="max-w-container-full mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <CuliCurveLogo size={32} />
@@ -372,7 +372,7 @@ export default function MenuValidationPage({
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-container-full mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Menu Sections */}
           <div className="lg:col-span-2 space-y-4">

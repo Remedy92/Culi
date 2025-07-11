@@ -58,7 +58,7 @@ export default async function DashboardPage({
     <div className="min-h-screen bg-seasalt">
       {/* Header */}
       <header className="bg-white shadow-warm sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-container-full mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-3 md:py-6">
             <div className="flex items-center gap-3 md:gap-4 min-w-0">
               <Link href={`/${locale}/dashboard`} className="flex-shrink-0">
@@ -104,7 +104,7 @@ export default async function DashboardPage({
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
+      <main className="max-w-container-full mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
           <Card className="p-4 md:p-6 shadow-warm hover:shadow-warm-lg transition-shadow active:scale-[0.98] md:active:scale-100 touch-manipulation">

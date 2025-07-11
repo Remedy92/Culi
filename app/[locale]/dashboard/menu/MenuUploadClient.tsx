@@ -136,7 +136,7 @@ export default function MenuUploadClient({ restaurantId, locale }: MenuUploadCli
           </div>
 
           {/* Main Content */}
-          <div className="max-w-4xl mx-auto px-4">
+          <div className="max-w-container-wide mx-auto px-4">
             <AnimatePresence mode="wait">
               {/* Welcome Step */}
               {currentStep === 'welcome' && (
@@ -205,7 +205,7 @@ export default function MenuUploadClient({ restaurantId, locale }: MenuUploadCli
                     <div className="relative z-10 bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-warm-xl">
                       <FileUpload 
                         onChange={handleFileChange}
-                        className="max-w-2xl mx-auto"
+                        className="max-w-container-narrow mx-auto"
                       />
                       
                       {selectedFile && (

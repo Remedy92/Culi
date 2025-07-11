@@ -59,7 +59,7 @@ export function Pricing() {
   ];
   return (
     <section id="pricing" className="py-12 md:py-16 lg:py-20 bg-seasalt">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-container-full px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

@@ -38,7 +38,7 @@ const buttonVariants = cva(
     defaultVariants: {
       variant: "default",
       size: "default",
-      shape: "pill",
+      shape: "rounded",
     },
     compoundVariants: [
       // Size adjustments for different shapes

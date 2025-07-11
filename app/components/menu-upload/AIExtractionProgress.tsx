@@ -256,7 +256,7 @@ export function AIExtractionProgress({
   };
 
   return (
-    <div className={cn('w-full max-w-3xl mx-auto', className)}>
+    <div className={cn('w-full max-w-container-standard mx-auto', className)}>
       {/* Main Card */}
       <div className="relative bg-white rounded-3xl shadow-warm-xl overflow-hidden">
         {/* Sparkles Background */}

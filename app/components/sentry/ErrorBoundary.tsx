@@ -85,7 +85,7 @@ function DefaultErrorFallback({
 
   return (
     <div className="min-h-[400px] flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6">
+      <div className="max-w-container-narrow w-full bg-white rounded-lg shadow-lg p-6">
         <div className="flex items-center space-x-3 text-red-600 mb-4">
           <AlertCircle className="h-6 w-6" />
           <h2 className="text-lg font-semibold">Something went wrong</h2>

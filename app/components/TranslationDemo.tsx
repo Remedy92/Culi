@@ -54,7 +54,7 @@ export function TranslationDemo() {
         <div className="absolute bottom-0 right-1/4 h-32 w-32 md:h-64 md:w-64 rounded-full bg-warm-taupe/5 blur-2xl md:blur-3xl" />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 mx-auto max-w-container-full px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -65,14 +65,14 @@ export function TranslationDemo() {
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-dark-umber mb-3 md:mb-4">
             {t('title')}
           </h2>
-          <p className="text-base md:text-lg text-dark-umber/80 max-w-2xl mx-auto px-4 sm:px-0">
+          <p className="text-base md:text-lg text-dark-umber/80 max-w-container-narrow mx-auto px-4 sm:px-0">
             {isMobile 
               ? t('descriptionMobile')
               : t('description')}
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-8 max-w-container-wide mx-auto">
           {menuItems.map((item, index) => (
             <motion.div
               key={index}

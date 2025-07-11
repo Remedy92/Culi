@@ -58,7 +58,7 @@ export function ChatDemo() {
 
 
   return (
-    <div className="mx-auto max-w-xl md:max-w-2xl px-4 sm:px-0">
+    <div className="mx-auto max-w-container-narrow md:max-w-container-standard px-4 sm:px-0">
       <div className="relative rounded-2xl bg-white/50 backdrop-blur-sm border border-warm-taupe/10 p-4 sm:p-6 md:p-8 shadow-warm touch-manipulation">
         
         {/* Chat messages container */}

@@ -21,7 +21,7 @@ export default function StyleGuidePage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground p-lg">
-      <div className="max-w-7xl mx-auto space-y-2xl">
+      <div className="max-w-container-full mx-auto space-y-2xl">
         {/* Header */}
         <div className="flex justify-between items-center mb-2xl">
           <div>

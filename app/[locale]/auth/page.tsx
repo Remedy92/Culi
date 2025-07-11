@@ -63,7 +63,7 @@ export default function AuthPage() {
 
   if (emailSent) {
     return (
-      <div className="min-h-screen flex flex-col bg-seasalt px-4">
+      <div className="min-h-screen flex flex-col bg-seasalt px-6 sm:px-8 md:px-12">
         {/* Header */}
         <div className="py-6 flex justify-center">
           <Link href="/" className="flex items-center gap-3 group">
@@ -76,8 +76,8 @@ export default function AuthPage() {
 
         {/* Content */}
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-full max-w-md">
-            <div className="bg-white rounded-3xl shadow-warm-xl p-8 text-center space-y-6">
+          <div className="w-full" style={{ maxWidth: '600px' }}>
+            <div className="bg-white rounded-2xl shadow-warm-xl p-8 text-center space-y-6">
               <div className="space-y-2">
                 <h2 className="text-2xl font-bold text-eerie-black">Check your email</h2>
                 <p className="text-cinereous">
@@ -103,7 +103,7 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-seasalt px-4">
+    <div className="min-h-screen flex flex-col bg-seasalt px-6 sm:px-8 md:px-12">
       {/* Header */}
       <div className="py-6 flex justify-center">
         <Link href="/" className="flex items-center gap-3 group">
@@ -116,8 +116,8 @@ export default function AuthPage() {
 
       {/* Content */}
       <div className="flex-1 flex items-center justify-center">
-        <div className="w-full max-w-md">
-          <div className="bg-white rounded-3xl shadow-warm-xl p-8">
+        <div className="w-full" style={{ maxWidth: '600px' }}>
+          <div className="bg-white rounded-2xl shadow-warm-xl p-8">
             <div className="space-y-2 text-center mb-8">
               <h2 className="text-2xl font-bold text-eerie-black">Sign in to <span className="font-black"><span className="font-serif">C</span>uli</span></h2>
               <p className="text-cinereous">

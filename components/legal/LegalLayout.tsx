@@ -185,7 +185,7 @@ export default function LegalLayout({
   return (
     <>
     <div className="min-h-screen bg-seasalt">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-container-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-eerie-black/80 hover:text-spanish-orange transition-colors duration-200 mb-8"
@@ -249,7 +249,7 @@ export default function LegalLayout({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="flex-1 max-w-4xl"
+            className="flex-1 max-w-container-wide"
           >
             <header className="mb-10 pb-10 border-b border-cinereous/15">
               <h1 className="text-[2.5rem] font-bold text-eerie-black mb-5 tracking-[-0.02em] leading-tight">{title}</h1>

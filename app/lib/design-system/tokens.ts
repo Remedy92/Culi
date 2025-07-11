@@ -263,6 +263,19 @@ export const components = {
 } as const;
 
 /**
+ * Container width tokens
+ * Defines max-width values for different container types
+ */
+export const containers = {
+  prose: '65ch',           // ~650px - optimal for reading
+  narrow: '48rem',         // 768px - forms, cards, modals
+  standard: '64rem',       // 1024px - main content sections
+  wide: '80rem',           // 1280px - dashboards, data tables
+  full: '96rem',           // 1536px - hero sections, wide layouts
+  screen: '100%',          // Full viewport width
+} as const;
+
+/**
  * Utility function to get CSS variable value
  */
 export function getCSSVariable(variable: string): string {

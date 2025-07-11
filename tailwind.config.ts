@@ -222,6 +222,15 @@ const config: Config = {
         "warm-2xl": "0 25px 50px -12px rgba(198, 93, 44, 0.15)",
       },
       
+      // Max width utilities for containers
+      maxWidth: {
+        "container-prose": "var(--container-prose, 65ch)",
+        "container-narrow": "var(--container-narrow, 48rem)",
+        "container-standard": "var(--container-standard, 64rem)",
+        "container-wide": "var(--container-wide, 80rem)",
+        "container-full": "var(--container-full, 96rem)",
+      },
+      
       keyframes: {
         fadeUp: {
           "0%": { opacity: "0", transform: "translateY(20px)" },

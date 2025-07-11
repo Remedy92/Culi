@@ -37,7 +37,7 @@ export function Features() {
         <div className="absolute top-0 right-0 h-64 w-64 rounded-full bg-spanish-orange/5 blur-3xl" />
         <div className="absolute bottom-0 left-0 h-64 w-64 rounded-full bg-cinereous/5 blur-3xl" />
       </div>
-      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 mx-auto max-w-container-full px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -50,7 +50,7 @@ export function Features() {
               highlight: () => <span className="text-spanish-orange font-black"><span className="font-serif">C</span>uli</span>
             })}
           </h2>
-          <p className="text-base md:text-lg text-eerie-black/80 max-w-2xl mx-auto">
+          <p className="text-base md:text-lg text-eerie-black/80 max-w-container-narrow mx-auto">
             {t('sectionDescription')}
           </p>
         </motion.div>
@@ -73,7 +73,7 @@ export function Features() {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-container-wide mx-auto">
             {features.map((feature, index) => (
               <motion.div
                 key={index}

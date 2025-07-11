@@ -15,7 +15,7 @@ export function CTASection() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-spanish-orange/10 blur-3xl" />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
+      <div className="relative z-10 mx-auto max-w-container-standard px-4 sm:px-6 lg:px-8 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -26,7 +26,7 @@ export function CTASection() {
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-eerie-black">
             {t('title')}
           </h2>
-          <p className="text-lg md:text-xl text-eerie-black/80 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-eerie-black/80 max-w-container-narrow mx-auto">
             {t.rich('description', {
               culi: () => <span className="font-black"><span className="font-serif">C</span>uli</span>
             })}

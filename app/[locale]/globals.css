@@ -156,6 +156,13 @@ body {
   --touch-target-min: 44px;
   --touch-target-comfortable: 48px;
   --touch-target-large: 56px;
+  
+  /* Container Width System */
+  --container-prose: 65ch;           /* ~650px - optimal reading width */
+  --container-narrow: 48rem;         /* 768px - forms, cards, modals */
+  --container-standard: 64rem;       /* 1024px - main content */
+  --container-wide: 80rem;           /* 1280px - dashboards, wide content */
+  --container-full: 96rem;           /* 1536px - hero sections */
 }
 
 /* Professional Typography Scale for Legal Content */

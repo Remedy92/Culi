@@ -13,7 +13,7 @@ const chatMessages = [
 export function Demo() {
   return (
     <section id="demo" className="py-24 lg:py-32 bg-timberwolf/30">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-container-full px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left side - Description */}
           <motion.div
@@ -67,7 +67,7 @@ export function Demo() {
             transition={{ duration: 0.6 }}
             className="relative"
           >
-            <div className="mx-auto max-w-sm">
+            <div className="mx-auto max-w-container-narrow">
               {/* Phone frame */}
               <div className="relative bg-eerie-black rounded-[2.5rem] p-3 shadow-2xl">
                 <div className="bg-white rounded-[2rem] overflow-hidden">

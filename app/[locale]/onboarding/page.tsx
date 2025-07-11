@@ -329,7 +329,7 @@ export default function OnboardingPage({
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-container-narrow mx-auto">
         {/* Chat Interface */}
         <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
           {/* Culi's Message */}
@@ -337,7 +337,7 @@ export default function OnboardingPage({
             <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full shadow-warm flex items-center justify-center">
               <CuliCurveLogo size={20} className="sm:w-6 sm:h-6" />
             </div>
-            <div className="bg-white rounded-2xl rounded-tl-none shadow-warm-lg p-3 sm:p-4 max-w-[85%] sm:max-w-md">
+            <div className="bg-white rounded-2xl rounded-tl-none shadow-warm-lg p-3 sm:p-4 max-w-[85%] sm:max-w-container-narrow">
               <div className="space-y-2">
                 {reducedMotion ? (
                   <>
@@ -395,7 +395,7 @@ export default function OnboardingPage({
               <button
                 type="button"
                 onClick={() => setShowForm(false)}
-                className="bg-spanish-orange text-white rounded-2xl rounded-tr-none shadow-warm-lg p-3 sm:p-4 max-w-[85%] sm:max-w-md relative group hover:bg-opacity-90 transition-all cursor-pointer touch-manipulation"
+                className="bg-spanish-orange text-white rounded-2xl rounded-tr-none shadow-warm-lg p-3 sm:p-4 max-w-[85%] sm:max-w-container-narrow relative group hover:bg-opacity-90 transition-all cursor-pointer touch-manipulation"
                 title="Click to edit restaurant name"
               >
                 <div className="flex items-center gap-2">
@@ -412,7 +412,7 @@ export default function OnboardingPage({
               <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full shadow-warm flex items-center justify-center">
                 <CuliCurveLogo size={20} className="sm:w-6 sm:h-6" />
               </div>
-              <div className="bg-white rounded-2xl rounded-tl-none shadow-warm-lg p-3 sm:p-4 max-w-[85%] sm:max-w-md">
+              <div className="bg-white rounded-2xl rounded-tl-none shadow-warm-lg p-3 sm:p-4 max-w-[85%] sm:max-w-container-narrow">
                 {reducedMotion ? (
                   <p className="text-sm sm:text-base text-eerie-black">
                     Great! Before we continue, I need you to review and accept our policies.
@@ -452,7 +452,7 @@ export default function OnboardingPage({
             }} className="space-y-6">
               {/* Restaurant Name Input - Chat Style */}
               {!showForm && (
-                <div className="max-w-2xl mx-auto">
+                <div className="max-w-container-narrow mx-auto">
                   <FormField
                     control={form.control}
                     name="restaurantName"
@@ -501,7 +501,7 @@ export default function OnboardingPage({
               )}
 
               {showForm && (
-                <div className="max-w-2xl mx-auto">
+                <div className="max-w-container-narrow mx-auto">
                   {errorMessage && (
                     <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 animate-fade-in">
                       <p className="text-sm">{errorMessage}</p>
@@ -590,7 +590,7 @@ export default function OnboardingPage({
               )}
 
               {showForm && (
-                <div className="max-w-2xl mx-auto mt-6 animate-fade-in">
+                <div className="max-w-container-narrow mx-auto mt-6 animate-fade-in">
                   <Button
                     type="submit"
                     className="w-full py-4 sm:py-6 text-base sm:text-lg touch-manipulation"
@@ -612,7 +612,7 @@ export default function OnboardingPage({
           </Form>
 
           {showForm && (
-            <div className="max-w-2xl mx-auto mt-8 animate-fade-in">
+            <div className="max-w-container-narrow mx-auto mt-8 animate-fade-in">
               <div className="p-3 sm:p-4 bg-timberwolf/30 rounded-xl sm:rounded-2xl">
                 <h3 className="font-medium text-eerie-black mb-2 flex items-center text-sm sm:text-base">
                   <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-spanish-orange flex-shrink-0" />
