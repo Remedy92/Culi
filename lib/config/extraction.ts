@@ -8,9 +8,9 @@ export const EXTRACTION_CONFIG = {
   OCR: {
     CONFIDENCE_THRESHOLD: 70, // Minimum confidence % to avoid enhancement
     LANGUAGES: ['nld', 'eng'], // Dutch primary for Flemish menus, English fallback
-    PAGE_SEG_MODE: '4', // Single column of text of variable sizes - better for menus
+    PAGE_SEG_MODE: '3', // Fully automatic page segmentation - better for multi-column menus
     PRESERVE_SPACES: '1',
-    CHAR_WHITELIST: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.,€$£¥-()/ '
+    CHAR_WHITELIST: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.,€$£¥-()/ *•°%+&\''
   },
 
   // AI Model Settings

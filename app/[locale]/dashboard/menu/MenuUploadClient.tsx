@@ -85,10 +85,50 @@ export default function MenuUploadClient({ restaurantId, locale }: MenuUploadCli
       setIsExtracting(true)
       setCurrentStep('extracting')
       
-      // Navigate to validation
-      setTimeout(() => {
+      // Validate URLs exist
+      if (!data.menu?.thumbnailUrl) {
+        throw new Error('Missing thumbnail URL from upload response')
+      }
+      
+      // Start extraction process
+      try {
+        const extractResponse = await fetch('/api/menu/extract', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            menuId: data.menu.id,
+            restaurantId: restaurantId,
+            thumbnailUrl: data.menu.thumbnailUrl,
+            enhancedUrl: data.menu.enhancedUrl || data.menu.thumbnailUrl
+          })
+        })
+
+        if (!extractResponse.ok) {
+          const error = await extractResponse.json()
+          throw new Error(error.error || 'Extraction failed')
+        }
+
+        const extractData = await extractResponse.json()
+        
+        console.log('Extraction response:', extractData)
+        
+        // Verify extraction was saved
+        if (!extractData.hasExtractedData) {
+          throw new Error('Extraction completed but data was not saved properly')
+        }
+        
+        // Wait a bit to ensure database consistency and animation
+        await new Promise(resolve => setTimeout(resolve, 2000))
+        
+        // Navigate to validation page with extraction already done
         router.push(`/${locale}/dashboard/menu/validate?menuId=${data.menu.id}`)
-      }, 2000)
+        
+      } catch (extractError) {
+        console.error('Extraction error:', extractError)
+        toast.error(extractError instanceof Error ? extractError.message : 'AI analysis failed. Please try again.')
+        setIsExtracting(false)
+        setCurrentStep('upload')
+      }
       
     } catch (error) {
       console.error('Upload error:', error)
@@ -117,8 +157,8 @@ export default function MenuUploadClient({ restaurantId, locale }: MenuUploadCli
       <MultiStepLoader 
         loadingStates={loadingStates} 
         loading={isExtracting} 
-        duration={3000}
-        loop={false}
+        duration={10000}
+        loop={true}
       />
 
       {/* Welcome Modal */}

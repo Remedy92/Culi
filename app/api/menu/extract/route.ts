@@ -190,7 +190,7 @@ export async function POST(req: NextRequest) {
       description: 'Save extraction results'
     });
 
-    const { error: updateError } = await supabase
+    const { data: updatedMenu, error: updateError } = await supabase
       .from('menus')
       .update({
         extracted_data: validatedResult,
@@ -199,11 +199,19 @@ export async function POST(req: NextRequest) {
         extraction_timestamp: new Date().toISOString(),
         is_active: true
       })
-      .eq('id', input.menuId);
+      .eq('id', input.menuId)
+      .select()
+      .single();
 
     if (updateError) {
       console.error('Failed to update menu:', updateError);
       throw new Error('Failed to save extraction results');
+    }
+    
+    // Verify the update was successful
+    if (!updatedMenu?.extracted_data) {
+      console.error('Menu update succeeded but extracted_data is missing');
+      throw new Error('Extraction data was not saved properly');
     }
 
     // Save individual items for search
@@ -256,9 +264,13 @@ export async function POST(req: NextRequest) {
     span.end();
 
     // Return success response
+    console.log(`Extraction completed successfully for menu ${input.menuId}. Items: ${items.length}, Confidence: ${validatedResult.overallConfidence}%`);
+    
     return NextResponse.json({
       success: true,
       extraction: validatedResult,
+      menuId: input.menuId,
+      hasExtractedData: !!updatedMenu.extracted_data,
       metrics: {
         itemsExtracted: items.length,
         confidence: validatedResult.overallConfidence,
@@ -312,8 +324,9 @@ async function performOCR(
   try {
     await worker.setParameters({
       tessedit_pageseg_mode: EXTRACTION_CONFIG.OCR.PAGE_SEG_MODE,
-      preserve_interword_spaces: EXTRACTION_CONFIG.OCR.PRESERVE_SPACES
-      // Removed tessedit_char_whitelist as it can interfere with non-English languages
+      preserve_interword_spaces: EXTRACTION_CONFIG.OCR.PRESERVE_SPACES,
+      tessedit_char_whitelist: EXTRACTION_CONFIG.OCR.CHAR_WHITELIST,
+      user_defined_dpi: '300' // Force higher DPI to improve line detection
     });
 
     console.log('Starting OCR recognition...');
@@ -326,16 +339,48 @@ async function performOCR(
     
     const { data } = await Promise.race([recognizePromise, timeoutPromise]) as Awaited<ReturnType<typeof worker.recognize>>;
     
+    // Log full data structure for debugging
+    console.log('OCR data structure:', {
+      hasLines: !!data.lines,
+      linesCount: data.lines?.length || 0,
+      textLength: data.text?.length || 0,
+      confidence: data.confidence || 0
+    });
+    
     // Add defensive coding for missing lines
     if (!data.lines) {
-      console.warn('OCR warning: No text lines detected in image');
+      console.warn('OCR warning: No text lines property in response');
       data.lines = [];
+    }
+    
+    // Fallback: Create synthetic lines if none detected but text exists
+    let lines = data.lines || [];
+    if (lines.length === 0 && data.text && data.text.trim().length > 0) {
+      console.warn('OCR fallback: Creating synthetic lines from text');
+      addBreadcrumb('OCR synthetic lines fallback', 'ocr', { 
+        textLength: data.text.length,
+        confidence: data.confidence 
+      });
+      
+      // Split text by newlines and create synthetic line objects
+      const textLines = data.text.split('\n').filter(line => line.trim().length > 0);
+      lines = textLines.map((text, index) => ({
+        text,
+        confidence: data.confidence || 0,
+        bbox: {
+          x0: 0,
+          y0: index * 30,
+          x1: 1000,
+          y1: (index + 1) * 30
+        },
+        words: []
+      }));
     }
     
     const result = OCRResultSchema.parse({
       text: data.text || '',
       confidence: data.confidence || 0,
-      lines: data.lines.map(line => ({
+      lines: lines.map(line => ({
         text: line.text,
         bbox: {
           x: line.bbox.x0,

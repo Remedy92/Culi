@@ -28,7 +28,6 @@ import { Input } from '@/app/components/ui/input'
 import { Badge } from '@/app/components/ui/badge'
 import { cn } from '@/lib/utils'
 import type { ExtractedMenu, MenuItem, MenuSection } from '@/lib/ai/menu/extraction-schemas'
-import { MultiStepLoader } from '@/app/components/ui/multi-step-loader'
 
 interface EditableField {
   sectionId?: string;
@@ -37,26 +36,6 @@ interface EditableField {
   value: string;
 }
 
-const extractionLoadingStates = [
-  {
-    text: "Reading menu text with OCR",
-  },
-  {
-    text: "AI analyzing menu structure",
-  },
-  {
-    text: "Identifying dishes and prices",
-  },
-  {
-    text: "Detecting allergens and dietary info",
-  },
-  {
-    text: "Organizing menu sections",
-  },
-  {
-    text: "Validating extracted data",
-  },
-]
 
 export default function MenuValidationPage({ 
   params 
@@ -70,7 +49,6 @@ export default function MenuValidationPage({
   const menuId = searchParams.get('menuId')
   
   const [isLoading, setIsLoading] = useState(true)
-  const [isExtracting, setIsExtracting] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [extraction, setExtraction] = useState<ExtractedMenu | null>(null)
   const [editingField, setEditingField] = useState<EditableField | null>(null)
@@ -91,26 +69,54 @@ export default function MenuValidationPage({
   }, [menuId])
 
   const checkAuthAndLoadMenu = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      router.push(`/${locale}/auth`)
-      return
-    }
+    try {
+      const { data: { user }, error: authError } = await supabase.auth.getUser()
+      
+      if (authError) {
+        console.error('Auth error:', authError)
+        toast.error('Authentication failed')
+        router.push(`/${locale}/auth`)
+        return
+      }
+      
+      if (!user) {
+        router.push(`/${locale}/auth`)
+        return
+      }
 
-    const { data: restaurant } = await supabase
-      .from('restaurants')
-      .select('id')
-      .eq('owner_id', user.id)
-      .single()
+      console.log('Fetching restaurant for user:', user.id)
+      
+      // Use RPC to get restaurant data safely (bypasses RLS recursion)
+      const { data: restaurant, error: restaurantError } = await supabase
+        .rpc('get_user_restaurant')
+        .single()
 
-    if (!restaurant) {
-      router.push(`/${locale}/onboarding`)
-      return
-    }
+      if (restaurantError) {
+        console.error('Restaurant query error:', restaurantError)
+        
+        // Handle specific error cases
+        if (restaurantError.code === 'PGRST116' || restaurantError.message?.includes('No rows')) {
+          console.log('No restaurant found for user, redirecting to onboarding')
+          router.push(`/${locale}/onboarding`)
+          return
+        }
+        
+        // For other errors, show message and redirect
+        toast.error('Failed to load restaurant data')
+        router.push(`/${locale}/dashboard/menu`)
+        return
+      }
+
+      if (!restaurant) {
+        console.log('No restaurant data returned, redirecting to onboarding')
+        router.push(`/${locale}/onboarding`)
+        return
+      }
 
     setRestaurantId(restaurant.id)
     
     // Load menu data
+    console.log('Loading menu data for ID:', menuId)
     const { data: menu, error } = await supabase
       .from('menus')
       .select('*')
@@ -118,60 +124,69 @@ export default function MenuValidationPage({
       .eq('restaurant_id', restaurant.id)
       .single()
 
+    console.log('Menu data loaded:', { 
+      menuId, 
+      hasMenu: !!menu, 
+      hasExtractedData: !!menu?.extracted_data,
+      error 
+    })
+
     if (error || !menu) {
-      toast.error('Menu not found')
+      console.error('Menu load error:', error)
+      
+      // Handle specific error cases
+      if (error?.code === '42P17' || error?.message?.includes('infinite recursion')) {
+        console.error('RLS recursion error detected:', error)
+        toast.error('Database configuration error. Please contact support.')
+      } else if (error?.code === 'PGRST116' || error?.message?.includes('No rows')) {
+        toast.error('Menu not found or access denied')
+      } else {
+        toast.error('Failed to load menu data')
+      }
+      
       router.push(`/${locale}/dashboard/menu`)
       return
     }
 
     if (menu.extracted_data) {
+      console.log('Extracted data found, sections:', menu.extracted_data.sections?.length || 0)
       setExtraction(menu.extracted_data)
       // Expand all sections by default
       setExpandedSections(new Set(menu.extracted_data.sections.map((s: MenuSection) => s.id)))
       setIsLoading(false)
     } else {
-      // Start extraction if not done
-      setIsExtracting(true)
-      setIsLoading(false)
-      startExtraction(menuId, restaurant.id, menu.thumbnail_url, menu.enhanced_url)
-    }
-  }
-
-  const startExtraction = async (menuId: string, restaurantId: string, thumbnailUrl: string, enhancedUrl?: string) => {
-    try {
-      const response = await fetch('/api/menu/extract', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          menuId,
-          restaurantId,
-          thumbnailUrl,
-          enhancedUrl
-        })
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || 'Extraction failed')
-      }
-
-      const data = await response.json()
+      // If no extracted data, try to reload once
+      console.error('No extracted data found for menu:', menuId)
+      console.log('Full menu object:', menu)
       
-      if (data.extraction) {
-        handleExtractionComplete(data.extraction)
-      }
+      // Try reloading once after a delay
+      setTimeout(async () => {
+        console.log('Retrying menu load...')
+        const { data: retryMenu } = await supabase
+          .from('menus')
+          .select('*')
+          .eq('id', menuId)
+          .single()
+        
+        if (retryMenu?.extracted_data) {
+          console.log('Extracted data found on retry')
+          setExtraction(retryMenu.extracted_data)
+          setExpandedSections(new Set(retryMenu.extracted_data.sections.map((s: MenuSection) => s.id)))
+          setIsLoading(false)
+        } else {
+          toast.error('Menu extraction incomplete. Please try uploading again.')
+          router.push(`/${locale}/dashboard/menu`)
+        }
+      }, 2000)
+    }
     } catch (error) {
-      console.error('Extraction error:', error)
-      toast.error(error instanceof Error ? error.message : 'Extraction failed')
-      setIsExtracting(false)
+      console.error('Unexpected error in checkAuthAndLoadMenu:', error)
+      toast.error('An unexpected error occurred')
+      router.push(`/${locale}/dashboard/menu`)
     }
   }
 
-  const handleExtractionComplete = (extractedData: ExtractedMenu) => {
-    setExtraction(extractedData)
-    setExpandedSections(new Set(extractedData.sections.map(s => s.id)))
-    setIsExtracting(false)
-  }
+
 
   const toggleSection = (sectionId: string) => {
     setExpandedSections(prev => {
@@ -310,15 +325,7 @@ export default function MenuValidationPage({
   }
 
   return (
-    <>
-      <MultiStepLoader 
-        loadingStates={extractionLoadingStates} 
-        loading={isExtracting} 
-        duration={4000}
-        loop={false}
-      />
-      
-      <div className="min-h-screen bg-seasalt">
+    <div className="min-h-screen bg-seasalt">
       {/* Header */}
       <div className="sticky top-0 z-40 bg-white shadow-warm">
         <div className="max-w-container-full mx-auto px-4 py-4">
@@ -618,7 +625,6 @@ export default function MenuValidationPage({
         </div>
       </div>
     </div>
-    </>
   )
 }
 
