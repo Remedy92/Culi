@@ -334,18 +334,18 @@ export default function OnboardingPage({
         <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
           {/* Culi's Message */}
           <div className="flex items-start gap-3">
-            <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full shadow-warm flex items-center justify-center">
+            <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full border-minimal flex items-center justify-center">
               <CuliCurveLogo size={20} className="sm:w-6 sm:h-6" />
             </div>
-            <div className="bg-white rounded-2xl rounded-tl-none shadow-warm-lg p-3 sm:p-4 max-w-[85%] sm:max-w-container-narrow">
+            <div className="bg-white rounded-2xl rounded-tl-none border-minimal p-3 sm:p-4 max-w-[85%] sm:max-w-container-narrow">
               <div className="space-y-2">
                 {reducedMotion ? (
                   <>
-                    <p className="text-sm sm:text-base text-eerie-black">
+                    <p className="text-xs sm:text-sm text-eerie-black font-light">
                       Hi! I&apos;m Culi, your AI menu assistant. Let&apos;s get your restaurant set up!
                     </p>
                     {showSecondMessage && (
-                      <p className="text-sm sm:text-base text-eerie-black">
+                      <p className="text-xs sm:text-sm text-eerie-black font-light">
                         What&apos;s the name of your restaurant?
                       </p>
                     )}
@@ -395,7 +395,7 @@ export default function OnboardingPage({
               <button
                 type="button"
                 onClick={() => setShowForm(false)}
-                className="bg-spanish-orange text-white rounded-2xl rounded-tr-none shadow-warm-lg p-3 sm:p-4 max-w-[85%] sm:max-w-container-narrow relative group hover:bg-opacity-90 transition-all cursor-pointer touch-manipulation"
+                className="bg-spanish-orange text-white rounded-2xl rounded-tr-none p-3 sm:p-4 max-w-[85%] sm:max-w-container-narrow relative group hover:bg-opacity-90 transition-all cursor-pointer touch-manipulation"
                 title="Click to edit restaurant name"
               >
                 <div className="flex items-center gap-2">
@@ -409,10 +409,10 @@ export default function OnboardingPage({
           {/* Culi's Follow-up */}
           {showForm && (
             <div className="flex items-start gap-3 animate-fade-in">
-              <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full shadow-warm flex items-center justify-center">
+              <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full border-minimal flex items-center justify-center">
                 <CuliCurveLogo size={20} className="sm:w-6 sm:h-6" />
               </div>
-              <div className="bg-white rounded-2xl rounded-tl-none shadow-warm-lg p-3 sm:p-4 max-w-[85%] sm:max-w-container-narrow">
+              <div className="bg-white rounded-2xl rounded-tl-none border-minimal p-3 sm:p-4 max-w-[85%] sm:max-w-container-narrow">
                 {reducedMotion ? (
                   <p className="text-sm sm:text-base text-eerie-black">
                     Great! Before we continue, I need you to review and accept our policies.
@@ -443,7 +443,7 @@ export default function OnboardingPage({
         </div>
 
         {/* Chat Input Section */}
-        <div className={`${showForm ? '' : 'fixed bottom-4 left-4 right-4 sm:static sm:bottom-auto sm:left-auto sm:right-auto'} bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-none border border-gray-100 sm:border-t sm:border-x-0 sm:border-b-0 shadow-lg p-3 sm:p-4 md:static md:bg-transparent md:border-0 md:p-0 md:shadow-none transition-all duration-300 safe-area-bottom`}>
+        <div className={`${showForm ? '' : 'fixed bottom-4 left-4 right-4 sm:static sm:bottom-auto sm:left-auto sm:right-auto'} bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-none border border-gray-100 sm:border-t sm:border-x-0 sm:border-b-0 p-3 sm:p-4 md:static md:bg-transparent md:border-0 md:p-0 transition-all duration-300 safe-area-bottom`}>
 
           <Form {...form}>
             <form onSubmit={(e) => {
@@ -459,7 +459,7 @@ export default function OnboardingPage({
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <div className="bg-white rounded-2xl shadow-warm-sm p-2">
+                          <div className="bg-white rounded-2xl border-minimal p-2">
                             <div className="flex items-center gap-2">
                               <Input 
                                 placeholder="Type your restaurant name..." 
@@ -482,7 +482,7 @@ export default function OnboardingPage({
                               <button
                                 type="button"
                                 onClick={() => field.value && setShowForm(true)}
-                                className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-spanish-orange text-white rounded-xl flex items-center justify-center hover:bg-opacity-90 transition-all disabled:opacity-50 shadow-sm touch-manipulation"
+                                className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-spanish-orange text-white rounded-xl flex items-center justify-center hover:bg-opacity-90 transition-all disabled:opacity-50 touch-manipulation"
                                 disabled={!field.value || isLoading}
                               >
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -507,7 +507,7 @@ export default function OnboardingPage({
                       <p className="text-sm">{errorMessage}</p>
                     </div>
                   )}
-                  <div className="bg-white rounded-2xl sm:rounded-3xl shadow-warm-xl p-4 sm:p-6 md:p-8 mt-4 sm:mt-6 animate-fade-in legal-requirements-form">
+                  <div className="bg-white rounded-2xl sm:rounded-3xl border-minimal p-4 sm:p-6 md:p-8 mt-4 sm:mt-6 animate-fade-in legal-requirements-form">
                     <h3 className="text-sm font-medium text-eerie-black mb-4">Legal Requirements</h3>
                 
                 <FormField
