@@ -28,7 +28,7 @@ import { Input } from '@/app/components/ui/input'
 import { Badge } from '@/app/components/ui/badge'
 import { cn } from '@/lib/utils'
 import type { ExtractedMenu, MenuItem, MenuSection } from '@/lib/ai/menu/extraction-schemas'
-import { AIExtractionProgress } from '@/app/components/menu-upload/AIExtractionProgress'
+import { MultiStepLoader } from '@/app/components/ui/multi-step-loader'
 
 interface EditableField {
   sectionId?: string;
@@ -36,6 +36,27 @@ interface EditableField {
   field: string;
   value: string;
 }
+
+const extractionLoadingStates = [
+  {
+    text: "Reading menu text with OCR",
+  },
+  {
+    text: "AI analyzing menu structure",
+  },
+  {
+    text: "Identifying dishes and prices",
+  },
+  {
+    text: "Detecting allergens and dietary info",
+  },
+  {
+    text: "Organizing menu sections",
+  },
+  {
+    text: "Validating extracted data",
+  },
+]
 
 export default function MenuValidationPage({ 
   params 
@@ -49,6 +70,7 @@ export default function MenuValidationPage({
   const menuId = searchParams.get('menuId')
   
   const [isLoading, setIsLoading] = useState(true)
+  const [isExtracting, setIsExtracting] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [extraction, setExtraction] = useState<ExtractedMenu | null>(null)
   const [editingField, setEditingField] = useState<EditableField | null>(null)
@@ -109,14 +131,46 @@ export default function MenuValidationPage({
       setIsLoading(false)
     } else {
       // Start extraction if not done
-      setIsLoading(true)
+      setIsExtracting(true)
+      setIsLoading(false)
+      startExtraction(menuId, restaurant.id, menu.thumbnail_url, menu.enhanced_url)
+    }
+  }
+
+  const startExtraction = async (menuId: string, restaurantId: string, thumbnailUrl: string, enhancedUrl?: string) => {
+    try {
+      const response = await fetch('/api/menu/extract', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          menuId,
+          restaurantId,
+          thumbnailUrl,
+          enhancedUrl
+        })
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Extraction failed')
+      }
+
+      const data = await response.json()
+      
+      if (data.extraction) {
+        handleExtractionComplete(data.extraction)
+      }
+    } catch (error) {
+      console.error('Extraction error:', error)
+      toast.error(error instanceof Error ? error.message : 'Extraction failed')
+      setIsExtracting(false)
     }
   }
 
   const handleExtractionComplete = (extractedData: ExtractedMenu) => {
     setExtraction(extractedData)
     setExpandedSections(new Set(extractedData.sections.map(s => s.id)))
-    setIsLoading(false)
+    setIsExtracting(false)
   }
 
   const toggleSection = (sectionId: string) => {
@@ -239,19 +293,10 @@ export default function MenuValidationPage({
     return 'text-red-600'
   }
 
-  if (isLoading && menuId && restaurantId) {
+  if (isLoading) {
     return (
-      <div className="min-h-screen bg-seasalt py-8">
-        <AIExtractionProgress
-          menuId={menuId}
-          restaurantId={restaurantId}
-          thumbnailUrl=""
-          onComplete={handleExtractionComplete}
-          onError={(error) => {
-            toast.error(error)
-            router.push(`/${locale}/dashboard/menu`)
-          }}
-        />
+      <div className="min-h-screen bg-seasalt flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-spanish-orange" />
       </div>
     )
   }
@@ -265,7 +310,15 @@ export default function MenuValidationPage({
   }
 
   return (
-    <div className="min-h-screen bg-seasalt">
+    <>
+      <MultiStepLoader 
+        loadingStates={extractionLoadingStates} 
+        loading={isExtracting} 
+        duration={4000}
+        loop={false}
+      />
+      
+      <div className="min-h-screen bg-seasalt">
       {/* Header */}
       <div className="sticky top-0 z-40 bg-white shadow-warm">
         <div className="max-w-7xl mx-auto px-4 py-4">
@@ -565,6 +618,7 @@ export default function MenuValidationPage({
         </div>
       </div>
     </div>
+    </>
   )
 }
 
