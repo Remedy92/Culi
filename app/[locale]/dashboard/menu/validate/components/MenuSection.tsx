@@ -1,22 +1,25 @@
 'use client'
 
-import React from 'react'
+import React, { useCallback, useState } from 'react'
 import { motion } from 'framer-motion'
-import { GripVertical, Trash2, Plus } from 'lucide-react'
+import { GripVertical, Trash2, Plus, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { 
   AccordionContent, 
-  AccordionItem, 
-  AccordionTrigger 
+  AccordionItem
 } from '@/components/ui/accordion'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import type { MenuSection as MenuSectionType } from '@/lib/ai/menu/extraction-schemas'
+import { InlineEdit } from './InlineEdit'
+import { ValidationBadge } from './ValidationBadge'
 
 interface MenuSectionProps {
   section: MenuSectionType
   isExpanded: boolean
+  selectionState?: 'checked' | 'unchecked' | 'indeterminate'
+  validationState?: 'checked' | 'unchecked' | 'indeterminate'
+  onToggleSelection?: () => void
   onToggle: () => void
+  onUpdate: (updates: Partial<MenuSectionType>) => void
   onDelete: () => void
   onAddItem: () => void
   children: React.ReactNode
@@ -24,7 +27,12 @@ interface MenuSectionProps {
 }
 
 export const MenuSection = React.forwardRef<HTMLDivElement, MenuSectionProps>(
-  ({ section, onToggle, onDelete, onAddItem, children, dragHandleProps }, ref) => {
+  ({ section, isExpanded, selectionState = 'unchecked', validationState = 'unchecked', onToggleSelection, onToggle, onUpdate, onDelete, onAddItem, children, dragHandleProps }, ref) => {
+    const [isHovered, setIsHovered] = useState(false)
+    const handleNameSave = useCallback((name: string) => {
+      onUpdate({ name })
+    }, [onUpdate])
+
     return (
       <AccordionItem 
         value={section.id} 
@@ -33,64 +41,117 @@ export const MenuSection = React.forwardRef<HTMLDivElement, MenuSectionProps>(
       >
         <motion.div
           layout
-          className={cn(
-            "group relative bg-white rounded-lg border border-gray-200",
-            "hover:border-gray-300 transition-all duration-200"
-          )}
+          className="group relative"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
         >
-          {/* Section Header */}
-          <div className="flex items-center">
-            {/* Drag Handle - Always Visible */}
-            <div
-              className="cursor-move px-3 py-4 text-gray-400 hover:text-gray-600"
-              {...dragHandleProps}
-            >
-              <GripVertical className="h-4 w-4" />
+          {/* Section Header - Entire area clickable */}
+          <div 
+            onClick={(e) => {
+              // Don't toggle if clicking on interactive elements
+              const target = e.target as HTMLElement
+              if (target.closest('button') || target.closest('[contenteditable]') || target.closest('input')) {
+                return
+              }
+              onToggle()
+            }}
+            className={cn(
+              "flex items-center gap-3 py-4 px-2 cursor-pointer",
+              "border-b border-warm transition-colors duration-150",
+              selectionState !== 'unchecked' ? "bg-warm-100" : "hover:bg-warm-50"
+            )}
+          >
+            {/* Selection Checkbox / Drag Handle */}
+            <div className="flex items-center w-4 h-4">
+              {(isHovered || selectionState !== 'unchecked') ? (
+                onToggleSelection && (
+                  <input
+                    type="checkbox"
+                    checked={selectionState === 'checked'}
+                    ref={input => {
+                      if (input) {
+                        input.indeterminate = selectionState === 'indeterminate'
+                      }
+                    }}
+                    onChange={(e) => {
+                      e.stopPropagation()
+                      onToggleSelection()
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                    className="w-4 h-4 cursor-pointer"
+                  />
+                )
+              ) : (
+                <div
+                  className="cursor-move"
+                  onClick={(e) => e.stopPropagation()}
+                  {...dragHandleProps}
+                >
+                  <GripVertical className="h-4 w-4 text-warm-secondary" />
+                </div>
+              )}
             </div>
 
-            <AccordionTrigger 
-              onClick={onToggle}
-              className="flex-1 hover:no-underline px-4 py-4"
-            >
-              <div className="flex items-center gap-3">
-                {/* Section Name */}
-                <h3 className="text-base font-medium text-gray-900">
-                  {section.name}
-                </h3>
-
-                {/* Item Count */}
-                <span className="text-sm text-gray-500">
-                  {section.items.length} items
-                </span>
+            {/* Section Name with Inline Edit */}
+            <div className="flex-1 flex items-center gap-3">
+              <ChevronDown 
+                className={cn(
+                  "h-4 w-4 text-warm-secondary transition-transform duration-150",
+                  isExpanded && "rotate-180"
+                )}
+              />
+              <div className="text-notion-sm font-medium text-notion-primary">
+                <InlineEdit
+                  value={section.name}
+                  onSave={handleNameSave}
+                  placeholder="Section name"
+                  className="capitalize"
+                />
               </div>
-            </AccordionTrigger>
+              <span className="text-notion-xs text-warm-secondary">
+                ({section.items.length})
+              </span>
+            </div>
 
-            {/* Delete Button - Always Visible */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onDelete}
-              className="mr-2 h-8 w-8 p-0 text-gray-400 hover:text-red-600 hover:bg-red-50"
+            {/* Section Validation Badge */}
+            <ValidationBadge 
+              isValidated={validationState === 'checked'}
+            />
+
+            {/* Delete Button - Hidden until hover */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                onDelete()
+              }}
+              className={cn(
+                "hover-visible p-1 rounded",
+                "transition-colors duration-150",
+                "hover:bg-red-50 hover:text-red-600"
+              )}
             >
               <Trash2 className="h-4 w-4" />
-            </Button>
+            </button>
           </div>
 
           {/* Section Content */}
-          <AccordionContent>
-            <div className="px-4 pb-4 space-y-2">
+          <AccordionContent className="border-none">
+            <div className="pl-8 pr-4 py-3 space-y-1">
               {children}
               
               {/* Add Item Button */}
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full border-dashed hover:border-gray-400"
+              <button
                 onClick={onAddItem}
+                className={cn(
+                  "w-full flex items-center gap-2 py-3 px-2 -mx-2 mt-2",
+                  "text-notion-sm text-warm-secondary",
+                  "rounded transition-colors duration-150",
+                  "hover:bg-warm-100 hover:text-spanish-orange"
+                )}
               >
-                <Plus className="h-3 w-3 mr-1" />
-                Add Item
-              </Button>
+                <Plus className="h-4 w-4" />
+                Add item
+              </button>
             </div>
           </AccordionContent>
         </motion.div>

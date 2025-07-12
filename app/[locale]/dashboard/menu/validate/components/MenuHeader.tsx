@@ -1,8 +1,8 @@
 'use client'
 
-import { Check, Loader2 } from 'lucide-react'
+import React from 'react'
+import { cn } from '@/lib/utils'
 import { CuliCurveLogo } from '@/app/components/CuliCurveLogo'
-import { Button } from '@/components/ui/button'
 
 interface MenuHeaderProps {
   hasChanges: boolean
@@ -10,37 +10,38 @@ interface MenuHeaderProps {
   onSave: () => void
 }
 
-export function MenuHeader({ 
-  hasChanges, 
-  isSaving, 
-  onSave
-}: MenuHeaderProps) {
-
+export function MenuHeader({ hasChanges, isSaving, onSave }: MenuHeaderProps) {
   return (
-    <header
-      className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b"
-    >
+    <header className="fixed top-0 left-0 right-0 z-50 bg-warm-50 border-b border-warm">
       <div className="max-w-container-wide mx-auto px-4">
         <div className="flex items-center justify-between h-14">
-          {/* Logo */}
-          <CuliCurveLogo size={20} />
+          {/* Logo and Title */}
+          <div className="flex items-center gap-3">
+            <CuliCurveLogo size={24} />
+            <div>
+              <h1 className="text-notion-base font-medium text-notion-primary">
+                Validate Menu
+              </h1>
+              <p className="text-notion-xs text-warm-secondary">
+                Click any text to edit • Check items to validate
+              </p>
+            </div>
+          </div>
 
-          {/* Save Button */}
-          <Button
+          {/* Save button */}
+          <button
             onClick={onSave}
             disabled={!hasChanges || isSaving}
-            size="sm"
-            variant={hasChanges ? "default" : "ghost"}
-            className="h-8 px-3 text-sm"
-          >
-            {isSaving ? (
-              <Loader2 className="h-3 w-3 animate-spin" />
-            ) : hasChanges ? (
-              "Save"
-            ) : (
-              <Check className="h-3 w-3" />
+            className={cn(
+              "px-4 py-2 rounded text-notion-sm font-medium",
+              "transition-all duration-150",
+              hasChanges 
+                ? "bg-spanish-orange text-white hover:bg-spanish-orange/90" 
+                : "text-warm-secondary cursor-not-allowed"
             )}
-          </Button>
+          >
+            {isSaving ? 'Saving...' : hasChanges ? 'Save changes' : 'All saved'}
+          </button>
         </div>
       </div>
     </header>

@@ -5,27 +5,36 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { Reorder } from 'framer-motion'
 import { createClient } from '@/lib/supabase/browser'
 import { toast } from 'sonner'
-import { Loader2, Plus } from 'lucide-react'
+import { Plus } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 import { Accordion } from '@/components/ui/accordion'
-import { Button } from '@/components/ui/button'
 import type { ExtractedMenu, MenuItem, MenuSection } from '@/lib/ai/menu/extraction-schemas'
 
 // Import new components
 import { MenuHeader } from './components/MenuHeader'
 import { MenuSection as MenuSectionComponent } from './components/MenuSection'
 import { MenuItem as MenuItemComponent } from './components/MenuItem'
-import { EditDialog } from './components/EditDialog'
-import { QuickActions } from './components/QuickActions'
-import { SaveIndicator } from './components/SaveIndicator'
+import { FloatingActions } from './components/FloatingActions'
 
-interface EditableField {
-  type: 'item' | 'section'
-  data: MenuItem | MenuSection | null
-}
 
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'error'
 
+
+// Currency code to symbol mapping
+const currencySymbols: Record<string, string> = {
+  EUR: '€',
+  USD: '$',
+  GBP: '£',
+  JPY: '¥',
+  CHF: 'CHF',
+  CAD: 'C$',
+  AUD: 'A$',
+  CNY: '¥',
+  SEK: 'kr',
+  NOK: 'kr',
+  DKK: 'kr',
+}
 
 export default function MenuValidationPage({ 
   params 
@@ -41,12 +50,15 @@ export default function MenuValidationPage({
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [extraction, setExtraction] = useState<ExtractedMenu | null>(null)
-  const [editingField, setEditingField] = useState<EditableField | null>(null)
   const [expandedSections, setExpandedSections] = useState<string[]>([])
   const [hasChanges, setHasChanges] = useState(false)
   const [restaurantId, setRestaurantId] = useState<string | null>(null)
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
-  const [lastSaved, setLastSaved] = useState<Date | undefined>()
+  const [, setLastSaved] = useState<Date | undefined>()
+  const [validatedItems, setValidatedItems] = useState<Set<string>>(new Set())
+  const [validatedSections, setValidatedSections] = useState<Set<string>>(new Set())
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set())
+  const [selectedSections, setSelectedSections] = useState<Set<string>>(new Set())
   
   const supabase = createClient()
 
@@ -142,6 +154,13 @@ export default function MenuValidationPage({
     if (menu.extracted_data) {
       console.log('Extracted data found, sections:', menu.extracted_data.sections?.length || 0)
       setExtraction(menu.extracted_data)
+      
+      // Load validation state if exists
+      if (menu.extracted_data.validation) {
+        setValidatedItems(new Set(menu.extracted_data.validation.validatedItems || []))
+        setValidatedSections(new Set(menu.extracted_data.validation.validatedSections || []))
+      }
+      
       // Expand first section by default
       setExpandedSections([menu.extracted_data.sections[0]?.id].filter(Boolean))
       setIsLoading(false)
@@ -188,34 +207,39 @@ export default function MenuValidationPage({
     })
   }, [])
 
-  const handleEdit = useCallback((type: 'item' | 'section', data: MenuItem | MenuSection) => {
-    setEditingField({ type, data })
-  }, [])
-
-  const handleEditSave = useCallback((updatedData: MenuItem | MenuSection) => {
-    if (!extraction || !editingField) return
-
-    const newExtraction = { ...extraction }
+  const updateMenuItem = useCallback((sectionId: string, itemId: string, updates: Partial<MenuItem>) => {
+    if (!extraction) return
     
-    if (editingField.type === 'item') {
-      // Find and update the item
-      newExtraction.sections = newExtraction.sections.map(section => ({
-        ...section,
-        items: section.items.map(item => 
-          item.id === (updatedData as MenuItem).id ? updatedData as MenuItem : item
-        )
-      }))
-    } else {
-      // Update section
-      newExtraction.sections = newExtraction.sections.map(section => 
-        section.id === (updatedData as MenuSection).id ? updatedData as MenuSection : section
+    const newExtraction = { ...extraction }
+    newExtraction.sections = newExtraction.sections.map(section => {
+      if (section.id === sectionId) {
+        return {
+          ...section,
+          items: section.items.map(item => 
+            item.id === itemId ? { ...item, ...updates } : item
+          )
+        }
+      }
+      return section
+    })
+    
+    setExtraction(newExtraction)
+    setHasChanges(true)
+  }, [extraction])
+
+  const updateSection = useCallback((sectionId: string, updates: Partial<MenuSection>) => {
+    if (!extraction) return
+    
+    const newExtraction = {
+      ...extraction,
+      sections: extraction.sections.map(section => 
+        section.id === sectionId ? { ...section, ...updates } : section
       )
     }
-
+    
     setExtraction(newExtraction)
-    setEditingField(null)
     setHasChanges(true)
-  }, [extraction, editingField])
+  }, [extraction])
 
   const deleteItem = useCallback((sectionId: string, itemId: string) => {
     if (!extraction) return
@@ -259,10 +283,20 @@ export default function MenuValidationPage({
     setSaveStatus('saving')
     
     try {
+      // Add validation data to extraction
+      const extractionWithValidation = {
+        ...extraction,
+        validation: {
+          validatedItems: Array.from(validatedItems),
+          validatedSections: Array.from(validatedSections),
+          validatedAt: new Date().toISOString()
+        }
+      }
+
       const { error } = await supabase
         .from('menus')
         .update({
-          extracted_data: extraction,
+          extracted_data: extractionWithValidation,
           is_validated: true,
           validated_at: new Date().toISOString()
         })
@@ -288,7 +322,7 @@ export default function MenuValidationPage({
     } finally {
       setIsSaving(false)
     }
-  }, [extraction, menuId, restaurantId, locale, router, supabase])
+  }, [extraction, menuId, restaurantId, locale, router, supabase, validatedItems, validatedSections])
 
   const handleAddSection = useCallback(() => {
     toast.info('Add section functionality coming soon')
@@ -297,6 +331,110 @@ export default function MenuValidationPage({
   const handleAddItem = useCallback(() => {
     toast.info('Add item functionality coming soon')
   }, [])
+
+  const toggleItemSelection = useCallback((itemId: string) => {
+    setSelectedItems(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(itemId)) {
+        newSet.delete(itemId)
+      } else {
+        newSet.add(itemId)
+      }
+      return newSet
+    })
+  }, [])
+
+
+  const getSectionSelectionState = useCallback((section: MenuSection): 'checked' | 'unchecked' | 'indeterminate' => {
+    const itemIds = section.items.map(item => item.id)
+    const checkedCount = itemIds.filter(id => selectedItems.has(id)).length
+    
+    if (checkedCount === 0) return 'unchecked'
+    if (checkedCount === itemIds.length) return 'checked'
+    return 'indeterminate'
+  }, [selectedItems])
+
+  const getSectionValidationState = useCallback((section: MenuSection): 'checked' | 'unchecked' | 'indeterminate' => {
+    const itemIds = section.items.map(item => item.id)
+    const checkedCount = itemIds.filter(id => validatedItems.has(id)).length
+    
+    if (checkedCount === 0) return 'unchecked'
+    if (checkedCount === itemIds.length) return 'checked'
+    return 'indeterminate'
+  }, [validatedItems])
+
+  const selectAll = useCallback(() => {
+    if (!extraction) return
+    
+    const allItemIds = extraction.sections.flatMap(section => 
+      section.items.map(item => item.id)
+    )
+    const allSectionIds = extraction.sections.map(section => section.id)
+    
+    setSelectedItems(new Set(allItemIds))
+    setSelectedSections(new Set(allSectionIds))
+  }, [extraction])
+
+  const clearAll = useCallback(() => {
+    setSelectedItems(new Set())
+    setSelectedSections(new Set())
+  }, [])
+
+  const validateSelected = useCallback(() => {
+    // Validate all selected items
+    setValidatedItems(prev => {
+      const newSet = new Set(prev)
+      selectedItems.forEach(id => newSet.add(id))
+      return newSet
+    })
+    
+    // Validate all selected sections
+    setValidatedSections(prev => {
+      const newSet = new Set(prev)
+      selectedSections.forEach(id => newSet.add(id))
+      return newSet
+    })
+    
+    // Clear selection after validation
+    setSelectedItems(new Set())
+    setSelectedSections(new Set())
+    
+    setHasChanges(true)
+    toast.success(`${selectedItems.size} items validated successfully!`)
+  }, [selectedItems, selectedSections])
+
+  const toggleSectionSelection = useCallback((sectionId: string) => {
+    if (!extraction) return
+    
+    const section = extraction.sections.find(s => s.id === sectionId)
+    if (!section) return
+    
+    const itemIds = section.items.map(item => item.id)
+    const isCurrentlySelected = selectedSections.has(sectionId)
+    
+    setSelectedSections(prev => {
+      const newSet = new Set(prev)
+      if (isCurrentlySelected) {
+        newSet.delete(sectionId)
+      } else {
+        newSet.add(sectionId)
+      }
+      return newSet
+    })
+    
+    setSelectedItems(prev => {
+      const newSet = new Set(prev)
+      if (isCurrentlySelected) {
+        // Deselect all items in this section
+        itemIds.forEach(id => newSet.delete(id))
+      } else {
+        // Select all items in this section
+        itemIds.forEach(id => newSet.add(id))
+      }
+      return newSet
+    })
+  }, [extraction, selectedSections])
+
 
   // Add keyboard shortcuts
   useEffect(() => {
@@ -308,23 +446,51 @@ export default function MenuValidationPage({
           saveChanges()
         }
       }
+      // Cmd/Ctrl + A to select all
+      if ((e.metaKey || e.ctrlKey) && e.key === 'a') {
+        e.preventDefault()
+        selectAll()
+      }
+      // Escape to clear selection
+      if (e.key === 'Escape' && selectedItems.size > 0) {
+        e.preventDefault()
+        clearAll()
+      }
+      // Enter to validate selected
+      if (e.key === 'Enter' && selectedItems.size > 0) {
+        e.preventDefault()
+        validateSelected()
+      }
     }
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [hasChanges, saveChanges])
+  }, [hasChanges, saveChanges, selectAll, clearAll, selectedItems.size, validateSelected])
 
   if (isLoading || !extraction) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-5 w-5 animate-spin text-spanish-orange" />
+        <div className="text-notion-sm text-notion-tertiary">Loading...</div>
       </div>
     )
   }
 
+  // Check if this is the first time user is visiting
+  const isFirstVisit = extraction.sections.length === 0 || 
+    (extraction.sections.length === 1 && extraction.sections[0].items.length === 0)
+
+  // Calculate validation progress
+  const totalItems = extraction.sections.reduce((acc, section) => acc + section.items.length, 0)
+  const totalSections = extraction.sections.length
+  const validatedItemCount = validatedItems.size
+  const validatedSectionCount = validatedSections.size
+  const totalValidatable = totalItems + totalSections
+  const totalValidated = validatedItemCount + validatedSectionCount
+  const validationProgress = totalValidatable > 0 ? (totalValidated / totalValidatable) * 100 : 0
+
   return (
-    <div className="min-h-screen bg-white">
-      {/* Floating Header */}
+    <div className="min-h-screen bg-warm-50">
+      {/* Minimal Header */}
       <MenuHeader
         hasChanges={hasChanges}
         isSaving={isSaving}
@@ -333,6 +499,30 @@ export default function MenuValidationPage({
 
       {/* Main Content */}
       <main className="mx-auto max-w-container-wide px-4 pt-20 pb-24">
+        <div className="bg-white rounded-lg shadow-sm p-6">
+        {/* Instructions and Progress */}
+        <div className="mb-6">
+          {isFirstVisit ? (
+            <div className="text-notion-sm text-warm-secondary">
+              <p>Click any text to edit. Check off items as you validate them.</p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <div className="flex justify-between items-center text-notion-xs">
+                <span className="text-warm-secondary">Validation Progress</span>
+                <span className="text-notion-primary font-medium">
+                  {totalValidated} of {totalValidatable} validated
+                </span>
+              </div>
+              <div className="h-2 bg-warm-100 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-spanish-orange transition-all duration-300"
+                  style={{ width: `${validationProgress}%` }}
+                />
+              </div>
+            </div>
+          )}
+        </div>
         <Accordion 
           type="multiple" 
           value={expandedSections}
@@ -349,7 +539,11 @@ export default function MenuValidationPage({
                 <MenuSectionComponent
                   section={section}
                   isExpanded={expandedSections.includes(section.id)}
+                  selectionState={getSectionSelectionState(section)}
+                  validationState={getSectionValidationState(section)}
+                  onToggleSelection={() => toggleSectionSelection(section.id)}
                   onToggle={() => toggleSection(section.id)}
+                  onUpdate={(updates) => updateSection(section.id, updates)}
                   onDelete={() => deleteSection(section.id)}
                   onAddItem={handleAddItem}
                 >
@@ -357,8 +551,11 @@ export default function MenuValidationPage({
                     <MenuItemComponent
                       key={item.id}
                       item={item}
-                      currency={extraction.metadata.currency}
-                      onEdit={() => handleEdit('item', item)}
+                      currency={currencySymbols[extraction.metadata.currency] || extraction.metadata.currency}
+                      isSelected={selectedItems.has(item.id)}
+                      isValidated={validatedItems.has(item.id)}
+                      onToggleSelection={() => toggleItemSelection(item.id)}
+                      onUpdate={(updates) => updateMenuItem(section.id, item.id, updates)}
                       onDelete={() => deleteItem(section.id, item.id)}
                     />
                   ))}
@@ -369,39 +566,38 @@ export default function MenuValidationPage({
         </Accordion>
         
         {/* Add Section Button */}
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full mt-4 border-dashed hover:border-gray-400"
-          onClick={handleAddSection}
-        >
-          <Plus className="h-3 w-3 mr-1" />
-          Add Section
-        </Button>
+        <div className="flex justify-center mt-6">
+          <button
+            onClick={handleAddSection}
+            className={cn(
+              "flex items-center gap-2 py-3 px-6",
+              "text-notion-sm text-warm-secondary",
+              "rounded-lg border border-dashed border-warm",
+              "transition-colors duration-150",
+              "hover:border-spanish-orange hover:text-spanish-orange hover:bg-warm-100"
+            )}
+          >
+            <Plus className="h-4 w-4" />
+            Add section
+          </button>
+        </div>
+        </div>
       </main>
 
-      {/* Mobile Quick Actions */}
-      <QuickActions
-        hasChanges={hasChanges}
-        onSave={saveChanges}
-        onAddSection={handleAddSection}
-        isSaving={isSaving}
-      />
-      
-      {/* Save Indicator */}
-      <SaveIndicator
-        status={saveStatus}
-        lastSaved={lastSaved}
-      />
-      
-      {/* Edit Dialog */}
-      <EditDialog
-        open={!!editingField}
-        onOpenChange={(open) => !open && setEditingField(null)}
-        type={editingField?.type || 'item'}
-        data={editingField?.data || null}
-        currency={extraction.metadata.currency}
-        onSave={handleEditSave}
+      {/* Save Indicator - Notion style */}
+      {saveStatus === 'saved' && (
+        <div className="fixed bottom-6 left-6 text-notion-sm text-warm-secondary bg-warm-50 px-4 py-2 rounded shadow-sm">
+          ✓ Saved
+        </div>
+      )}
+
+      {/* Floating Actions Bar */}
+      <FloatingActions
+        selectedCount={selectedItems.size}
+        totalCount={totalItems}
+        onSelectAll={selectAll}
+        onClearAll={clearAll}
+        onValidateSelected={validateSelected}
       />
     </div>
   )

@@ -1,68 +1,128 @@
 'use client'
 
-import React from 'react'
+import React, { useCallback, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Trash2 } from 'lucide-react'
+import { Trash2, GripVertical } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
 import type { MenuItem as MenuItemType } from '@/lib/ai/menu/extraction-schemas'
+import { InlineEdit } from './InlineEdit'
+import { PriceDisplay } from './PriceDisplay'
+import { ValidationBadge } from './ValidationBadge'
 
 interface MenuItemProps {
   item: MenuItemType
   currency?: string
-  onEdit: () => void
+  isSelected?: boolean
+  isValidated?: boolean
+  onToggleSelection?: () => void
+  onUpdate: (updates: Partial<MenuItemType>) => void
   onDelete: () => void
 }
 
-export function MenuItem({ item, currency = '€', onEdit, onDelete }: MenuItemProps) {
+export function MenuItem({ 
+  item, 
+  currency = '€', 
+  isSelected = false,
+  isValidated = false,
+  onToggleSelection,
+  onUpdate, 
+  onDelete 
+}: MenuItemProps) {
+  const [isHovered, setIsHovered] = useState(false)
+  const handleNameSave = useCallback((name: string) => {
+    onUpdate({ name })
+  }, [onUpdate])
+
+  const handleDescriptionSave = useCallback((description: string) => {
+    onUpdate({ description })
+  }, [onUpdate])
+
+  const handlePriceSave = useCallback((price: number) => {
+    onUpdate({ price })
+  }, [onUpdate])
+
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, y: 5 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -5 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.15 }}
       className="group relative"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      <div 
-        onClick={onEdit}
-        className={cn(
-          "flex items-start justify-between gap-4 p-3 rounded-lg",
-          "cursor-pointer hover:bg-gray-50 transition-colors",
-          "border border-transparent hover:border-gray-200"
-        )}
-      >
+      <div className={cn(
+        "flex items-start gap-3 py-3 px-2 -mx-2 rounded",
+        "transition-colors duration-150",
+        isSelected ? "bg-warm-100" : "hover:bg-warm-50"
+      )}>
+        {/* Selection Checkbox / Drag Handle */}
+        <div className="flex items-center pt-1 w-4 h-4">
+          {(isHovered || isSelected) ? (
+            onToggleSelection && (
+              <input
+                type="checkbox"
+                checked={isSelected}
+                onChange={onToggleSelection}
+                className="w-4 h-4 cursor-pointer"
+                onClick={(e) => e.stopPropagation()}
+              />
+            )
+          ) : (
+            <GripVertical className="h-4 w-4 text-warm-secondary cursor-move" />
+          )}
+        </div>
+
         {/* Item Details */}
         <div className="flex-1 min-w-0">
-          <h4 className="font-medium text-gray-900">
-            {item.name}
-          </h4>
-          {item.description && (
-            <p className="text-sm text-gray-600 mt-0.5 line-clamp-2">
-              {item.description}
-            </p>
+          <div className="text-notion-sm text-notion-primary">
+            <InlineEdit 
+              value={item.name} 
+              onSave={handleNameSave}
+              placeholder="Item name"
+            />
+          </div>
+          {(item.description || false) && (
+            <div className="text-notion-xs text-warm-secondary mt-0.5">
+              <InlineEdit 
+                value={item.description || ''} 
+                onSave={handleDescriptionSave}
+                placeholder="Add description"
+                multiline
+              />
+            </div>
           )}
         </div>
 
         {/* Price */}
-        <div className="flex items-center gap-2">
-          <p className="font-medium text-gray-900">
-            {currency}{item.price?.toFixed(2) || '0.00'}
-          </p>
+        <div className="text-notion-sm text-notion-primary pt-1">
+          <PriceDisplay 
+            value={item.price || 0} 
+            currency={currency}
+            onSave={handlePriceSave}
+          />
+        </div>
+
+        {/* Delete button - Hidden until hover */}
+        <button
+          onClick={onDelete}
+          className={cn(
+            "hover-visible p-1 rounded",
+            "transition-colors duration-150",
+            "hover:bg-red-50 hover:text-red-600"
+          )}
+        >
+          <Trash2 className="h-4 w-4" />
+        </button>
+
+        {/* Validation Badge - Far right */}
+        <div className="pt-1 ml-2">
+          <ValidationBadge 
+            isValidated={isValidated}
+          />
         </div>
       </div>
-
-      {/* Delete button - always visible */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={(e) => {
-          e.stopPropagation()
-          onDelete()
-        }}
-        className="absolute -right-2 top-3 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50 hover:text-red-600"
-      >
-        <Trash2 className="h-3 w-3" />
-      </Button>
     </motion.div>
   )
 }
