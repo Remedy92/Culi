@@ -48,6 +48,24 @@
   --color-cinereous-light: #D4C5BF;
   --color-cinereous-dark: #B59B88;
   
+  /* Container widths - inherit from :root for consistency */
+  --container-prose: var(--container-prose, 65ch);
+  --container-narrow: var(--container-narrow, 48rem);
+  --container-standard: var(--container-standard, 64rem);
+  --container-wide: var(--container-wide, 80rem);
+  --container-full: var(--container-full, 96rem);
+  
+  /* Spacing variables - inherit from :root */
+  --space-xs: var(--space-xs, 0.5rem);
+  --space-sm: var(--space-sm, 0.75rem);
+  --space-md: var(--space-md, 1rem);
+  --space-lg: var(--space-lg, 1.5rem);
+  --space-xl: var(--space-xl, 2rem);
+  --space-2xl: var(--space-2xl, 2.5rem);
+  --space-3xl: var(--space-3xl, 3rem);
+  --space-4xl: var(--space-4xl, 4rem);
+  --space-5xl: var(--space-5xl, 5rem);
+  
   /* Dark mode semantic colors */
   --color-success: #10B981;
   --color-success-light: #34D399;
@@ -102,6 +120,30 @@
   /* Muted color alias */
   --color-muted: #FBF8F4;
   --color-muted-foreground: #3A3330;
+  
+  /* Container widths for Tailwind v4 compatibility */
+  --container-prose: 65ch;
+  --container-narrow: 48rem;
+  --container-standard: 64rem;
+  --container-wide: 80rem;
+  --container-full: 96rem;
+  
+  /* Spacing values for Tailwind v4 compatibility */
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 2.5rem;
+  --space-3xl: 3rem;
+  --space-4xl: 4rem;
+  --space-5xl: 5rem;
+  
+  /* Standard width mappings for Tailwind v4 */
+  --width-4xl: 56rem;
+  --width-5xl: 64rem;
+  --width-6xl: 72rem;
+  --width-7xl: 80rem;
 }
 
 html {

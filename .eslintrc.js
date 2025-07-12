@@ -22,5 +22,12 @@ module.exports = {
         ],
       },
     ],
+    'no-restricted-syntax': [
+      'error',
+      {
+        selector: 'Literal[value=/max-w-(xs|sm|md|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl)(?!-)/]',
+        message: 'Use custom max-w-container-* utilities instead. Options: container-narrow (48rem), container-standard (64rem), container-wide (80rem)',
+      },
+    ],
   },
 };

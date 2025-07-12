@@ -16,7 +16,6 @@ import { MenuHeader } from './components/MenuHeader'
 import { MenuSection as MenuSectionComponent } from './components/MenuSection'
 import { MenuItem as MenuItemComponent } from './components/MenuItem'
 import { EditDialog } from './components/EditDialog'
-import { AIPanel } from './components/AIPanel'
 import { QuickActions } from './components/QuickActions'
 import { SaveIndicator } from './components/SaveIndicator'
 
@@ -44,7 +43,6 @@ export default function MenuValidationPage({
   const [extraction, setExtraction] = useState<ExtractedMenu | null>(null)
   const [editingField, setEditingField] = useState<EditableField | null>(null)
   const [expandedSections, setExpandedSections] = useState<string[]>([])
-  const [showAISuggestions, setShowAISuggestions] = useState(false)
   const [hasChanges, setHasChanges] = useState(false)
   const [restaurantId, setRestaurantId] = useState<string | null>(null)
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
@@ -300,11 +298,6 @@ export default function MenuValidationPage({
     toast.info('Add item functionality coming soon')
   }, [])
 
-  const handleApplyAISuggestion = useCallback(() => {
-    toast.success('Suggestion applied')
-    setHasChanges(true)
-  }, [])
-
   // Add keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -323,28 +316,23 @@ export default function MenuValidationPage({
 
   if (isLoading || !extraction) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-seasalt to-white flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <Loader2 className="h-8 w-8 animate-spin text-spanish-orange mx-auto" />
-          <p className="text-sm text-muted-foreground">Loading your menu...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-5 w-5 animate-spin text-spanish-orange" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-seasalt to-white">
+    <div className="min-h-screen bg-white">
       {/* Floating Header */}
       <MenuHeader
         hasChanges={hasChanges}
         isSaving={isSaving}
         onSave={saveChanges}
-        onToggleAI={() => setShowAISuggestions(!showAISuggestions)}
-        showAI={showAISuggestions}
       />
 
       {/* Main Content */}
-      <main className="mx-auto max-w-4xl px-4 pt-20 pb-24">
+      <main className="mx-auto max-w-container-wide px-4 pt-20 pb-24">
         <Accordion 
           type="multiple" 
           value={expandedSections}
@@ -383,30 +371,20 @@ export default function MenuValidationPage({
         {/* Add Section Button */}
         <Button
           variant="outline"
-          className="w-full mt-6 border-dashed hover:border-spanish-orange hover:text-spanish-orange"
+          size="sm"
+          className="w-full mt-4 border-dashed hover:border-gray-400"
           onClick={handleAddSection}
         >
-          <Plus className="h-4 w-4 mr-2" />
+          <Plus className="h-3 w-3 mr-1" />
           Add Section
         </Button>
       </main>
 
-      {/* Floating AI Panel */}
-      <AIPanel
-        open={showAISuggestions}
-        onOpenChange={setShowAISuggestions}
-        extraction={extraction}
-        onApplySuggestion={handleApplyAISuggestion}
-        isMobile={false}
-      />
-      
       {/* Mobile Quick Actions */}
       <QuickActions
         hasChanges={hasChanges}
         onSave={saveChanges}
         onAddSection={handleAddSection}
-        onToggleAI={() => setShowAISuggestions(!showAISuggestions)}
-        showAI={showAISuggestions}
         isSaving={isSaving}
       />
       
