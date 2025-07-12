@@ -54,7 +54,7 @@ export function TranslationDemo() {
         <div className="absolute bottom-0 right-1/4 h-32 w-32 md:h-64 md:w-64 rounded-full bg-warm-taupe/5 blur-2xl md:blur-3xl" />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-container-full px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 container-full">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

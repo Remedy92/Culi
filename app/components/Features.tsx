@@ -37,7 +37,7 @@ export function Features() {
         <div className="absolute top-0 right-0 h-64 w-64 rounded-full bg-spanish-orange/5 blur-3xl" />
         <div className="absolute bottom-0 left-0 h-64 w-64 rounded-full bg-cinereous/5 blur-3xl" />
       </div>
-      <div className="relative z-10 mx-auto max-w-container-full px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 container-full">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

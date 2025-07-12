@@ -48,23 +48,6 @@
   --color-cinereous-light: #D4C5BF;
   --color-cinereous-dark: #B59B88;
   
-  /* Container widths - inherit from :root for consistency */
-  --container-prose: var(--container-prose, 65ch);
-  --container-narrow: var(--container-narrow, 48rem);
-  --container-standard: var(--container-standard, 64rem);
-  --container-wide: var(--container-wide, 80rem);
-  --container-full: var(--container-full, 96rem);
-  
-  /* Spacing variables - inherit from :root */
-  --space-xs: var(--space-xs, 0.5rem);
-  --space-sm: var(--space-sm, 0.75rem);
-  --space-md: var(--space-md, 1rem);
-  --space-lg: var(--space-lg, 1.5rem);
-  --space-xl: var(--space-xl, 2rem);
-  --space-2xl: var(--space-2xl, 2.5rem);
-  --space-3xl: var(--space-3xl, 3rem);
-  --space-4xl: var(--space-4xl, 4rem);
-  --space-5xl: var(--space-5xl, 5rem);
   
   /* Dark mode semantic colors */
   --color-success: #10B981;
@@ -128,6 +111,21 @@
   --container-wide: 80rem;
   --container-full: 96rem;
   
+  /* Standard Tailwind v4 container variables for max-w-* utilities */
+  --container-3xs: 16rem;  /* 256px */
+  --container-2xs: 18rem;  /* 288px */
+  --container-xs: 20rem;   /* 320px */
+  --container-sm: 24rem;   /* 384px */
+  --container-md: 28rem;   /* 448px */
+  --container-lg: 32rem;   /* 512px */
+  --container-xl: 36rem;   /* 576px */
+  --container-2xl: 42rem;  /* 672px */
+  --container-3xl: 48rem;  /* 768px */
+  --container-4xl: 56rem;  /* 896px */
+  --container-5xl: 64rem;  /* 1024px */
+  --container-6xl: 72rem;  /* 1152px */
+  --container-7xl: 80rem;  /* 1280px */
+  
   /* Spacing values for Tailwind v4 compatibility */
   --space-xs: 0.5rem;
   --space-sm: 0.75rem;
@@ -158,9 +156,10 @@ body {
   color: var(--foreground);
   position: relative;
   font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  overflow-x: hidden;
 }
 
-/* Mobile-First Responsive Typography System */
+/* Mobile-First Responsive Typography System - Keep these as they're different from @theme */
 :root {
   /* Fluid Typography Scale - balanced for all screen sizes */
   --text-xs: clamp(0.75rem, 1vw + 0.5rem, 0.875rem);
@@ -183,28 +182,10 @@ body {
   --leading-relaxed: 1.625;
   --leading-loose: 1.75;
   
-  /* Mobile-First Spacing System - Refined for better control */
-  --space-xs: clamp(0.25rem, 0.25rem + 0.25vw, 0.5rem);     /* 4px → 8px */
-  --space-sm: clamp(0.5rem, 0.5rem + 0.25vw, 0.75rem);      /* 8px → 12px */
-  --space-md: clamp(0.75rem, 0.75rem + 0.5vw, 1rem);        /* 12px → 16px */
-  --space-lg: clamp(1rem, 1rem + 0.5vw, 1.5rem);            /* 16px → 24px */
-  --space-xl: clamp(1.5rem, 1.5rem + 0.5vw, 2rem);          /* 24px → 32px */
-  --space-2xl: clamp(2rem, 2rem + 0.5vw, 2.5rem);           /* 32px → 40px */
-  --space-3xl: clamp(2.5rem, 2.5rem + 0.5vw, 3rem);         /* 40px → 48px */
-  --space-4xl: clamp(3rem, 3rem + 0.5vw, 4rem);             /* 48px → 64px */
-  --space-5xl: clamp(4rem, 4rem + 0.5vw, 5rem);             /* 64px → 80px */
-  
   /* Touch-Friendly Sizes */
   --touch-target-min: 44px;
   --touch-target-comfortable: 48px;
   --touch-target-large: 56px;
-  
-  /* Container Width System */
-  --container-prose: 65ch;           /* ~650px - optimal reading width */
-  --container-narrow: 48rem;         /* 768px - forms, cards, modals */
-  --container-standard: 64rem;       /* 1024px - main content */
-  --container-wide: 80rem;           /* 1280px - dashboards, wide content */
-  --container-full: 96rem;           /* 1536px - hero sections */
 }
 
 /* Professional Typography Scale for Legal Content */
@@ -759,6 +740,75 @@ body {
 
 /* Component-specific utility classes */
 @layer components {
+  /* Container presets - using explicit CSS to avoid Tailwind v4 @apply compilation issues */
+  .container-prose {
+    width: 100%;
+    max-width: var(--container-prose, 65ch);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .container-narrow {
+    width: 100%;
+    max-width: var(--container-narrow, 48rem);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .container-standard {
+    width: 100%;
+    max-width: var(--container-standard, 64rem);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .container-wide {
+    width: 100%;
+    max-width: var(--container-wide, 80rem);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .container-full {
+    width: 100%;
+    max-width: var(--container-full, 96rem);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Responsive padding for all containers */
+  @media (min-width: 640px) {
+    .container-prose,
+    .container-narrow,
+    .container-standard,
+    .container-wide,
+    .container-full {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .container-prose,
+    .container-narrow,
+    .container-standard,
+    .container-wide,
+    .container-full {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+
   /* Button presets */
   .btn-primary {
     @apply inline-flex items-center justify-center whitespace-nowrap rounded-full px-6 py-3 text-sm font-medium bg-primary text-primary-foreground shadow-md hover:bg-primary/90 hover:shadow-lg hover:scale-105 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;

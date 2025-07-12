@@ -115,7 +115,7 @@ export function Hero() {
         ))}
       </div>
 
-      <div className="relative z-10 mx-auto max-w-container-full px-4 sm:px-6 lg:px-8 text-center py-20 md:py-20">
+      <div className="relative z-10 container-full text-center py-20 md:py-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
