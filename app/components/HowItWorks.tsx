@@ -33,7 +33,7 @@ export function HowItWorks() {
       <div className="absolute inset-0">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-96 w-96 rounded-full bg-spanish-orange/5 blur-3xl" />
       </div>
-      <div className="relative z-10 mx-auto max-w-container-full px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 mx-auto max-w-max-w-container-full mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -44,7 +44,7 @@ export function HowItWorks() {
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-eerie-black mb-4">
             {t('title')}
           </h2>
-          <p className="text-base md:text-lg text-eerie-black/80 max-w-container-narrow mx-auto">
+          <p className="text-base md:text-lg text-eerie-black/80 max-w-max-w-container-narrow mx-auto mx-auto">
             {t('subtitle')}
           </p>
         </motion.div>
@@ -84,7 +84,7 @@ export function HowItWorks() {
                   <h3 className="text-lg md:text-xl font-semibold text-eerie-black mb-2">
                     {step.title}
                   </h3>
-                  <p className="text-sm md:text-base text-cinereous max-w-container-narrow">
+                  <p className="text-sm md:text-base text-cinereous max-w-max-w-container-narrow mx-auto">
                     {step.description}
                   </p>
                 </div>

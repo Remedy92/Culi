@@ -36,7 +36,7 @@ export function AnimatedModal({
         {isOpen && (
           <DialogContent
             className={cn(
-              'max-w-container-narrow p-0 overflow-hidden',
+              'max-w-max-w-container-narrow mx-auto p-0 overflow-hidden',
               className
             )}
             showCloseButton={showCloseButton}

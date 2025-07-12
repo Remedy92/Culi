@@ -293,7 +293,7 @@ export function AnalysisProgressModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent 
-        className="w-full max-w-[90vw] sm:max-w-container-narrow md:max-w-container-standard"
+        className="w-full max-w-[90vw] sm:max-w-max-w-container-narrow mx-auto md:max-w-max-w-container-standard mx-auto"
         onPointerDownOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >

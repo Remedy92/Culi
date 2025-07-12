@@ -113,7 +113,7 @@ export function EditDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-container-narrow">
+      <DialogContent className="max-w-max-w-container-narrow mx-auto">
         <DialogHeader>
           <DialogTitle>
             Edit {type === 'item' ? 'Menu Item' : 'Section'}

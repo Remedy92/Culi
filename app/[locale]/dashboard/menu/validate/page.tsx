@@ -498,7 +498,7 @@ export default function MenuValidationPage({
       />
 
       {/* Main Content */}
-      <main className="mx-auto max-w-container-wide px-4 pt-20 pb-24">
+      <main className="mx-auto max-w-max-w-container-wide mx-auto px-4 pt-20 pb-24">
         <div className="bg-white rounded-lg shadow-sm p-6">
         {/* Instructions and Progress */}
         <div className="mb-6">

@@ -53,7 +53,7 @@ export function Header() {
       }}
     >
       <motion.nav 
-        className="mx-auto max-w-container-full px-4 sm:px-6 lg:px-8 h-full"
+        className="mx-auto max-w-max-w-container-full mx-auto px-4 sm:px-6 lg:px-8 h-full"
         style={{
           paddingTop: headerPadding,
           paddingBottom: headerPadding

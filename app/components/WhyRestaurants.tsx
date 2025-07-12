@@ -52,7 +52,7 @@ export function WhyRestaurants() {
         <div className="absolute top-1/2 left-0 h-64 w-64 rounded-full bg-warm-taupe/5 blur-3xl" />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-container-full px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 mx-auto max-w-max-w-container-full mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -63,7 +63,7 @@ export function WhyRestaurants() {
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-eerie-black mb-4">
             {t('title')}
           </h2>
-          <p className="text-base md:text-lg text-eerie-black/80 max-w-container-narrow mx-auto">
+          <p className="text-base md:text-lg text-eerie-black/80 max-w-max-w-container-narrow mx-auto mx-auto">
             {t('subtitle')}
           </p>
         </motion.div>
