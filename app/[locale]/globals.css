@@ -740,73 +740,12 @@ body {
   }
 }
 
-/* Container utility classes for Tailwind v4 */
-@utility container-prose {
-  width: 100%;
-  max-width: var(--container-prose, 65ch);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
+/* Note: Container utilities are generated from tailwind.config.ts maxWidth values */
+/* Use max-w-container-* classes instead of custom @utility directives */
 
-@utility container-narrow {
-  width: 100%;
-  max-width: var(--container-narrow, 48rem);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
-@utility container-standard {
-  width: 100%;
-  max-width: var(--container-standard, 64rem);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
-@utility container-wide {
-  width: 100%;
-  max-width: var(--container-wide, 80rem);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
-@utility container-full {
-  width: 100%;
-  max-width: var(--container-full, 96rem);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
-/* Responsive padding for all containers */
-@media (min-width: 640px) {
-  .container-prose,
-  .container-narrow,
-  .container-standard,
-  .container-wide,
-  .container-full {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .container-prose,
-  .container-narrow,
-  .container-standard,
-  .container-wide,
-  .container-full {
-    padding-left: 2rem;
-    padding-right: 2rem;
-  }
+/* Fix for Tailwind v4 w-full bug */
+.w-full {
+  width: 100% !important;
 }
 
 /* Component-specific utility classes */

@@ -76,7 +76,7 @@ export default function AuthPage() {
 
         {/* Content */}
         <div className="flex-1 flex items-center justify-center">
-          <div className="container-narrow">
+          <div className="max-w-container-narrow mx-auto">
             <div className="bg-white rounded-2xl shadow-warm-xl p-8 text-center space-y-6">
               <div className="space-y-2">
                 <h2 className="text-2xl font-bold text-eerie-black">Check your email</h2>
@@ -116,7 +116,7 @@ export default function AuthPage() {
 
       {/* Content */}
       <div className="flex-1 flex items-center justify-center">
-        <div className="container-narrow">
+        <div className="max-w-container-narrow mx-auto">
           <div className="bg-white rounded-2xl shadow-warm-xl p-8">
             <div className="space-y-2 text-center mb-8">
               <h2 className="text-2xl font-bold text-eerie-black">Sign in to <span className="font-black"><span className="font-serif">C</span>uli</span></h2>

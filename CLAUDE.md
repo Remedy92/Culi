@@ -120,7 +120,6 @@ AI_GATEWAY_API_KEY= (optional, for Vercel AI Gateway)
 - Guest chat interface
 - QR code generation
 - Menu upload/processing
-- Authentication (Supabase Auth)
 - Subscription management (Stripe)
 
 ### Performance Optimization Strategies
@@ -130,18 +129,6 @@ AI_GATEWAY_API_KEY= (optional, for Vercel AI Gateway)
 - Use edge functions for low latency
 - Implement connection pooling for database
 - Stream AI responses for better UX
-
-### Width Utilities
-
-**CRITICAL**: Never use standard Tailwind max-width classes (max-w-xl, max-w-5xl, etc.) as they cause narrow column issues.
-
-Always use our custom container utilities:
-- `max-w-container-narrow` (48rem/768px) - forms, modals, focused content
-- `max-w-container-standard` (64rem/1024px) - standard content pages
-- `max-w-container-wide` (80rem/1280px) - dashboards, wide layouts, menu validation
-- `max-w-container-full` (96rem/1536px) - hero sections, full-width content
-
-This prevents the recurring narrow column issue caused by standard Tailwind widths in our v4 setup.
 
 ### Memory
 
