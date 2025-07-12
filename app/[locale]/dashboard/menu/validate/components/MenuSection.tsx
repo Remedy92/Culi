@@ -29,6 +29,12 @@ interface MenuSectionProps {
 export const MenuSection = React.forwardRef<HTMLDivElement, MenuSectionProps>(
   ({ section, isExpanded, selectionState = 'unchecked', validationState = 'unchecked', onToggleSelection, onToggle, onUpdate, onDelete, onAddItem, children, dragHandleProps }, ref) => {
     const [isHovered, setIsHovered] = useState(false)
+    const [isTouchDevice, setIsTouchDevice] = useState(false)
+    
+    // Detect touch device on mount
+    React.useEffect(() => {
+      setIsTouchDevice(window.matchMedia('(hover: none)').matches)
+    }, [])
     const handleNameSave = useCallback((name: string) => {
       onUpdate({ name })
     }, [onUpdate])
@@ -62,33 +68,44 @@ export const MenuSection = React.forwardRef<HTMLDivElement, MenuSectionProps>(
             )}
           >
             {/* Selection Checkbox / Drag Handle */}
-            <div className="flex items-center w-4 h-4">
-              {(isHovered || selectionState !== 'unchecked') ? (
-                onToggleSelection && (
-                  <input
-                    type="checkbox"
-                    checked={selectionState === 'checked'}
-                    ref={input => {
-                      if (input) {
-                        input.indeterminate = selectionState === 'indeterminate'
-                      }
-                    }}
-                    onChange={(e) => {
-                      e.stopPropagation()
-                      onToggleSelection()
-                    }}
-                    onClick={(e) => e.stopPropagation()}
-                    className="w-4 h-4 cursor-pointer"
-                  />
-                )
-              ) : (
-                <div
-                  className="cursor-move"
+            <div className="relative flex items-center justify-center w-6 h-6 flex-shrink-0">
+              {/* Drag handle - always rendered with scale transform */}
+              <div
+                className={cn(
+                  "absolute cursor-move transition-all duration-150",
+                  (isTouchDevice || isHovered || selectionState !== 'unchecked') && onToggleSelection 
+                    ? "opacity-0 scale-95" 
+                    : "opacity-100 scale-100"
+                )}
+                onClick={(e) => e.stopPropagation()}
+                {...dragHandleProps}
+              >
+                <GripVertical className="h-4 w-4 text-warm-secondary" />
+              </div>
+              
+              {/* Checkbox - always rendered with scale transform */}
+              {onToggleSelection && (
+                <input
+                  type="checkbox"
+                  checked={selectionState === 'checked'}
+                  ref={input => {
+                    if (input) {
+                      input.indeterminate = selectionState === 'indeterminate'
+                    }
+                  }}
+                  onChange={(e) => {
+                    e.stopPropagation()
+                    onToggleSelection()
+                  }}
                   onClick={(e) => e.stopPropagation()}
-                  {...dragHandleProps}
-                >
-                  <GripVertical className="h-4 w-4 text-warm-secondary" />
-                </div>
+                  className={cn(
+                    "absolute w-4 h-4 cursor-pointer transition-all duration-150",
+                    (isTouchDevice || isHovered || selectionState !== 'unchecked') 
+                      ? "opacity-100 scale-100" 
+                      : "opacity-30 scale-90 hover:opacity-50"
+                  )}
+                  aria-label={`Select ${section.name || 'section'}`}
+                />
               )}
             </div>
 

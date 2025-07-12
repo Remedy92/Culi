@@ -392,6 +392,8 @@ body {
   }
   .group:hover .hover-visible { opacity: 1; }
   
+  /* Notion-style hover states */
+  
   .notion-hover {
     transition: background-color 150ms ease;
     border-radius: 3px;

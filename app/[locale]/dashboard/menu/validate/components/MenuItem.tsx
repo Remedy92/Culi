@@ -29,6 +29,12 @@ export function MenuItem({
   onDelete 
 }: MenuItemProps) {
   const [isHovered, setIsHovered] = useState(false)
+  const [isTouchDevice, setIsTouchDevice] = useState(false)
+  
+  // Detect touch device on mount
+  React.useEffect(() => {
+    setIsTouchDevice(window.matchMedia('(hover: none)').matches)
+  }, [])
   const handleNameSave = useCallback((name: string) => {
     onUpdate({ name })
   }, [onUpdate])
@@ -58,19 +64,30 @@ export function MenuItem({
         isSelected ? "bg-warm-100" : "hover:bg-warm-50"
       )}>
         {/* Selection Checkbox / Drag Handle */}
-        <div className="flex items-center pt-1 w-4 h-4">
-          {(isHovered || isSelected) ? (
-            onToggleSelection && (
-              <input
-                type="checkbox"
-                checked={isSelected}
-                onChange={onToggleSelection}
-                className="w-4 h-4 cursor-pointer"
-                onClick={(e) => e.stopPropagation()}
-              />
-            )
-          ) : (
-            <GripVertical className="h-4 w-4 text-warm-secondary cursor-move" />
+        <div className="relative flex items-center justify-center pt-1 w-6 h-6 flex-shrink-0">
+          {/* Drag handle - always rendered with scale transform */}
+          <GripVertical className={cn(
+            "absolute h-4 w-4 text-warm-secondary cursor-move transition-all duration-150",
+            (isTouchDevice || isHovered || isSelected) && onToggleSelection 
+              ? "opacity-0 scale-95" 
+              : "opacity-100 scale-100"
+          )} />
+          
+          {/* Checkbox - always rendered with scale transform */}
+          {onToggleSelection && (
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={onToggleSelection}
+              className={cn(
+                "absolute w-4 h-4 cursor-pointer transition-all duration-150",
+                (isTouchDevice || isHovered || isSelected) 
+                  ? "opacity-100 scale-100" 
+                  : "opacity-30 scale-90 hover:opacity-50"
+              )}
+              onClick={(e) => e.stopPropagation()}
+              aria-label={`Select ${item.name}`}
+            />
           )}
         </div>
 
