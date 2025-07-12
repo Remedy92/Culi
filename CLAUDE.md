@@ -89,7 +89,8 @@ NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 AI_GATEWAY_API_KEY= (optional, for Vercel AI Gateway)
-```
+GOOGLE_APPLICATION_CREDENTIALS_JSON= (optional, for Google Vision OCR - JSON service account key)
+``
 
 ### Security Considerations
 

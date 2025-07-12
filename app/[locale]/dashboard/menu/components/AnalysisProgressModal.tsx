@@ -12,11 +12,15 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogHeader,
+  DialogTitle,
 } from '@/components/ui/dialog'
 
 import {
   Sheet,
   SheetContent,
+  SheetHeader,
+  SheetTitle,
 } from '@/components/ui/sheet'
 
 import { Button } from '@/components/ui/button'
@@ -93,6 +97,13 @@ export function AnalysisProgressModal({
     }
   }, [open])
 
+  // Get appropriate title for accessibility
+  const getModalTitle = () => {
+    if (error) return 'Analysis Error'
+    if (isComplete) return 'Analysis Complete'
+    return 'Menu Analysis Progress'
+  }
+
   const content = (
     <div className="w-full">
       {/* Progress Section */}
@@ -145,6 +156,9 @@ export function AnalysisProgressModal({
           onPointerDownOutside={(e) => e.preventDefault()}
           onEscapeKeyDown={(e) => e.preventDefault()}
         >
+          <SheetHeader className="sr-only">
+            <SheetTitle>{getModalTitle()}</SheetTitle>
+          </SheetHeader>
           <div className="overflow-y-auto">
             {content}
           </div>
@@ -160,6 +174,9 @@ export function AnalysisProgressModal({
         onPointerDownOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
+        <DialogHeader className="sr-only">
+          <DialogTitle>{getModalTitle()}</DialogTitle>
+        </DialogHeader>
         {content}
       </DialogContent>
     </Dialog>

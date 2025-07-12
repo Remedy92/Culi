@@ -114,7 +114,9 @@ export async function POST(req: NextRequest) {
     console.log('Starting parallel OCR and AI analysis...');
     
     const results = await Promise.allSettled([
-      performOCR(input.thumbnailUrl),
+      EXTRACTION_CONFIG.FEATURES.USE_GOOGLE_VISION ? 
+        performOCRWithGoogleVision(input.thumbnailUrl) : 
+        performOCR(input.thumbnailUrl),
       performQuickAIAnalysis(input.thumbnailUrl)
     ]);
     
@@ -419,6 +421,168 @@ export async function POST(req: NextRequest) {
       );
     }
   });
+}
+
+async function performOCRWithGoogleVision(
+  imageUrl: string
+): Promise<z.infer<typeof OCRResultSchema>> {
+  const span = Sentry.startInactiveSpan({
+    op: 'ocr.google',
+    description: 'Google Cloud Vision OCR processing'
+  });
+
+  console.log('Starting Google Vision OCR processing...');
+  const startTime = Date.now();
+
+  try {
+    // Dynamically import Google Cloud Vision to reduce bundle size
+    const vision = await import('@google-cloud/vision');
+    
+    // Creates a client
+    const client = new vision.ImageAnnotatorClient({
+      // If credentials are not provided, the client library will look for credentials in the environment
+      credentials: process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON ? 
+        (() => {
+          const creds = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON);
+          // Fix escaped newlines in private key
+          if (creds.private_key) {
+            creds.private_key = creds.private_key.replace(/\\n/g, '\n');
+          }
+          return creds;
+        })() : undefined
+    });
+
+    // Prepare the request
+    const request = {
+      image: {
+        source: {
+          imageUri: imageUrl
+        }
+      },
+      features: [{
+        type: EXTRACTION_CONFIG.GOOGLE_VISION.FEATURE_TYPE,
+        maxResults: EXTRACTION_CONFIG.GOOGLE_VISION.MAX_RESULTS
+      }],
+      imageContext: {
+        languageHints: EXTRACTION_CONFIG.GOOGLE_VISION.LANGUAGE_HINTS
+      }
+    };
+
+    console.log('Calling Google Vision API...');
+    
+    // Perform text detection
+    const [result] = await client.annotateImage(request);
+    const fullTextAnnotation = result.fullTextAnnotation;
+    
+    if (!fullTextAnnotation) {
+      throw new Error('No text detected in image');
+    }
+
+    // Convert Google Vision response to our OCR schema
+    const pages = fullTextAnnotation.pages || [];
+    const lines: Array<{
+      text: string;
+      bbox: { x: number; y: number; width: number; height: number };
+      confidence: number;
+    }> = [];
+    let totalConfidence = 0;
+    let lineCount = 0;
+
+    // Extract lines from pages -> blocks -> paragraphs -> words
+    for (const page of pages) {
+      if (!page.blocks) continue;
+      
+      for (const block of page.blocks) {
+        if (!block.paragraphs) continue;
+        
+        for (const paragraph of block.paragraphs) {
+          if (!paragraph.words) continue;
+          
+          // Reconstruct line text from words
+          let lineText = '';
+          let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+          let lineConfidence = 0;
+          let wordCount = 0;
+          
+          for (const word of paragraph.words) {
+            if (!word.symbols) continue;
+            
+            let wordText = '';
+            for (const symbol of word.symbols) {
+              wordText += symbol.text || '';
+              
+              // Update confidence
+              if (symbol.confidence !== undefined) {
+                lineConfidence += symbol.confidence;
+                wordCount++;
+              }
+              
+              // Update bounding box
+              if (symbol.boundingBox && symbol.boundingBox.vertices) {
+                for (const vertex of symbol.boundingBox.vertices) {
+                  minX = Math.min(minX, vertex.x || 0);
+                  minY = Math.min(minY, vertex.y || 0);
+                  maxX = Math.max(maxX, vertex.x || 0);
+                  maxY = Math.max(maxY, vertex.y || 0);
+                }
+              }
+              
+              // Check for line break
+              if (symbol.property?.detectedBreak?.type?.includes('LINE_BREAK')) {
+                wordText += '\n';
+              } else if (symbol.property?.detectedBreak?.type?.includes('SPACE')) {
+                wordText += ' ';
+              }
+            }
+            
+            lineText += wordText;
+          }
+          
+          if (lineText.trim()) {
+            const avgConfidence = wordCount > 0 ? (lineConfidence / wordCount) * 100 : 0;
+            totalConfidence += avgConfidence;
+            lineCount++;
+            
+            lines.push({
+              text: lineText.trim(),
+              bbox: {
+                x: minX,
+                y: minY,
+                width: maxX - minX,
+                height: maxY - minY
+              },
+              confidence: avgConfidence
+            });
+          }
+        }
+      }
+    }
+
+    const overallConfidence = lineCount > 0 ? totalConfidence / lineCount : 0;
+    
+    const result_schema = OCRResultSchema.parse({
+      text: fullTextAnnotation.text || '',
+      confidence: overallConfidence,
+      lines: lines,
+      language: pages[0]?.property?.detectedLanguages?.[0]?.languageCode || 'unknown'
+    });
+
+    const duration = Date.now() - startTime;
+    console.log(`Google Vision OCR completed in ${duration}ms. Confidence: ${result_schema.confidence}%, Lines: ${result_schema.lines.length}, Text length: ${result_schema.text.length}`);
+    
+    span.setAttribute('ocr.confidence', result_schema.confidence);
+    span.setAttribute('ocr.lines', result_schema.lines.length);
+    span.setAttribute('ocr.duration', duration);
+    span.setAttribute('ocr.provider', 'google_vision');
+    span.end();
+
+    return result_schema;
+  } catch (error) {
+    console.error('Google Vision OCR error:', error);
+    span.setAttribute('ocr.error', true);
+    span.end();
+    throw new Error(`Google Vision OCR failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
 }
 
 async function performOCR(

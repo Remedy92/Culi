@@ -13,6 +13,13 @@ export const EXTRACTION_CONFIG = {
     CHAR_WHITELIST: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.,€$£¥-()/ *•°%+&\''
   },
 
+  // Google Cloud Vision Settings
+  GOOGLE_VISION: {
+    LANGUAGE_HINTS: ['nl', 'en', 'fr', 'de', 'es', 'it'], // Multilingual hints for better accuracy
+    MAX_RESULTS: 10, // Maximum number of text annotations to return
+    FEATURE_TYPE: 'DOCUMENT_TEXT_DETECTION' // Better for dense text/menus than TEXT_DETECTION
+  },
+
   // AI Model Settings
   AI: {
     QUICK_ANALYSIS_MODEL: 'gpt-4o-mini', // Cheaper model for initial analysis
@@ -70,7 +77,8 @@ export const EXTRACTION_CONFIG = {
   FEATURES: {
     ENABLE_AI_FALLBACK: true, // Fallback to GPT-4o on timeout
     ENABLE_GATEWAY_BYPASS: true, // Allow direct API calls on gateway timeout
-    EXPONENTIAL_BACKOFF: true // Use exponential backoff for retries
+    EXPONENTIAL_BACKOFF: true, // Use exponential backoff for retries
+    USE_GOOGLE_VISION: true // Use Google Cloud Vision API instead of Tesseract
   }
 } as const;
 
