@@ -28,7 +28,6 @@ export default function MenuUploadClient({ restaurantId, locale }: MenuUploadCli
   const [isUploading, setIsUploading] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [showModal, setShowModal] = useState(true)
-  const [filePreview, setFilePreview] = useState<string | undefined>()
   const [extractionError, setExtractionError] = useState<string | undefined>()
   const router = useRouter()
   
@@ -183,12 +182,8 @@ export default function MenuUploadClient({ restaurantId, locale }: MenuUploadCli
     <>
       <AnalysisProgressModal
         open={isExtracting}
-        fileName={selectedFile?.name}
-        fileSize={selectedFile?.size}
-        filePreview={filePreview}
         error={extractionError}
         onRetry={handleRetryExtraction}
-        // Navigation now handled directly in extraction response
       />
 
       {/* Welcome Modal */}
