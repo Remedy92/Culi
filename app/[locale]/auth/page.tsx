@@ -63,7 +63,7 @@ export default function AuthPage() {
 
   if (emailSent) {
     return (
-      <div className="min-h-screen flex flex-col bg-seasalt px-6 sm:px-8 md:px-12">
+      <div className="min-h-screen flex flex-col bg-seasalt">
         {/* Header */}
         <div className="py-6 flex justify-center">
           <Link href="/" className="flex items-center gap-3 group">
@@ -103,7 +103,7 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-seasalt px-6 sm:px-8 md:px-12">
+    <div className="min-h-screen flex flex-col bg-seasalt">
       {/* Header */}
       <div className="py-6 flex justify-center">
         <Link href="/" className="flex items-center gap-3 group">

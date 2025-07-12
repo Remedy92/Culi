@@ -157,6 +157,8 @@ body {
   position: relative;
   font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
   overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
 }
 
 /* Mobile-First Responsive Typography System - Keep these as they're different from @theme */
@@ -738,77 +740,77 @@ body {
   }
 }
 
+/* Container utility classes for Tailwind v4 */
+@utility container-prose {
+  width: 100%;
+  max-width: var(--container-prose, 65ch);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@utility container-narrow {
+  width: 100%;
+  max-width: var(--container-narrow, 48rem);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@utility container-standard {
+  width: 100%;
+  max-width: var(--container-standard, 64rem);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@utility container-wide {
+  width: 100%;
+  max-width: var(--container-wide, 80rem);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@utility container-full {
+  width: 100%;
+  max-width: var(--container-full, 96rem);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* Responsive padding for all containers */
+@media (min-width: 640px) {
+  .container-prose,
+  .container-narrow,
+  .container-standard,
+  .container-wide,
+  .container-full {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-prose,
+  .container-narrow,
+  .container-standard,
+  .container-wide,
+  .container-full {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
 /* Component-specific utility classes */
 @layer components {
-  /* Container presets - using explicit CSS to avoid Tailwind v4 @apply compilation issues */
-  .container-prose {
-    width: 100%;
-    max-width: var(--container-prose, 65ch);
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-  
-  .container-narrow {
-    width: 100%;
-    max-width: var(--container-narrow, 48rem);
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-  
-  .container-standard {
-    width: 100%;
-    max-width: var(--container-standard, 64rem);
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-  
-  .container-wide {
-    width: 100%;
-    max-width: var(--container-wide, 80rem);
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-  
-  .container-full {
-    width: 100%;
-    max-width: var(--container-full, 96rem);
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-  
-  /* Responsive padding for all containers */
-  @media (min-width: 640px) {
-    .container-prose,
-    .container-narrow,
-    .container-standard,
-    .container-wide,
-    .container-full {
-      padding-left: 1.5rem;
-      padding-right: 1.5rem;
-    }
-  }
-  
-  @media (min-width: 1024px) {
-    .container-prose,
-    .container-narrow,
-    .container-standard,
-    .container-wide,
-    .container-full {
-      padding-left: 2rem;
-      padding-right: 2rem;
-    }
-  }
-
   /* Button presets */
   .btn-primary {
     @apply inline-flex items-center justify-center whitespace-nowrap rounded-full px-6 py-3 text-sm font-medium bg-primary text-primary-foreground shadow-md hover:bg-primary/90 hover:shadow-lg hover:scale-105 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
