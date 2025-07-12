@@ -136,6 +136,9 @@ const config: Config = {
       
       // Spacing that uses CSS variables for fluid values
       spacing: {
+        // Explicitly define 'full' to prevent conflicts
+        'full': '100%',
+        
         // Fluid system with proper fallbacks matching max clamp values
         xs: "var(--space-xs, 0.5rem)",      // 8px fallback
         sm: "var(--space-sm, 0.75rem)",     // 12px fallback

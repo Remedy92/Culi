@@ -743,11 +743,6 @@ body {
 /* Note: Container utilities are generated from tailwind.config.ts maxWidth values */
 /* Use max-w-container-* classes instead of custom @utility directives */
 
-/* Fix for Tailwind v4 w-full bug */
-.w-full {
-  width: 100% !important;
-}
-
 /* Component-specific utility classes */
 @layer components {
   /* Button presets */

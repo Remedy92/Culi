@@ -8,7 +8,8 @@ const nextConfig: NextConfig = {
   /* config options here */
   experimental: {
     // Optimize for faster builds
-    optimizeCss: true,
+    // Temporarily disabled to debug w-full issue
+    optimizeCss: false,
   },
   
   // Fix Tesseract.js worker resolution (moved to stable API in Next.js 15)
