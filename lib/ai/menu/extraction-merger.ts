@@ -814,3 +814,109 @@ function identifyWarnings(sections: MenuSection[], ocr: OCRResult): string[] {
   
   return warnings;
 }
+
+/**
+ * Rebuilds sections from a flat items array, grouping by category
+ * Used when sections are corrupted or missing items during enhancement
+ */
+export function rebuildSectionsFromItems(items: MenuItem[]): MenuSection[] {
+  const sectionMap = new Map<string, MenuItem[]>();
+  
+  // Group items by category
+  items.forEach(item => {
+    const category = item.category || 'Uncategorized';
+    if (!sectionMap.has(category)) {
+      sectionMap.set(category, []);
+    }
+    sectionMap.get(category)!.push(item);
+  });
+  
+  // Define section order for common categories
+  const sectionOrder = ['STARTERS', 'HOOFDGERECHTEN', 'MAINS', 'DESSERT', 'DESSERTS', 'LUNCH MENU', 'DINNER MENU'];
+  
+  // Build sections with proper ordering
+  const sections = Array.from(sectionMap.entries())
+    .sort(([a], [b]) => {
+      const aIndex = sectionOrder.findIndex(s => a.toUpperCase().includes(s));
+      const bIndex = sectionOrder.findIndex(s => b.toUpperCase().includes(s));
+      
+      // If both found in order, sort by that
+      if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
+      // If only one found, it comes first
+      if (aIndex !== -1) return -1;
+      if (bIndex !== -1) return 1;
+      // Otherwise alphabetical
+      return a.localeCompare(b);
+    })
+    .map(([name, sectionItems], index) => {
+      // Calculate section confidence as average of item confidences
+      const avgConfidence = sectionItems.length > 0
+        ? Math.round(sectionItems.reduce((sum, item) => sum + item.confidence, 0) / sectionItems.length)
+        : 50;
+      
+      // Check if this is a bundle section
+      const hasBundle = sectionItems.some(item => item.isPartOfBundle);
+      const bundleItems = sectionItems.filter(item => item.isPartOfBundle);
+      
+      const section: MenuSection = {
+        id: generateUUID(),
+        name,
+        items: sectionItems,
+        confidence: avgConfidence as z.infer<typeof ConfidenceSchema>,
+        displayOrder: index
+      };
+      
+      // If it's a bundle section, try to reconstruct bundle info
+      if (hasBundle && bundleItems.length > 0) {
+        // Group bundle items by bundleId
+        const bundleGroups = new Map<string, MenuItem[]>();
+        bundleItems.forEach(item => {
+          if (item.bundleId) {
+            if (!bundleGroups.has(item.bundleId)) {
+              bundleGroups.set(item.bundleId, []);
+            }
+            bundleGroups.get(item.bundleId)!.push(item);
+          }
+        });
+        
+        // If there's a dominant bundle, add bundle info
+        if (bundleGroups.size === 1) {
+          const [, items] = Array.from(bundleGroups.entries())[0]; // bundleId not needed here
+          const priceItem = sectionItems.find(item => 
+            !item.isPartOfBundle && item.price && item.name.match(/\d+-gangen|\d+\s*course/i)
+          );
+          
+          if (priceItem) {
+            section.bundleInfo = {
+              type: detectBundleType(name),
+              courses: extractCourseCount(priceItem.name) || 2,
+              sharedPrice: priceItem.price as z.infer<typeof PriceSchema>,
+              priceType: 'fixed',
+              description: priceItem.description,
+              choices: groupBundleChoices(items)
+            };
+          }
+        }
+      }
+      
+      return section;
+    });
+  
+  return sections;
+}
+
+// Helper to detect bundle type from section name
+function detectBundleType(sectionName: string): MenuSection['bundleInfo']['type'] {
+  const name = sectionName.toLowerCase();
+  if (name.includes('lunch')) return 'lunch-special';
+  if (name.includes('dinner') || name.includes('diner')) return 'multi-course';
+  if (name.includes('prix') || name.includes('fixe')) return 'prix-fixe';
+  if (name.includes('combo')) return 'combo';
+  return 'multi-course';
+}
+
+// Helper to extract course count from text
+function extractCourseCount(text: string): number | null {
+  const match = text.match(/(\d+)[\s-]*(gangen|course|gang)/i);
+  return match ? parseInt(match[1]) : null;
+}

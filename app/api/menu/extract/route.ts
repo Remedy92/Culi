@@ -8,7 +8,7 @@ import { captureError, trackExtractionError, addBreadcrumb } from '@/lib/sentry'
 import { createClient } from '@supabase/supabase-js';
 import { z } from 'zod';
 
-import { mergeOCRWithAI } from '@/lib/ai/menu/extraction-merger';
+import { mergeOCRWithAI, rebuildSectionsFromItems } from '@/lib/ai/menu/extraction-merger';
 import { QUICK_ANALYSIS_PROMPT } from '@/lib/ai/menu/extraction-prompts';
 import { 
   ExtractedMenuSchema, 
@@ -166,6 +166,9 @@ export async function POST(req: NextRequest) {
     
     // Track warnings for non-critical issues
     const warnings: string[] = [];
+    
+    // Enhancement tracking variable
+    let enhancedResult: Awaited<ReturnType<typeof enhanceWithFullResolution>> | null = null;
 
     // Check if enhancement needed
     if (validatedResult.overallConfidence < EXTRACTION_CONFIG.OCR.CONFIDENCE_THRESHOLD && input.enhancedUrl) {
@@ -174,7 +177,7 @@ export async function POST(req: NextRequest) {
         description: 'Enhance with full resolution'
       });
 
-      const enhancedResult = await enhanceWithFullResolution(
+      enhancedResult = await enhanceWithFullResolution(
         input.enhancedUrl,
         ocrResult.text,
         validatedResult
@@ -183,10 +186,94 @@ export async function POST(req: NextRequest) {
       enhanceSpan.end();
 
       if (enhancedResult) {
-        Object.assign(validatedResult, enhancedResult);
+        // Log pre-enhancement state
+        console.log(`Pre-enhancement: ${validatedResult.sections.length} sections, ${validatedResult.items.length} items`);
+        
+        // Properly merge enhanced sections without overwriting all sections
+        if (enhancedResult.sections) {
+          // Create a map of enhanced sections by ID for efficient lookup
+          const enhancedSectionsMap = new Map(
+            enhancedResult.sections.map(s => [s.id, s])
+          );
+          
+          // Merge sections preserving all original sections
+          validatedResult.sections = validatedResult.sections.map(section => {
+            const enhanced = enhancedSectionsMap.get(section.id);
+            if (!enhanced) return section; // Keep non-enhanced sections as-is
+            
+            // Create a map of enhanced items for this section
+            const enhancedItemsMap = new Map(
+              enhanced.items.map(item => [item.id, item])
+            );
+            
+            // Merge items within the section
+            return {
+              ...section,
+              items: section.items.map(item => {
+                const enhancedItem = enhancedItemsMap.get(item.id);
+                return enhancedItem ? { ...item, ...enhancedItem } : item;
+              }),
+              // Update section confidence if enhanced
+              confidence: enhanced.confidence || section.confidence
+            };
+          });
+          
+          console.log(`Enhancement updated ${enhancedResult.sections.length} sections`);
+        }
+        
+        // Merge other enhanced properties (metadata, etc.) but not sections
+        if (enhancedResult.metadata) {
+          Object.assign(validatedResult.metadata, enhancedResult.metadata);
+        }
       } else {
         warnings.push('Enhancement skipped due to processing error');
       }
+    }
+
+    // Validation safeguards after merging
+    const sectionItemCount = validatedResult.sections.reduce(
+      (sum, section) => sum + section.items.length, 0
+    );
+    
+    if (sectionItemCount !== validatedResult.items.length) {
+      console.warn(`Section/items mismatch: ${sectionItemCount} items in sections vs ${validatedResult.items.length} in items array`);
+      
+      // Capture warning to Sentry for monitoring
+      Sentry.captureMessage('Menu extraction section/items mismatch', {
+        level: 'warning',
+        extra: {
+          menuId: input.menuId,
+          sectionItemCount,
+          itemsArrayCount: validatedResult.items.length,
+          sectionCount: validatedResult.sections.length
+        }
+      });
+      
+      addBreadcrumb('Extraction validation warning', 'validation', {
+        sectionItemCount,
+        itemsArrayCount: validatedResult.items.length,
+        sectionCount: validatedResult.sections.length
+      });
+      
+      warnings.push(`Item count mismatch detected: ${sectionItemCount} in sections vs ${validatedResult.items.length} total`);
+      
+      // Rebuild sections if we're missing items
+      if (sectionItemCount < validatedResult.items.length) {
+        console.warn('Rebuilding sections from items array due to missing items');
+        validatedResult.sections = rebuildSectionsFromItems(validatedResult.items);
+        warnings.push('Sections were rebuilt from items to recover missing data');
+      }
+    }
+    
+    // Re-validate against schema
+    const validation = ExtractedMenuSchema.safeParse(validatedResult);
+    if (!validation.success) {
+      console.error('Extraction validation failed:', validation.error);
+      addBreadcrumb('Schema validation failed', 'validation', {
+        errors: validation.error.errors
+      });
+      // Don't throw - we can still save with warnings
+      warnings.push('Extraction data may not conform to expected schema');
     }
 
     // Save to database
@@ -219,25 +306,36 @@ export async function POST(req: NextRequest) {
       throw new Error('Extraction data was not saved properly');
     }
 
-    // Save individual items for search
-    const items = validatedResult.sections.flatMap(section => 
-      section.items.map(item => ({
-        menu_id: input.menuId,
-        restaurant_id: input.restaurantId,
-        section_name: section.name,
-        name: item.name,
-        price: item.price,
-        description: item.description,
-        allergens: item.allergens,
-        dietary_tags: item.dietaryTags,
-        confidence: item.confidence / 100
-      }))
-    );
+    // Save individual items for search - use the flattened items array
+    const items = validatedResult.items.map(item => ({
+      menu_id: input.menuId,
+      restaurant_id: input.restaurantId,
+      category: item.category || 'Uncategorized', // Correct column name
+      name: item.name,
+      price: item.price ?? null, // Handle undefined prices (e.g., bundle items)
+      description: item.description || null,
+      allergens: item.allergens || [],
+      dietary_tags: item.dietaryTags || [],
+      extraction_confidence: (item.confidence || 0) / 100
+    }));
 
+    let insertedItemsCount = 0;
     if (items.length > 0) {
-      await supabase
+      const { data: insertedItems, error: insertError } = await supabase
         .from('menu_items_cache')
-        .insert(items);
+        .insert(items)
+        .select();
+      
+      if (insertError) {
+        console.error('Failed to insert menu items to cache:', insertError);
+        addBreadcrumb('menu_items_cache insert failed', 'database', { 
+          error: insertError.message,
+          itemCount: items.length 
+        });
+        warnings.push('Some items may not be searchable due to cache insert failure');
+      } else {
+        insertedItemsCount = insertedItems?.length || 0;
+      }
     }
 
     saveSpan.end();
@@ -261,15 +359,24 @@ export async function POST(req: NextRequest) {
     validatedResult.metadata.processingTime = processingTime;
     
     // Track metrics
-    span.setAttribute('extraction.items_extracted', items.length);
+    span.setAttribute('extraction.sections_count', validatedResult.sections.length);
+    span.setAttribute('extraction.items_extracted', validatedResult.items.length);
+    span.setAttribute('extraction.items_cached', insertedItemsCount);
     span.setAttribute('extraction.confidence_score', validatedResult.overallConfidence);
     span.setAttribute('extraction.ocr_confidence', ocrResult.confidence);
     span.setAttribute('extraction.processing_time', processingTime);
+    span.setAttribute('extraction.enhanced', !!enhancedResult);
 
     span.end();
 
-    // Return success response
-    console.log(`Extraction completed successfully for menu ${input.menuId}. Items: ${items.length}, Confidence: ${validatedResult.overallConfidence}%`);
+    // Return success response with comprehensive logging
+    console.log(`Extraction completed for menu ${input.menuId}:
+- Sections: ${validatedResult.sections.length}
+- Total items: ${validatedResult.items.length}
+- Cache items inserted: ${insertedItemsCount}
+- Confidence: ${validatedResult.overallConfidence}%
+- Processing time: ${processingTime}ms
+- Enhanced: ${!!enhancedResult}`);
     
     return NextResponse.json({
       success: true,
@@ -278,9 +385,12 @@ export async function POST(req: NextRequest) {
       hasExtractedData: !!updatedMenu.extracted_data,
       warnings: warnings.length > 0 ? warnings : undefined,
       metrics: {
-        itemsExtracted: items.length,
+        sectionsExtracted: validatedResult.sections.length,
+        itemsExtracted: validatedResult.items.length,
+        itemsCached: insertedItemsCount,
         confidence: validatedResult.overallConfidence,
-        processingTime: processingTime
+        processingTime: processingTime,
+        enhanced: !!enhancedResult
       }
     });
 

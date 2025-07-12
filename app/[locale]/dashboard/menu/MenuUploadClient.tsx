@@ -44,17 +44,6 @@ export default function MenuUploadClient({ restaurantId, locale }: MenuUploadCli
     const file = files[0]
     // Validation is now handled by FileUpload component
     setSelectedFile(file)
-    
-    // Create preview for images
-    if (file.type.startsWith('image/')) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setFilePreview(reader.result as string)
-      }
-      reader.readAsDataURL(file)
-    } else {
-      setFilePreview(undefined)
-    }
   }
 
   const uploadFile = async () => {
@@ -291,7 +280,6 @@ export default function MenuUploadClient({ restaurantId, locale }: MenuUploadCli
                     onChange={handleFileChange}
                     onRemove={() => {
                       setSelectedFile(null)
-                      setFilePreview(undefined)
                     }}
                     value={selectedFile}
                     accept={{
